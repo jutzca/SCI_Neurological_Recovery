@@ -10,6 +10,7 @@ value <-as.data.frame(emsci_incidence%>%
   count(YEARDOI))
 
 library(easyGgplot2)
+library(ggthemes)
 
 ggplot2.barplot(data=value, xName="YEARDOI", yName='n',
                 width=0.9, color="black")+
@@ -17,7 +18,7 @@ ggplot2.barplot(data=value, xName="YEARDOI", yName='n',
   scale_y_continuous(expand = c(0.1,0)) +
   scale_x_discrete(breaks = c(2001, 2003, 2005, 2007, 2009, 2011, 2013, 2015, 2017, 2019), expand=c(0,0) )+ 
   geom_hline(yintercept = 0) +
-  theme_economist(horizontal = FALSE) +
+  #theme_economist(horizontal = FALSE) +
   labs(fill = "", x = "Year of Injury", y = "Number of Patients")+ ggtitle("Annual incidence")+
   theme(axis.title = element_text(size = 13, face = 'bold'), 
         axis.text.y = element_text(size = 12),

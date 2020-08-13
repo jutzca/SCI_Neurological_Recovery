@@ -69,3 +69,4 @@ grid.arrange(gg.female,
              widths=c(0.4,0.4),
              ncol=2
 )
+
