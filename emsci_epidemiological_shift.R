@@ -7,6 +7,10 @@ rm(list = ls())
 #where libraries are stored
 .libPaths()
 
+
+#paths
+outdir_figures='/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/EMSCI_20_Years/Tables'
 #The following commands will install these packages if they are not already installed:
   
 #if(!require(lme4)){install.packages("lme4")}
@@ -119,11 +123,13 @@ table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level, data = emsci.trauma.sex.va.a1
 table1::table1(~ Country | X5_year_bins, data = emsci.trauma.sex.va.a1)
 
 ###Calculate Number of patients enrolled per year
-nr.of.patients.enrolled.per.year = emsci.trauma.sex.va.a1 %>%
+nr.of.patients.enrolled.per.year = emsci.trauma.sex.va.a1%>%
   count(YEARDOI) %>%
   group_by(YEARDOI)
 
 nr.of.patients.enrolled.per.year
+
+library(ggplot2)
 
 patients_enrolled_per_country <-ggplot(nr.of.patients.enrolled.per.year, aes(as.factor(YEARDOI),as.numeric(n), fill=n))+  geom_bar(stat="identity")+
   geom_text(aes(label=n), vjust=-0.3, size=3.5)+
@@ -139,12 +145,14 @@ patients_enrolled_per_country <-ggplot(nr.of.patients.enrolled.per.year, aes(as.
   labs(x= "Year", y="Number of patients enrolled")
 patients_enrolled_per_country
 
+
+
 ##Save plot
 ggsave(
   "patients_enrolled_per_country.pdf",
   plot = patients_enrolled_per_country,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 4,
   height = 3,
@@ -307,7 +315,7 @@ ggsave(
   "age_overall.pdf",
   plot = age_overall,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,   
   scale = 1,
   width = 5,
   height = 4,
@@ -366,7 +374,7 @@ ggsave(
   "age_para.pdf",
   plot = age_para,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -424,7 +432,7 @@ ggsave(
   "age_tetra.pdf",
   plot = age_tetra,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -484,7 +492,7 @@ ggsave(
   "age_ais_a.pdf",
   plot = age_ais_a,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -544,7 +552,7 @@ ggsave(
   "age_ais_b.pdf",
   plot = age_ais_b,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -603,7 +611,7 @@ ggsave(
   "age_ais_c.pdf",
   plot = age_ais_c,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -663,7 +671,7 @@ ggsave(
   "age_ais_d.pdf",
   plot = age_ais_d,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -785,7 +793,7 @@ ggsave(
   "sex.overall.pdf",
   plot = sex.overall,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',
   scale = 1,
   width = 5,
   height = 4,
