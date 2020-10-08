@@ -192,6 +192,11 @@ table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level+YEARDOI, data = emsci.missing.
 
 #------Comparison between included and exlcuded cohorts------
 
+#sex
+prop.test(x=c(141,477), n=c(1059, 3542),
+          conf.level=0.95)
+
+
 
 
 
@@ -552,7 +557,7 @@ ggsave(
   "age_ais_b.pdf",
   plot = age_ais_b,
   device = 'pdf',
-  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',    ###Set path to save figures
+  path = outdir_figures,    
   scale = 1,
   width = 5,
   height = 4,
@@ -611,7 +616,7 @@ ggsave(
   "age_ais_c.pdf",
   plot = age_ais_c,
   device = 'pdf',
-  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -671,7 +676,7 @@ ggsave(
   "age_ais_d.pdf",
   plot = age_ais_d,
   device = 'pdf',
-  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',    ###Set path to save figures
+  path = outdir_figures,    
   scale = 1,
   width = 5,
   height = 4,
@@ -793,7 +798,7 @@ ggsave(
   "sex.overall.pdf",
   plot = sex.overall,
   device = 'pdf',
-  path = '/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
@@ -885,7 +890,7 @@ ggsave(
   "sex.paraplegia.pdf",
   plot = sex.paraplegia,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
@@ -976,7 +981,7 @@ ggsave(
   "sex.tetrapelgia.pdf",
   plot = sex.tetrapelgia,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
@@ -1070,7 +1075,7 @@ ggsave(
   "sex.ais_a.pdf",
   plot = sex.ais_a,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -1165,7 +1170,7 @@ ggsave(
   "sex.ais_b.pdf",
   plot = sex.ais_b,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -1259,7 +1264,7 @@ ggsave(
   "sex.ais_c.pdf",
   plot = sex.ais_c,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -1352,7 +1357,7 @@ ggsave(
   "sex.ais_d.pdf",
   plot = sex.ais_d,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,

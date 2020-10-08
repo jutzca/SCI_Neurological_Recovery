@@ -7,6 +7,10 @@ rm(list = ls())
 #where libraries are stored
 .libPaths()
 
+#paths
+outdir_figures='/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/EMSCI_20_Years/Tables'
+
 #The following commands will install these packages if they are not already installed:
 
 #if(!require(lme4)){install.packages("lme4")}
