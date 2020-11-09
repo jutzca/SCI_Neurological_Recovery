@@ -1,16 +1,9 @@
 ##### Code created by C. Jutzeler August 3rd, 2020
-##### Validation Cohort: Sygen trial
+##### Cohort: EMSCI study
 
-#Clear workspace
-rm(list = ls())
+#clear working space
+rm(list=ls())
 
-#where libraries are stored
-.libPaths()
-
-
-#paths
-outdir_figures='/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/EMSCI_20_Years/Tables'
 #The following commands will install these packages if they are not already installed:
   
 #if(!require(lme4)){install.packages("lme4")}
@@ -28,7 +21,6 @@ outdir_tables='/Users/jutzca/Documents/Github/EMSCI_20_Years/Tables'
 # if(!require(EpiReport)){install.packages("EpiReport")}
 # if(!require(epiDisplay)){install.packages("epiDisplay")}
 # devtools::install_github("hadley/devtools")
-# if(!require(epicalc)){devtools::install_version("epicalc",version="2.15.1.0")}
 # if(!require(boot)){install.packages("boot")}
 # if(!require(table1)){install.packages("table1")}
 # if(!require(sjPlot)){install.packages("sjPlot")}
@@ -54,7 +46,6 @@ library(dplyr)
 library(gridExtra)
 library(reshape2)
 library(PMCMRplus)
-library(epicalc)
 library(EpiReport)
 library(epiDisplay)
 library(naniar)
@@ -71,7 +62,13 @@ library('ggthemes')
 library(Hmisc)
 
 
-rm(list=ls())
+#where libraries are stored
+.libPaths()
+
+#paths
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+
 
 #-------------------------Data wrangling------------------------------------------------------------------------------------------------------
 
@@ -84,14 +81,13 @@ emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Ag
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar')&   ## Neurological level
                              (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
-
-
-#-------------------------Data analysis and visualization of ------------------------------------------------------------------------------------------------------
+#-------------------------Data analysis and visualization------------------------------------------------------------------------------------------------------
 
 #------Data analysis and creation of table: Included cohort------
 
 #Subset data to only patients with valid entry at stage 'very acute' or 'acute I' and remove duplicate patient numbers
 emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute') , Patientennummer, .keep_all = TRUE)
+
 #relevel cause and injury level of injury
 emsci.trauma.sex.va.a1$Cause <- factor(emsci.trauma.sex.va.a1$Cause, levels=c("disc herniation", "haemorragic", "ischemic", "traumatic", "other"))
 emsci.trauma.sex.va.a1$NLI_level <- factor(emsci.trauma.sex.va.a1$NLI_level, levels=c("cervical", "thoracic", "lumbar", "sacral"))
@@ -109,6 +105,7 @@ label(emsci.trauma.sex.va.a1$Sex) <- "Sex"
 label(emsci.trauma.sex.va.a1$AgeAtDOI) <- "Age"
 label(emsci.trauma.sex.va.a1$NLI_level)<- "Neurological level of injury"
 label(emsci.trauma.sex.va.a1$YEARDOI) <- "Year of injury"
+label(emsci.trauma.sex.va.a1$AIS) <- "AIS Score"
 
 #Assign units to Age at Injury and Year of Injury
 units(emsci.trauma.sex.va.a1$AgeAtDOI) <- "years"
@@ -118,7 +115,7 @@ units(emsci.trauma.sex.va.a1$YEARDOI) <- "years"
 table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level, data = emsci.trauma.sex.va.a1)
 
 
-#------Data analysis, creation of table, and figure: Patients enrolled per country------
+#------Data analysis, creation of table, and figure: Patients enrolled per year and country------
 #Create Supplemantray Table 1: Number of patients enrolled per country (5 year bins)
 table1::table1(~ Country | X5_year_bins, data = emsci.trauma.sex.va.a1)
 
@@ -126,12 +123,12 @@ table1::table1(~ Country | X5_year_bins, data = emsci.trauma.sex.va.a1)
 nr.of.patients.enrolled.per.year = emsci.trauma.sex.va.a1%>%
   count(YEARDOI) %>%
   group_by(YEARDOI)
-
 nr.of.patients.enrolled.per.year
 
-library(ggplot2)
+sort(nr.of.patients.enrolled.per.year$n)
 
-patients_enrolled_per_country <-ggplot(nr.of.patients.enrolled.per.year, aes(as.factor(YEARDOI),as.numeric(n), fill=n))+  geom_bar(stat="identity")+
+##Plot number of patients enrolled per year
+patients_enrolled_per_year <-ggplot(nr.of.patients.enrolled.per.year, aes(as.factor(YEARDOI),as.numeric(n), fill=n))+  geom_bar(stat="identity")+
   geom_text(aes(label=n), vjust=-0.3, size=3.5)+
   theme_economist()+
   theme(legend.position = "none",
@@ -143,9 +140,45 @@ patients_enrolled_per_country <-ggplot(nr.of.patients.enrolled.per.year, aes(as.
         axis.text.x = element_text(angle = 45))+
   scale_fill_continuous(low="red", high="darkblue") +
   labs(x= "Year", y="Number of patients enrolled")
+patients_enrolled_per_year
+
+##Save plot
+ggsave(
+  "patients_enrolled_per_year.pdf",
+  plot = patients_enrolled_per_year,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 4,
+  height = 3,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+###Calculate Number of patients enrolled per country
+nr.of.patients.enrolled.per.country = emsci.trauma.sex.va.a1%>%
+  count(Country) %>%
+  group_by(Country)
+nr.of.patients.enrolled.per.country
+
+sort(nr.of.patients.enrolled.per.country$n)
+
+##Plot number of patients enrolled per country
+patients_enrolled_per_country <-ggplot(nr.of.patients.enrolled.per.country, aes(as.factor(Country),as.numeric(n), fill=n))+  geom_bar(stat="identity")+
+  geom_text(aes(label=n), vjust=-0.3, size=3.5)+
+  theme_economist()+
+  theme(legend.position = "none",
+        axis.title.y= element_blank(),
+        axis.text.y= element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        axis.text.x = element_text(angle = 45))+
+   labs(x= "Country", y="Number of patients enrolled")
 patients_enrolled_per_country
-
-
 
 ##Save plot
 ggsave(
@@ -161,8 +194,6 @@ ggsave(
 )
 
 dev.off()
-
-
 
 
 
@@ -190,15 +221,29 @@ units(emsci.missing.unique$YEARDOI) <- "years"
 table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level+YEARDOI, data = emsci.missing.unique)
 
 
-#------Comparison between included and exlcuded cohorts------
+#------Comparison between included and exlcuded EMSCI cohorts------
 
 #sex
 prop.test(x=c(141,477), n=c(1059, 3542),
           conf.level=0.95)
 
 
+#injury characteristics
+prop.test(x=c(137,35,54,140), n=c(1818, 522, 858, 1373),
+          conf.level=0.95)
 
+#age
+emsci.missing.unique$status <- 'excluded cohort'
+emsci.trauma.sex.va.a1$status <- 'included cohort'
+merged_data<-rbind(emsci.missing.unique,emsci.trauma.sex.va.a1)
 
+#Welch Two Sample t-test
+t.test(AgeAtDOI ~ status, data = merged_data)
+
+#Here's a quick visualization of the difference:
+ggplot(merged_data, aes(x=AgeAtDOI, fill = status)) + 
+   geom_histogram(alpha = .5, bins = 20, position = "identity") + 
+   theme_classic()
 
 #------Age distribution over time: Data analysis and visualization------
 
@@ -213,15 +258,33 @@ dotplot(emsci.trauma.sex.va.a1$AgeAtDOI, by = emsci.trauma.sex.va.a1$Sex)
 agegr <- cut(emsci.trauma.sex.va.a1$AgeAtDOI, breaks=c(18,39,59,79)) 
 table(agegr)
 
-#Calculate the change in age distribution over time - OVERALL ----
-age_model.overall <-lm(AgeAtDOI~YEARDOI, data=emsci.trauma.sex.va.a1)
+#------Calculate the change in age distribution over time - OVERALL ----
+age_model.overall <-lm(AgeAtDOI~YEARDOI*Sex, data=emsci.trauma.sex.va.a1)
 summary(age_model.overall)
 
-#interaction tearm YEARDOI and Sex
-age_model.sex <-lm(AgeAtDOI~YEARDOI*Sex, data=emsci.trauma.sex.va.a1)
-summary(age_model.sex)
 
-####Calculate the change age distribution over time - FEMALE ----
+#------Calculate the change in age distribution over time - OVERALL FEMALE----
+age_model.overall.female <-lm(AgeAtDOI~YEARDOI, data=subset(emsci.trauma.sex.va.a1, Sex=='Female'))
+summary(age_model.overall.female)
+
+#------Calculate the change in age distribution over time - OVERALL MALE----
+age_model.overall.male <-lm(AgeAtDOI~YEARDOI, data=subset(emsci.trauma.sex.va.a1, Sex=='Male'))
+summary(age_model.overall.female)
+
+
+tab_model(
+  age_model.overall, age_model.overall.female, age_model.overall.male,
+  pred.labels = c("Intercept", "Year of injury"),
+  dv.labels = c("Overall","Overall Female", "Overall Male"),
+  string.pred = "Coeffcient",
+  string.ci = "Conf. Int (95%)",
+  string.p = "P-Value",
+ digits.p = 3
+)
+
+
+
+#------Calculate the change age distribution over time - FEMALE ----
 #Tetraplegia
 age_model.tetra.female <-lm(AgeAtDOI~YEARDOI, data=subset(emsci.trauma.sex.va.a1, plegia == 'tetra' & Sex =='Female'))
 summary(age_model.tetra.female)
@@ -247,7 +310,7 @@ age_model.ais_d.female <-lm(AgeAtDOI~YEARDOI, data=subset(emsci.trauma.sex.va.a1
 summary(age_model.ais_d.female)
 
 
-####Calculate the change age distribution over time - MALE ----
+#------Calculate the change age distribution over time - MALE ----
 #Tetraplegia
 age_model.tetra.male <-lm(AgeAtDOI~YEARDOI, data=subset(emsci.trauma.sex.va.a1, plegia == 'tetra' & Sex =='Male'))
 summary(age_model.tetra.male)
@@ -274,7 +337,7 @@ summary(age_model.ais_d.male)
 
 
 
-#---Visualization: Change in age distribution over 20 years - OVERALL-----
+#------Visualization: Change in age distribution over 20 years - OVERALL-----
 
 #Set theme
 theme_set(theme_ridges())
@@ -331,7 +394,7 @@ ggsave(
 dev.off()
 
 
-#---Visualization: Change in age distribution over 20 years - PARAPLEGIA-----
+#------Visualization: Change in age distribution over 20 years - PARAPLEGIA-----
 
 #Set theme
 theme_set(theme_ridges())
@@ -389,7 +452,7 @@ ggsave(
 
 dev.off()
 
-#---Visualization: Change in age distribution over 20 years - TETRAPLEGIA-----
+#------Visualization: Change in age distribution over 20 years - TETRAPLEGIA-----
 
 #Set theme
 theme_set(theme_ridges())
@@ -449,7 +512,7 @@ dev.off()
 
 
 
-#---Visualization: Change in age distribution over 20 years - AIS A-----
+#------Visualization: Change in age distribution over 20 years - AIS A-----
 
 #Set theme
 theme_set(theme_ridges())
@@ -509,7 +572,7 @@ dev.off()
 
 
 
-#---Visualization: Change in age distribution over 20 years - AIS B-----
+#------Visualization: Change in age distribution over 20 years - AIS B-----
 
 #Set theme
 theme_set(theme_ridges())
@@ -568,7 +631,7 @@ ggsave(
 dev.off()
 
 
-#---Visualization: Change in age distribution over 20 years - AIS C-----
+#------Visualization: Change in age distribution over 20 years - AIS C-----
 
 #Set theme
 theme_set(theme_ridges())
@@ -628,7 +691,7 @@ dev.off()
 
 
 
-#---Visualization: Change in age distribution over 20 years - AIS C-----
+#------Visualization: Change in age distribution over 20 years - AIS C-----
 
 #Set theme
 theme_set(theme_ridges())
@@ -713,8 +776,7 @@ sex_ratios$Ratios <-
 #Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.lm <- lm(Ratios~YEARDOI, data=sex_ratios)
 summary(sex_ratios.lm)
-
-
+tab_model(sex_ratios.lm)
 
 #------Calculate the number of patients per year by sex - Overall----
 emsci.sex.long <- emsci.trauma.sex %>%

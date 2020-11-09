@@ -8,8 +8,8 @@ rm(list = ls())
 .libPaths()
 
 #paths
-outdir_figures='/Users/jutzca/Documents/Github/EMSCI_20_Years/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/EMSCI_20_Years/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
 
 #The following commands will install these packages if they are not already installed:
 
@@ -213,7 +213,7 @@ ggsave(
   "age_overall.sygen.pdf",
   plot = age_overall.sygen,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -246,7 +246,7 @@ age_para.sygen <- ggplot(
   #colours = c("#8C3F4D","#3E606F"),
   name = "Age [years]"
 )+
-  labs(title = 'Age at Injury between 2001 and 2019: Paraplegic Patients') +facet_grid(.~sygen.included.cohort.para$sex)+
+  labs(title = 'Age at Injury between 1992 to 1997: Paraplegic Patients') +facet_grid(.~sygen.included.cohort.para$sex)+
   xlab("Age at Injury")+ylab("Year of Injury")+
   theme_minimal()+
   theme(text = element_text(color = "#3A3F4A"),
@@ -272,7 +272,7 @@ ggsave(
   "age_para.sygen.pdf",
   plot = age_para.sygen,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -301,7 +301,7 @@ age_tetra.sygen <- ggplot(
   #colours = c("#8C3F4D","#3E606F"),
   name = "Age [years]"
 )+
-  labs(title = 'Age at Injury between 2001 and 2019: Tetraplegic Patients') +facet_grid(.~sygen.included.cohort.tetra$sex)+
+  labs(title = 'Age at Injury between 1992 to 1997: Tetraplegic Patients') +facet_grid(.~sygen.included.cohort.tetra$sex)+
   xlab("Age at Injury")+ylab("Year of Injury")+
   theme_minimal()+
   theme(text = element_text(color = "#3A3F4A"),
@@ -327,7 +327,7 @@ ggsave(
   "age_tetra.sygen.pdf",
   plot = age_tetra.sygen,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',    ###Set path to save figures
+  path = outdir_figures,    ###Set path to save figures
   scale = 1,
   width = 5,
   height = 4,
@@ -454,7 +454,7 @@ ggsave(
   "sex.overall.sygen.pdf",
   plot = sex.overall.sygen,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
@@ -549,7 +549,7 @@ ggsave(
   "sex.paraplegia.sygen.pdf",
   plot = sex.paraplegia.sygen,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
@@ -643,7 +643,7 @@ ggsave(
   "sex.tetrapelgia.sygen.pdf",
   plot = sex.tetrapelgia.sygen,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
