@@ -1,30 +1,39 @@
 library(ggplot2)
 library(grid)
 
-emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
-emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
-                             (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
-                             (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000))
+#Clear workspace
+rm(list = ls())
+
+#where libraries are stored
+.libPaths()
+
+#paths
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
 
 
-emsci.ais <- subset(emsci.trauma.sex, (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D") & (NLI_level == 'thoracic'| NLI_level == 'lumbar') )
-#emsci.ais <- subset(emsci.trauma.sex,NLI_level=='thoracic'|NLI_level=='lumbar')
+#load original dataset
+sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
+
+#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+sygen.included.cohort<- subset(sygen, (Sex=="Female" | Sex=="Male") & ###Age at DOI and Sex
+                                 (NLI == 'cervical' | NLI == 'thoracic')&   ## Neurological level
+                                 (AIS=="AIS A"| AIS=="AIS B"| AIS=="AIS C"| AIS=="AIS D")) #AIS Grades
 
 
-levels(emsci.ais$AIS) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
-abbrev_x <- c("", "2001/02", ""  ,"2003 "," ","2004","","2005"," ","2006"," ","2007"," ","2008"," ","2009 "," ","2010"," ","2011"," ","2012"," ","2013 "," ","2014 "," ","2015"," ","2016"," ","2017"," ","2018/19", '')
+levels(sygen.included.cohort$AIS) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D")
+abbrev_x <- c("", "1992", ""  ,"1993"," ","1994","","1995"," ","1996"," ","1997")
 
-plot <-ggplot(emsci.ais,aes(x=newtimeline, y=as.numeric(LEMS), group=AIS)) +
+plot2 <-ggplot(sygen.included.cohort,aes(x=New_timeline, y=as.numeric(LEMS), group=AIS)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="black", size=0.5) +
-  facet_grid(emsci.ais$AIS~.)+theme_bw()+ ylab('LEMS')+
-  scale_x_continuous( limits = c(0, 884), breaks = seq(0, 884, 26), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  facet_grid(sygen.included.cohort$AIS~.)+theme_bw()+ ylab('LEMS')+
+  #scale_x_continuous( limits = c(0, 317), breaks = seq(0, 317, 13), expand = c(0,0), labels=abbrev_x, position = "top" )+
   #scale_y_continuous( limits = c(0, 50), breaks = seq(0, 50, 25), expand = c(0,0))+
   theme(axis.title.x = element_blank(),panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
         axis.text.x = element_text(face='bold'))
 
-plot
+plot2
 
 # Construct a grid.layout that is the same as the ggplot layout
 gt = ggplotGrob(plot)
