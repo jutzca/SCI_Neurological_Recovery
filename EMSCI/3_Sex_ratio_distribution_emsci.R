@@ -1,15 +1,52 @@
-##################################################################################
-##################################################################################
-##### Code created by C. Jutzeler August 3rd, 2020 ###############################
-##### Change in female:male ratio between 2001 and 2020 in the EMSCI cohory ######
-##################################################################################
-##################################################################################
+## ---------------------------
+##
+## Script name: Sex_ratio_distribution_emsci
+##
+## Purpose of script: To determine if and to what extent the ratio between female and male SCI patients changed between 2001 and 2019.
+##
+## Author: Dr. Catherine Jutzeler
+##
+## Date Created: 2020-11-19
+##
+## Copyright (c) Catherine Jutzeler, 2020
+## Email: catherine.jutzeler@bsse.ethz.ch
+##
+## ---------------------------
+##
+## Data source: European Multi-center Study about Spinal Cord Injury
+##
+## Notes: Code for the publication XXX
+##   
+#### ---------------------------
 
-#clear working space
-rm(list=ls())
+## set working directory for Mac and PC
 
-#The following commands will install these packages if they are not already installed:
-  
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+
+## ---------------------------
+## load up the packages we will need:  (uncomment as required)
+library(lme4)
+library(sjPlot) #To creats tables
+library(jtools)#To creats tables
+library(ggplot2) #To creats graphs
+library(ggridges) #To creats graphs
+library(ggpubr) #To creats graphs
+library(plyr)
+library(dplyr)
+library(tidyr)
+library('ggthemes') #Themes for the plots
+library(Hmisc)
+library(scales)  #To recale the data
+library(splitstackshape) #To format the model output to a table
+library(lmerTest) #To run the mixed effect models
+library(data.table)
+library(magrittr)
+library(gridExtra)
+library(grid)
+
+## ----------------------------
+## Install packages needed:  (uncomment as required)
+
 #if(!require(lme4)){install.packages("lme4")}
 #if(!require(sjPlot)){install.packages("sjPlot")}
 #if(!require(jtools)){install.packages("jtools")}
@@ -18,65 +55,21 @@ rm(list=ls())
 #if(!require(ggpubr)){install.packages("ggpubr")}
 #if(!require(plyr)){install.packages("plyr")}
 #if(!require(dplyr)){install.packages("dplyr")}
-#if(!require(gridExtra)){install.packages("gridExtra")}
-#if(!require(reshape2)){install.packages("reshape2")}
-#if(!require(PMCMRplus)){install.packages("PMCMRplus")}
-#if(!require(naniar)){install.packages("naniar")}
-# if(!require(EpiReport)){install.packages("EpiReport")}
-# if(!require(epiDisplay)){install.packages("epiDisplay")}
-# devtools::install_github("hadley/devtools")
-# if(!require(boot)){install.packages("boot")}
-# if(!require(table1)){install.packages("table1")}
-# if(!require(sjPlot)){install.packages("sjPlot")}
-# if(!require(broom)){devtools::install_version("broom")}
-# if(!require(pander)){install.packages("pander")}
-# if(!require(gtable)){install.packages("gtable")}
-# if(!require(grid)){install.packages("grid")}
-# if(!require(data.table)){install.packages("data.table")}
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
+# if(!require(scales)){install.packages("scales")}
+# if(!require(splitstackshape)){install.packages("splitstackshape")}
+# if(!require(lmerTest)){install.packages("lmerTest")}
 
 
-#List of libraries required for the analyses below
-library(lme4)
-library(sjPlot)
-library(jtools)
-library(ggplot2)
-library(ggridges)
-library(ggpubr)
-library(plyr)
-library(dplyr)
-library(gridExtra)
-library(reshape2)
-library(PMCMRplus)
-library(EpiReport)
-library(epiDisplay)
-library(naniar)
-library(boot) 
-library(table1)
-library(sjPlot)
-library(broom)
-library(pander)
-library(gtable)
-library(grid)
-library(data.table)
-library(tidyr)
-library('ggthemes')
-library(Hmisc)
-library(scales)
-
-
-
-#where libraries are stored
-.libPaths()
-
-#paths
+#### ---------------------------
+#Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
-#-------------------------Data wrangling------------------------------------------------------------------------------------------------------
+#### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 #load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
@@ -93,29 +86,143 @@ emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Ag
 #Load data
 emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute'), Patientennummer, .keep_all = TRUE)
 
-#Count percentage of female and male subjects by Year of Injury
-sex_ratios = emsci.trauma.sex.va.a1 %>%
-  count(Sex, YEARDOI) %>%
-  group_by(YEARDOI)%>%
+
+#### ---------------------------Rescale Data
+rescale.many <- function(dat, column.nos) { 
+  nms <- names(dat) 
+  for(col in column.nos) { 
+    name <- paste(nms[col],".rescaled", sep = "") 
+    dat[name] <- rescale(dat[,col], center = TRUE, scale = TRUE) 
+  } 
+  cat(paste("Rescaled ", length(column.nos),      " variable(s)n")) 
+  dat 
+} 
+
+emsci.trauma.sex.va.a1 <-rescale.many(emsci.trauma.sex.va.a1, c(8)) 
+
+
+#Count percentage of female and male subjects by Year of Injury - OVERALL-----
+sex_ratios.overall = emsci.trauma.sex.va.a1 %>%
+  count(Sex, YEARDOI.rescaled) %>%
+  group_by(YEARDOI.rescaled)%>%
   mutate(frequency = (n / sum(n))*100)
 
 #Reshape data from long to wide in order to calculate ratios
-sex_ratios <- dcast(sex_ratios, YEARDOI ~ Sex, value.var="n")
-sex_ratios
+sex_ratios.overall <- dcast(sex_ratios.overall, YEARDOI.rescaled ~ Sex, value.var="n")
+sex_ratios.overall
 
 #Calculate ratios
-sex_ratios$Ratios <-
+sex_ratios.overall$Ratios <-
   case_when(
-    is.na(sex_ratios$m) & is.na(sex_ratios$f) ~ 1,
-    is.na(sex_ratios$m) & sex_ratios$f >= 0 ~ 1,
-    sex_ratios$m >= 0 & is.na(sex_ratios$f) ~ 0,
-    TRUE ~ sex_ratios$m / sex_ratios$f
+    is.na(sex_ratios.overall$m) & is.na(sex_ratios.overall$f) ~ 1,
+    is.na(sex_ratios.overall$m) & sex_ratios.overall$f >= 0 ~ 1,
+    sex_ratios.overall$m >= 0 & is.na(sex_ratios.overall$f) ~ 0,
+    TRUE ~ sex_ratios.overall$m / sex_ratios.overall$f
   )
 
 #Run LM to investigate if there was a change in sex ratio between 2001 and 2019
-sex_ratios.lm <- lm(Ratios~YEARDOI, data=sex_ratios)
-summary(sex_ratios.lm)
-tab_model(sex_ratios.lm)
+sex_ratios.emsci.overall.lm <- lm(Ratios~YEARDOI.rescaled, data=sex_ratios.overall)
+summary(sex_ratios.emsci.overall.lm)
+
+
+#Count percentage of female and male subjects by Year of Injury - AIS Grades-----
+sex_ratios = emsci.trauma.sex.va.a1 %>%
+  count(Sex, YEARDOI.rescaled, AIS) %>%
+  group_by(YEARDOI.rescaled)%>%
+  mutate(frequency = (n / sum(n))*100)
+
+#Reshape data from long to wide in order to calculate ratios
+sex_ratios <- dcast(sex_ratios, YEARDOI.rescaled ~ Sex+AIS, value.var="n")
+sex_ratios
+
+#Calculate ratios
+sex_ratios$Ratios_A <-
+  case_when(
+    is.na(sex_ratios$m_A) & is.na(sex_ratios$f_A) ~ 1,
+    is.na(sex_ratios$m_A) & sex_ratios$f_A >= 0 ~ 1,
+    sex_ratios$m_A >= 0 & is.na(sex_ratios$f_A) ~ 0,
+    TRUE ~ sex_ratios$m_A / sex_ratios$f_A
+  )
+
+sex_ratios$Ratios_B <-
+  case_when(
+    is.na(sex_ratios$m_B) & is.na(sex_ratios$f_B) ~ 1,
+    is.na(sex_ratios$m_B) & sex_ratios$f_B >= 0 ~ 1,
+    sex_ratios$m_B >= 0 & is.na(sex_ratios$f_B) ~ 0,
+    TRUE ~ sex_ratios$m_B / sex_ratios$f_B
+  )
+
+sex_ratios$Ratios_C <-
+  case_when(
+    is.na(sex_ratios$m_C) & is.na(sex_ratios$f_C) ~ 1,
+    is.na(sex_ratios$m_C) & sex_ratios$f_C >= 0 ~ 1,
+    sex_ratios$m_C >= 0 & is.na(sex_ratios$f_C) ~ 0,
+    TRUE ~ sex_ratios$m_C / sex_ratios$f_C
+  )
+
+sex_ratios$Ratios_D <-
+  case_when(
+    is.na(sex_ratios$m_D) & is.na(sex_ratios$f_D) ~ 1,
+    is.na(sex_ratios$m_D) & sex_ratios$f_D >= 0 ~ 1,
+    sex_ratios$m_D >= 0 & is.na(sex_ratios$f_D) ~ 0,
+    TRUE ~ sex_ratios$m_D / sex_ratios$f_D
+  )
+
+
+#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+sex_ratios.emsci.ais.a.lm <- lm(Ratios_A~YEARDOI.rescaled, data=sex_ratios)
+summary(sex_ratios.emsci.ais.a.lm)
+
+#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+sex_ratios.emsci.ais.b.lm <- lm(Ratios_B~YEARDOI.rescaled, data=sex_ratios)
+summary(sex_ratios.emsci.ais.b.lm)
+
+#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+sex_ratios.emsci.ais.c.lm <- lm(Ratios_C~YEARDOI.rescaled, data=sex_ratios)
+summary(sex_ratios.emsci.ais.c.lm)
+
+#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+sex_ratios.emsci.ais.d.lm <- lm(Ratios_D~YEARDOI.rescaled, data=sex_ratios)
+summary(sex_ratios.emsci.ais.d.lm)
+
+
+
+#Count percentage of female and male subjects by Year of Injury - Plegia-----
+
+sex_ratios.plegia = emsci.trauma.sex.va.a1 %>%
+  count(Sex, YEARDOI.rescaled, plegia) %>%
+  group_by(YEARDOI.rescaled)%>%
+  mutate(frequency = (n / sum(n))*100)
+
+#Reshape data from long to wide in order to calculate ratios
+sex_ratios.plegia <- dcast(sex_ratios.plegia, YEARDOI.rescaled ~ Sex+plegia, value.var="n")
+sex_ratios.plegia
+
+#Calculate ratios
+sex_ratios.plegia$Ratios_para <-
+  case_when(
+    is.na(sex_ratios.plegia$m_para) & is.na(sex_ratios.plegia$f_para) ~ 1,
+    is.na(sex_ratios.plegia$m_para) & sex_ratios.plegia$f_para >= 0 ~ 1,
+    sex_ratios.plegia$m_para >= 0 & is.na(sex_ratios.plegia$f_para) ~ 0,
+    TRUE ~ sex_ratios.plegia$m_para / sex_ratios.plegia$f_para
+  )
+
+sex_ratios.plegia$Ratios_tetra <-
+  case_when(
+    is.na(sex_ratios.plegia$m_tetra) & is.na(sex_ratios.plegia$f_tetra) ~ 1,
+    is.na(sex_ratios.plegia$m_tetra) & sex_ratios.plegia$f_tetra >= 0 ~ 1,
+    sex_ratios.plegia$m_tetra >= 0 & is.na(sex_ratios.plegia$f_tetra) ~ 0,
+    TRUE ~ sex_ratios.plegia$m_tetra / sex_ratios.plegia$f_tetra
+  )
+
+#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+sex_ratios.emsci.para.lm <- lm(Ratios_para~YEARDOI.rescaled, data=sex_ratios.plegia)
+summary(sex_ratios.emsci.para.lm)
+
+#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+sex_ratios.emsci.tetra.lm <- lm(Ratios_tetra~YEARDOI.rescaled, data=sex_ratios.plegia)
+summary(sex_ratios.emsci.tetra.lm)
+
 
 #------Calculate the number of patients per year by sex - Overall----
 emsci.sex.long <- emsci.trauma.sex %>%
@@ -214,6 +321,7 @@ emsci.sex.long.para <- subset(emsci.trauma.sex, plegia=='para') %>%
   count(Sex, YEARDOI)%>%
   group_by(YEARDOI)%>%
   mutate(frequency = (n / sum(n))*100)
+
 #------Plot population pyramide for year and color by Sex - PARAPLEGIA ----
 ##Plot data for the male patients
 gg.male.para <- ggplot(data = subset(emsci.sex.long.para,Sex=='m'), 
@@ -767,4 +875,6 @@ ggsave(
 )
 
 dev.off()
+
+#### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 

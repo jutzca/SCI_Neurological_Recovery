@@ -16,9 +16,9 @@ emsci.ais <- subset(emsci.trauma.sex, (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D") &
 levels(emsci.ais$AIS) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
 abbrev_x <- c("", "2001/02", ""  ,"2003 "," ","2004","","2005"," ","2006"," ","2007"," ","2008"," ","2009 "," ","2010"," ","2011"," ","2012"," ","2013 "," ","2014 "," ","2015"," ","2016"," ","2017"," ","2018/19", '')
 
-plot <-ggplot(emsci.ais,aes(x=newtimeline, y=as.numeric(LEMS), group=AIS)) +
+plot <-ggplot(emsci.ais,aes(x=newtimeline, y=as.numeric(TSS), group=AIS)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="black", size=0.5) +
-  facet_grid(emsci.ais$AIS~.)+theme_bw()+ ylab('LEMS')+
+  facet_grid(emsci.ais$AIS~.)+theme_bw()+ ylab('Total Sensory Score')+
   scale_x_continuous( limits = c(0, 884), breaks = seq(0, 884, 26), expand = c(0,0), labels=abbrev_x, position = "top" )+
   #scale_y_continuous( limits = c(0, 50), breaks = seq(0, 50, 25), expand = c(0,0))+
   theme(axis.title.x = element_blank(),panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),

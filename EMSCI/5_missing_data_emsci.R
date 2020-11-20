@@ -1,26 +1,26 @@
 #-------------------------Assess missigness of the data------------------------------------------------------------------------------------------------------
 #Code written by C. Jutzeler, March 20th, 2020
 
+#Clear workspace
+rm(list = ls())
 
 #paths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
-#Clear workspace
-rm(list = ls())
 
 #Install r packages as required for analyses and plots
-if(!require(table1)){install.packages("table1")}
-if(!require(dplyr)){install.packages('dplyr')}
-if(!require(naniar)){install.packages(('naniar'))}
-if(!require(ggplot2)){install.packages("ggplot2")}
-if(!require(ggthemes)){install.packages("ggthemes")}
-if(!require(tidyverse)){install.packages('tidyverse')}
-if(!require(mvnmle)){install.packages('finalfit')}
-if(!require(ggpubr)){install.packages("ggpubr")}
-if(!require(Gally)){install.packages("Gally")}
-if(!require(visdat)){install.packages("visdat")}
-if(!require(mice)){install.packages("mice")}
+# if(!require(table1)){install.packages("table1")}
+# if(!require(dplyr)){install.packages('dplyr')}
+# if(!require(naniar)){install.packages(('naniar'))}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggthemes)){install.packages("ggthemes")}
+# if(!require(tidyverse)){install.packages('tidyverse')}
+# if(!require(mvnmle)){install.packages('finalfit')}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(Gally)){install.packages("Gally")}
+# if(!require(visdat)){install.packages("visdat")}
+# if(!require(mice)){install.packages("mice")}
 
 #Load libraries
 library(devtools)
@@ -55,8 +55,8 @@ emsci <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Age at DOI an
 ##https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html
 
 #Subset Data
-emsci_subset <- emsci[,c(1,3,4,7,8, 10,11,15, 18, 19, 22, 25, 28, 31, 34,176, 177, 184,
-                                      186, 188,190, 192, 194, 214)] 
+emsci_subset <- emsci[,c(1,3,4,7,8, 10,11,15, 18, 19,20, 23, 26, 29, 32, 35,177, 178, 185,
+                                      187, 189,191, 193, 195, 215)] 
 
 #Subset data to most important variables
 #E.g., total scores of SCIM serve as proxy for the subscores. The rationale for that arises from the fact, that the total scores can not be
@@ -81,7 +81,6 @@ emsci_subset_newnames<-emsci_subset %>%
    'SCIM2 Total Score' = SCIM2_TotalScore,
    'SCIM3 Total Score' = SCIM3_TotalScore,
    'Walking Index for Spinal Cord Injury' = WISCI,
-   'Time-up-and-go test' = TUG,
    'Voluntary anal contraction' = VAC,
      'Deep anal pressure' =DAP)
 

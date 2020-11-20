@@ -1,15 +1,6 @@
 ##### Code created by C. Jutzeler August 3rd, 2020
 ##### Validation Cohort: Sygen trial
 
-#Clear workspace
-rm(list = ls())
-
-#where libraries are stored
-.libPaths()
-
-#paths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
 
 #The following commands will install these packages if they are not already installed:
 
@@ -70,8 +61,15 @@ library(tidyr)
 library('ggthemes')
 library(Hmisc)
 
+#Clear workspace
+rm(list = ls())
 
-rm(list=ls())
+#where libraries are stored
+.libPaths()
+
+#paths
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
 
 #-------------------------Data wrangling------------------------------------------------------------------------------------------------------
 
@@ -113,6 +111,8 @@ summary(age_model.overall.sygen)
 #interaction tearm YEARDOI and Sex
 age_model.sex.sygen <-lm(age~yeardoi*sex, data=sygen.included.cohort)
 summary(age_model.sex.sygen)
+
+tab_model(age_model.overall.sygen,age_model.sex.sygen)
 
 ####Calculate the change age distribution between 1992-1997 years - FEMALE ----
 #Tetraplegia
@@ -653,4 +653,7 @@ ggsave(
 
 dev.off()
 
+
+
+#------Assess whether the proportion of injury severities (AIS A, B, C, D, and E) changed over time----
 
