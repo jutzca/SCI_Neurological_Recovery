@@ -81,7 +81,7 @@ for (h in rescaled.sex) {
     for (i in ais.score){
       print(paste("MODEL",h,j, i,  sep = " "))
       df1 = subset(rescaled, (AIS == i & NLI== j & Sex == h))
-      mixed.lmer <- lmer(UEMS ~ as.numeric(Time.rescaled)*YEARDOI.rescaled+Age.rescaled + (1|ID), data = df1)
+      mixed.lmer <- lmer(TMS ~ as.numeric(Time.rescaled)*YEARDOI.rescaled+Age.rescaled + (1|ID), data = df1)
       print(summary(mixed.lmer))
       
       # ## capture summary stats
@@ -201,7 +201,7 @@ new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "thoracic" &
 
 
 #Add adjusted p-value column
-new_data.2$Adjusted.pval<- as.numeric(new_data.2$`p-value`)*8
+new_data.2$Adjusted.pval<- as.numeric(new_data.2$`p-value`)*16
 
 #Rename column
 names(new_data.2)[names(new_data.2) == 'Adjusted.pval'] <- 'Adjusted p-value'
@@ -253,6 +253,6 @@ new_data_4[is.na(new_data_4)] <- ""
 new_data_4[new_data_4 == "<NA>"] <- ""
 
 #Write csv file with only selected columns
-write.csv(new_data_4[,c(13,4:9,12)],"/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/results_UEMS.csv", row.names = F)
+write.csv(new_data_4[,c(13,4:9,12)],"/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/results_TMS.csv", row.names = F)
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####

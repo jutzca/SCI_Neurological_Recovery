@@ -1,12 +1,41 @@
-##### Code to analyze create the map of patients enrolled per country.
 
-#Clear workspace
-rm(list = ls())
+## ---------------------------
+##
+## Script name: Sex_ratio_distribution_emsci
+##
+## Purpose of script: To determine if and to what extent the ratio between female and male SCI patients changed between 2001 and 2019.
+##
+## Author: Dr. Catherine Jutzeler
+##
+## Date Created: 2020-11-19
+##
+## Copyright (c) Catherine Jutzeler, 2020
+## Email: catherine.jutzeler@bsse.ethz.ch
+##
+## ---------------------------
+##
+## Data source: 
+##
+## Notes:
+##   
+#### ---------------------------
 
-#where libraries are stored
-.libPaths()
+## set working directory for Mac and PC
 
-#The following commands will install these packages if they are not already installed:
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI")
+
+## ---------------------------
+## load up the packages we will need:  
+library(ggplot2)
+library(dplyr)
+require(maps)
+require(viridis)
+theme_set(
+  theme_void()
+)
+
+## ----------------------------
+## Install packages needed:  (uncomment as required)
 
 #if(!require(ggplot2)){install.packages("ggplot2")}
 #if(!require(ggridges)){install.packages("ggridges")}
@@ -17,14 +46,18 @@ rm(list = ls())
 #if(!require(maps)){install.packages("maps")}
 #if(!require(viridis)){install.packages("viridis")}
 
-#List of libraries required for the analyses below
-library(ggplot2)
-library(dplyr)
-require(maps)
-require(viridis)
-theme_set(
-  theme_void()
-)
+#### ---------------------------
+#Clear working space
+
+rm(list = ls())
+
+#### ---------------------------
+#Set output directorypaths
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+
+
+#### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 
 #----Create map figure for Europe----
@@ -94,7 +127,7 @@ ggsave(
   "emsci_eu.pdf",
   plot = emsci_eu,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
@@ -149,7 +182,7 @@ ggsave(
   "emsci_india.pdf",
   plot = emsci_india,
   device = 'pdf',
-  path = '/Users/jutzca/Desktop/Figures',
+  path = outdir_figures,
   scale = 1,
   width = 5,
   height = 4,
@@ -160,5 +193,6 @@ ggsave(
 dev.off()
 
 
+#### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
 

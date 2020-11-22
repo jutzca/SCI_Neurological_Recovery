@@ -2,7 +2,7 @@
 ##
 ## Script name: injury_characteristics_emsci
 ##
-## Purpose of script: To determine if and to what extent the injury characteritics of SCI patients changed between 2001 and 2019.
+## Purpose of script: To determine if and to what extent the injury characteristics of SCI patients changed between 2001 and 2019.
 ##
 ## Author: Dr. Catherine Jutzeler
 ##
@@ -291,18 +291,6 @@ results.emsci.ais.scores.new.df.3digits[results.emsci.ais.scores.new.df.3digits 
 
 #Write csv file with only selected columns
 write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/ais_scores_distribution_emsci.csv", row.names = F)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #### -------------------------------------------------------------------------- Visualization ------------------------------------------------------------------------------------------------####
