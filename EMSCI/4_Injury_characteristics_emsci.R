@@ -21,7 +21,7 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -65,8 +65,8 @@ library(grid)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -290,7 +290,7 @@ results.emsci.ais.scores.new.df.3digits[is.na(results.emsci.ais.scores.new.df.3d
 results.emsci.ais.scores.new.df.3digits[results.emsci.ais.scores.new.df.3digits == "<NA>"] <- ""
 
 #Write csv file with only selected columns
-write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/ais_scores_distribution_emsci.csv", row.names = F)
+write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/ais_scores_distribution_emsci.csv", row.names = F)
 
 
 #### -------------------------------------------------------------------------- Visualization ------------------------------------------------------------------------------------------------####

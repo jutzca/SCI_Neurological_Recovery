@@ -19,9 +19,11 @@
 ##   
 #### ---------------------------
 
+## 
+rm(list = ls())
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -85,8 +87,8 @@ library(scales)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 #-------------------------Data wrangling------------------------------------------------------------------------------------------------------
 

@@ -21,7 +21,7 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -65,8 +65,8 @@ library(grid)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -225,7 +225,7 @@ summary(sex_ratios.emsci.tetra.lm)
 
 
 #------Calculate the number of patients per year by sex - Overall----
-emsci.sex.long <- emsci.trauma.sex %>%
+emsci.sex.long <- emsci.trauma.sex.va.a1 %>%
                   count(Sex, YEARDOI)%>%
                   group_by(YEARDOI)%>%
                   mutate(frequency = (n / sum(n))*100)
@@ -317,7 +317,7 @@ ggsave(
 dev.off()
 
 #------Calculate the number of patients per year by sex - PARAPLEGIA----
-emsci.sex.long.para <- subset(emsci.trauma.sex, plegia=='para') %>%
+emsci.sex.long.para <- subset(emsci.trauma.sex.va.a1, plegia=='para') %>%
   count(Sex, YEARDOI)%>%
   group_by(YEARDOI)%>%
   mutate(frequency = (n / sum(n))*100)
@@ -410,7 +410,7 @@ ggsave(
 dev.off()
 
 #------Calculate the number of patients per year by sex - TETRAPLEGIA----
-emsci.sex.long.tetra <- subset(emsci.trauma.sex, plegia=='tetra') %>%
+emsci.sex.long.tetra <- subset(emsci.trauma.sex.va.a1, plegia=='tetra') %>%
   count(Sex, YEARDOI)%>%
   group_by(YEARDOI)%>%
   mutate(frequency = (n / sum(n))*100)
@@ -501,7 +501,7 @@ ggsave(
 dev.off()
 
 #------Calculate the number of patients per year by sex - AIS A----
-emsci.sex.long.ais_a <- subset(emsci.trauma.sex, AIS=='A') %>%
+emsci.sex.long.ais_a <- subset(emsci.trauma.sex.va.a1, AIS=='A') %>%
   count(Sex, YEARDOI)%>%
   group_by(YEARDOI)%>%
   mutate(frequency = (n / sum(n))*100)
@@ -596,7 +596,7 @@ dev.off()
 
 
 #------Calculate the number of patients per year by sex - AIS B----
-emsci.sex.long.ais_b <- subset(emsci.trauma.sex, AIS=='B') %>%
+emsci.sex.long.ais_b <- subset(emsci.trauma.sex.va.a1, AIS=='B') %>%
   count(Sex, YEARDOI)%>%
   group_by(YEARDOI)%>%
   mutate(frequency = (n / sum(n))*100)
@@ -690,7 +690,7 @@ ggsave(
 dev.off()
 
 #------Calculate the number of patients per year by sex - AIS C----
-emsci.sex.long.ais_c <- subset(emsci.trauma.sex, AIS=='C') %>%
+emsci.sex.long.ais_c <- subset(emsci.trauma.sex.va.a1, AIS=='C') %>%
   count(Sex, YEARDOI)%>%
   group_by(YEARDOI)%>%
   mutate(frequency = (n / sum(n))*100)
@@ -783,7 +783,7 @@ ggsave(
 
 dev.off()
 #------Calculate the number of patients per year by sex - AIS D----
-emsci.sex.long.ais_d <- subset(emsci.trauma.sex, AIS=='D') %>%
+emsci.sex.long.ais_d <- subset(emsci.trauma.sex.va.a1, AIS=='D') %>%
   count(Sex, YEARDOI)%>%
   group_by(YEARDOI)%>%
   mutate(frequency = (n / sum(n))*100)

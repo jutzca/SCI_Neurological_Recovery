@@ -1,39 +1,33 @@
-Model,Variable,Estimate,Standard Error,t-value,p-value,Adjusted p-value
-Overall,Intercept,42.212,0.664,63.613,0.000,Not applicable
-,YEARDOI,8.603,1.045,8.236,0.000,Not applicable
-Overall: Effect of sex,Intercept,48.472,1.362,35.579,0.000,Not applicable
-,YEARDOI,4.486,2.123,2.113,0.035,Not applicable
-,Sex,-8.101,1.557,-5.203,0.000,Not applicable
-,YEARDOI*Sex,5.306,2.433,2.181,0.029,Not applicable
-Female: Paraplegia: AIS A,Intercept,39.283,3.217,12.212,0.000,0.000
-,YEARDOI,5.866,5.025,1.167,0.244,
-Female: Paraplegia: AIS B,Intercept,41.352,4.614,8.962,0.000,0.000
-,YEARDOI,4.203,7.234,0.581,0.563,
-Female: Paraplegia: AIS C,Intercept,50.664,5.090,9.953,0.000,0.000
-,YEARDOI,-4.094,8.075,-0.507,0.613,
-Female: Paraplegia: AIS D,Intercept,50.196,4.877,10.291,0.000,0.000
-,YEARDOI,-0.211,7.241,-0.029,0.977,
-Female: Tetraplegia: AIS A,Intercept,45.932,3.542,12.968,0.000,0.000
-,YEARDOI,9.322,5.930,1.572,0.118,
-Female: Tetraplegia: AIS B,Intercept,48.045,4.805,9.999,0.000,0.000
-,YEARDOI,2.778,7.649,0.363,0.718,
-Female: Tetraplegia: AIS C,Intercept,52.597,4.152,12.667,0.000,0.000
-,YEARDOI,8.702,6.599,1.319,0.190,
-Female: Tetraplegia: AIS D,Intercept,59.594,3.091,19.278,0.000,0.000
-,YEARDOI,0.704,4.612,0.153,0.879,
-Male: Paraplegia: AIS A,Intercept,35.842,1.228,29.176,0.000,0.000
-,YEARDOI,8.257,2.045,4.038,0.000,0.001
-Male: Paraplegia: AIS B,Intercept,41.407,2.915,14.203,0.000,0.000
-,YEARDOI,8.302,4.666,1.779,0.077,
-Male: Paraplegia: AIS C,Intercept,42.170,2.877,14.660,0.000,0.000
-,YEARDOI,4.858,4.514,1.076,0.283,
-Male: Paraplegia: AIS D,Intercept,42.570,2.395,17.774,0.000,0.000
-,YEARDOI,2.766,3.628,0.762,0.447,
-Male: Tetraplegia: AIS A,Intercept,39.317,1.773,22.177,0.000,0.000
-,YEARDOI,5.629,2.877,1.957,0.051,
-Male: Tetraplegia: AIS B,Intercept,36.850,2.950,12.493,0.000,0.000
-,YEARDOI,3.957,4.771,0.829,0.408,
-Male: Tetraplegia: AIS C,Intercept,48.642,2.297,21.177,0.000,0.000
-,YEARDOI,7.430,3.477,2.137,0.033,0.531
-Male: Tetraplegia: AIS D,Intercept,46.768,1.603,29.180,0.000,0.000
-,YEARDOI,13.378,2.420,5.528,0.000,0.000
+"Model","Variable","Estimate","Standard Error","t-value","p-value","Adjusted p-value"
+"Female: Paraplegia: AIS A","Intercept",39.231,3.163,12.405,0,0
+"","YEARDOI",5.728,4.939,1.16,0.247,3.96
+"Female: Paraplegia: AIS B","Intercept",41.44,4.617,8.974,0,0
+"","YEARDOI",3.58,7.217,0.496,0.621,9.941
+"Female: Paraplegia: AIS C","Intercept",50.829,4.983,10.2,0,0
+"","YEARDOI",-3.568,7.879,-0.453,0.652,10.428
+"Female: Paraplegia: AIS D","Intercept",50.621,4.676,10.825,0,0
+"","YEARDOI",0.343,6.968,0.049,0.961,15.374
+"Female: Tetraplegia: AIS A","Intercept",45.881,3.573,12.84,0,0
+"","YEARDOI",10.752,6.016,1.787,0.076,1.217
+"Female: Tetraplegia: AIS B","Intercept",46.87,4.935,9.497,0,0
+"","YEARDOI",4.34,7.793,0.557,0.58,9.276
+"Female: Tetraplegia: AIS C","Intercept",52.773,4.181,12.622,0,0
+"","YEARDOI",8.257,6.684,1.235,0.219,3.503
+"Female: Tetraplegia: AIS D","Intercept",59.807,3.171,18.861,0,0
+"","YEARDOI",0.175,4.721,0.037,0.97,15.527
+"Male: Paraplegia: AIS A","Intercept",35.876,1.221,29.394,0,0
+"","YEARDOI",8.178,2.033,4.022,0,0.001
+"Male: Paraplegia: AIS B","Intercept",41.152,2.885,14.264,0,0
+"","YEARDOI",8.508,4.615,1.844,0.067,1.068
+"Male: Paraplegia: AIS C","Intercept",42.497,2.855,14.883,0,0
+"","YEARDOI",5.138,4.481,1.147,0.253,4.043
+"Male: Paraplegia: AIS D","Intercept",42.392,2.37,17.885,0,0
+"","YEARDOI",3.791,3.57,1.062,0.289,4.625
+"Male: Tetraplegia: AIS A","Intercept",39.17,1.8,21.758,0,0
+"","YEARDOI",5.923,2.916,2.031,0.043,0.683
+"Male: Tetraplegia: AIS B","Intercept",37.412,2.993,12.498,0,0
+"","YEARDOI",2.956,4.849,0.61,0.543,8.683
+"Male: Tetraplegia: AIS C","Intercept",48.724,2.308,21.114,0,0
+"","YEARDOI",7.234,3.498,2.068,0.039,0.629
+"Male: Tetraplegia: AIS D","Intercept",46.773,1.623,28.822,0,0
+"","YEARDOI",13.259,2.453,5.406,0,0

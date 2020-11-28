@@ -21,7 +21,7 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -65,8 +65,8 @@ rm(list = ls())
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -107,7 +107,7 @@ emsci.trauma.sex.va.a1 <-rescale.many(emsci.trauma.sex.va.a1, c(8))
 #### ---------------------------Age distribution over time: Data analysis ---------------------------
 
 #------Calculate the change in age distribution over time - OVERALL
-age_model.overall <-lm(AgeAtDOI~YEARDOI.rescaled*Sex, data=emsci.trauma.sex.va.a1)
+age_model.overall <-lm(AgeAtDOI~YEARDOI.rescaled, data=emsci.trauma.sex.va.a1)
 summary(age_model.overall)
 
 
@@ -273,7 +273,7 @@ results.emsci.age.new.df.3digits[is.na(results.emsci.age.new.df.3digits)] <- ""
 results.emsci.age.new.df.3digits[results.emsci.age.new.df.3digits == "<NA>"] <- ""
 
 #Write csv file with only selected columns
-write.csv(results.emsci.age.new.df.3digits[,c(12,4:8,11)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/Age_distribution_emsci.csv", row.names = F)
+write.csv(results.emsci.age.new.df.3digits[,c(12,4:8,11)],"/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/Age_distribution_emsci.csv", row.names = F)
 
 
 
