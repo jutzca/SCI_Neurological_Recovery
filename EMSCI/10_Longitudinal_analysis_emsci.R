@@ -2,18 +2,18 @@
 ##
 ## Script name: Longitudinal_analysis_sygen
 ##
-## Purpose of script: To determine if the neurological and functional recovery changed over the course of the Sygen trial (1192-1997).
+## Purpose of script: To determine if the neurological and functional recovery changed over the course of the EMSCI study.
 ##
 ## Author: Dr. Catherine Jutzeler
 ##
-## Date Created: 2020-11-19
+## Date Created: 2020-11-28
 ##
 ## Copyright (c) Catherine Jutzeler, 2020
 ## Email: catherine.jutzeler@bsse.ethz.ch
 ##
 ## ---------------------------
 ##
-## Data source: Sygen Clinical Trial
+## Data source: European Multicenter Study about Spinal Cord Injury (2001-20019)
 ##
 ## Notes: Code for the publication XXXX et al., 2021
 ##   
@@ -21,12 +21,16 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen")
+setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI")
 
 ## ---------------------------
 ## load up the packages we will need:  
 library(lme4)
 library(sjPlot)
+library(scales)
+library(lmerTest)
+library(dplyr)
+
 
 ## ----------------------------
 ## Install packages needed:  (uncomment as required)
@@ -36,24 +40,26 @@ library(sjPlot)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
+outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 #load original dataset
-sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
+emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
+
 
 #Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
-sygen.included.cohort<- subset(sygen, (!is.na(Age)) & (Sex=="Female" | Sex=="Male") & ###Age at DOI and Sex
-                                 (NLI == 'cervical' | NLI == 'thoracic')&   ## Neurological level
-                                 (AIS=="AIS A"| AIS=="AIS B"| AIS=="AIS C"| AIS=="AIS D")) #AIS Grades
+emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Age at DOI and Sex
+                             (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
+                             (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar')&   ## Neurological level
+                             (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
+#Convert certain columns to numeric
+emsci.trauma.sex[,c(5,6,8,11)] <- sapply(emsci.trauma.sex[,c(5,6,8,11)], as.numeric)
 
-#install.packages("scales")
-library(scales)
-
+#### ---------------------------Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -64,15 +70,12 @@ rescale.many <- function(dat, column.nos) {
   dat 
 } 
 
-rescaled <-rescale.many(sygen.included.cohort, c(4,9:23)) 
+emsci.rescaled <-rescale.many(emsci.trauma.sex, c(5,6,8,11)) 
 
-
-library(lmerTest)
-
-
-ais.score<-unique(rescaled$AIS)
-rescaled.nli <- unique(rescaled$NLI)
-rescaled.sex <- unique(rescaled$Sex)
+ais.score<-unique(emsci.rescaled$AIS)
+rescaled.nli <- unique(emsci.rescaled$plegia)
+rescaled.sex <- unique(emsci.rescaled$Sex)
+emsci.rescaled$Patientennummer <- as.factor(emsci.rescaled$Patientennummer)
 
 # create data frame to store results
 results <- data.frame()
@@ -80,8 +83,8 @@ for (h in rescaled.sex) {
   for (j in rescaled.nli){
     for (i in ais.score){
       print(paste("MODEL",h,j, i,  sep = " "))
-      df1 = subset(rescaled, (AIS == i & NLI== j & Sex == h))
-      mixed.lmer <- lmer(TMS ~ as.numeric(Time.rescaled)*YEARDOI.rescaled+Age.rescaled + (1|ID), data = df1)
+      df1 = subset(emsci.rescaled, (AIS == i & plegia == j & Sex == h))
+      mixed.lmer <- lmer(X6min ~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
       print(summary(mixed.lmer))
       
       # ## capture summary stats
@@ -115,7 +118,7 @@ for (h in rescaled.sex) {
       cfit <- coef(summary(mixed.lmer))
   
       # # create temporary data frame
-      df <- data.frame(Sex= h, NLI= j,ais = i, intercept.estimate = cfit[1], time_rescaled.estimate = cfit[2], yeardoi.estimate =cfit[3],
+      df <- data.frame(Sex= h, plegia= j,AIS = i, intercept.estimate = cfit[1], time_rescaled.estimate = cfit[2], yeardoi.estimate =cfit[3],
                        age.estimate= cfit[4], time.yeardoi.estimate= cfit[5],intercept.std= cfit[6],
                          time_rescaled.std =cfit[7],
                        yeardoi.std =cfit[8],
@@ -179,25 +182,25 @@ new_data.2$Variable[(new_data.2$Variable == 'yeardoi.')] <- "YEARDOI"
 new_data.2$Variable[(new_data.2$Variable == 'time.yeardoi.')] <- "Time*YEARDOI"
 
 #Create a new variable based on condition
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS A")] <- 'Female:Tetraplegia:AIS A'
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS B")] <- 'Female:Tetraplegia:AIS B'
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS C" )] <- 'Female:Tetraplegia:AIS C'
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS D" )] <- 'Female:Tetraplegia:AIS D'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "tetra" & new_data.2$AIS == "A")] <- 'Female:Tetraplegia:AIS A'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "tetra" & new_data.2$AIS == "B")] <- 'Female:Tetraplegia:AIS B'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "tetra" & new_data.2$AIS == "C" )] <- 'Female:Tetraplegia:AIS C'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "tetra" & new_data.2$AIS == "D" )] <- 'Female:Tetraplegia:AIS D'
 
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS A" )] <- 'Female:Paraplegia:AIS A'
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS B" )] <- 'Female:Paraplegia:AIS B'
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS C" )] <- 'Female:Paraplegia:AIS C'
-new_data.2$model_temp[(new_data.2$Sex == 'Female' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS D" )] <- 'Female:Paraplegia:AIS D'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "para" & new_data.2$AIS == "A" )] <- 'Female:Paraplegia:AIS A'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "para" & new_data.2$AIS == "B" )] <- 'Female:Paraplegia:AIS B'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "para" & new_data.2$AIS == "C" )] <- 'Female:Paraplegia:AIS C'
+new_data.2$model_temp[(new_data.2$Sex == 'f' & new_data.2$plegia == "para" & new_data.2$AIS == "D" )] <- 'Female:Paraplegia:AIS D'
 
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS A" )] <- 'Male:Tetraplegia:AIS A'
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS B" )] <- 'Male:Tetraplegia:AIS B'
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS C" )] <- 'Male:Tetraplegia:AIS C'
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "cervical" & new_data.2$ais == "AIS D" )] <- 'Male:Tetraplegia:AIS D'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "tetra" & new_data.2$AIS == "A" )] <- 'Male:Tetraplegia:AIS A'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "tetra" & new_data.2$AIS == "B" )] <- 'Male:Tetraplegia:AIS B'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "tetra" & new_data.2$AIS == "C" )] <- 'Male:Tetraplegia:AIS C'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "tetra" & new_data.2$AIS == "D" )] <- 'Male:Tetraplegia:AIS D'
 
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS A")] <- 'Male:Paraplegia:AIS A'
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS B" )] <- 'Male:Paraplegia:AIS B'
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS C" )] <- 'Male:Paraplegia:AIS C'
-new_data.2$model_temp[(new_data.2$Sex == 'Male' & new_data.2$NLI == "thoracic" & new_data.2$ais == "AIS D")] <- 'Male:Paraplegia:AIS D'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "para" & new_data.2$AIS == "A")] <- 'Male:Paraplegia:AIS A'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "para" & new_data.2$AIS == "B" )] <- 'Male:Paraplegia:AIS B'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "para" & new_data.2$AIS == "C" )] <- 'Male:Paraplegia:AIS C'
+new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "para" & new_data.2$AIS == "D")] <- 'Male:Paraplegia:AIS D'
 
 
 #Add adjusted p-value column
@@ -228,31 +231,32 @@ new_data_3 <- round_df(new_data.2, 4)
 new_data_4 <- arrange(new_data_3,model_temp,order)
 
 #Create a new variable based on condition
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS A" & new_data_4$order==1)] <- 'Female: Tetraplegia: AIS A'
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS B"& new_data_4$order==1)] <- 'Female: Tetraplegia: AIS B'
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS C" & new_data_4$order==1)] <- 'Female: Tetraplegia: AIS C'
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS D" & new_data_4$order==1)] <- 'Female: Tetraplegia: AIS D'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "tetra" & new_data_4$AIS == "A" & new_data_4$order==1)] <- 'Female: Tetraplegia: AIS A'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "tetra" & new_data_4$AIS == "B"& new_data_4$order==1)] <- 'Female: Tetraplegia: AIS B'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "tetra" & new_data_4$AIS == "C" & new_data_4$order==1)] <- 'Female: Tetraplegia: AIS C'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "tetra" & new_data_4$AIS == "D" & new_data_4$order==1)] <- 'Female: Tetraplegia: AIS D'
 
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS A" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS A'
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS B" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS B'
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS C" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS C'
-new_data_4$Model[(new_data_4$Sex == 'Female' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS D" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS D'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "para" & new_data_4$AIS == "A" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS A'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "para" & new_data_4$AIS == "B" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS B'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "para" & new_data_4$AIS == "C" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS C'
+new_data_4$Model[(new_data_4$Sex == 'f' & new_data_4$plegia == "para" & new_data_4$AIS == "D" & new_data_4$order==1)] <- 'Female: Paraplegia: AIS D'
 
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS A" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS A'
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS B" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS B'
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS C" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS C'
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "cervical" & new_data_4$ais == "AIS D" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS D'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "tetra" & new_data_4$AIS == "A" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS A'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "tetra" & new_data_4$AIS == "B" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS B'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "tetra" & new_data_4$AIS == "C" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS C'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "tetra" & new_data_4$AIS == "D" & new_data_4$order==1)] <- 'Male: Tetraplegia: AIS D'
 
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS A"& new_data_4$order==1)] <- 'Male: Paraplegia: AIS A'
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS B" & new_data_4$order==1)] <- 'Male: Paraplegia: AIS B'
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS C" & new_data_4$order==1)] <- 'Male: Paraplegia: AIS C'
-new_data_4$Model[(new_data_4$Sex == 'Male' & new_data_4$NLI == "thoracic" & new_data_4$ais == "AIS D"& new_data_4$order==1)] <- 'Male: Paraplegia: AIS D'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "para" & new_data_4$AIS == "A"& new_data_4$order==1)] <- 'Male: Paraplegia: AIS A'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "para" & new_data_4$AIS == "B" & new_data_4$order==1)] <- 'Male: Paraplegia: AIS B'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "para" & new_data_4$AIS == "C" & new_data_4$order==1)] <- 'Male: Paraplegia: AIS C'
+new_data_4$Model[(new_data_4$Sex == 'm' & new_data_4$plegia == "para" & new_data_4$AIS == "D"& new_data_4$order==1)] <- 'Male: Paraplegia: AIS D'
 
 # #Replace NA with empty cell
 new_data_4[is.na(new_data_4)] <- ""
 new_data_4[new_data_4 == "<NA>"] <- ""
 
 #Write csv file with only selected columns
-write.csv(new_data_4[,c(13,4:9,12)],"/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/results_TMS.csv", row.names = F)
+write.csv(new_data_4[,c(13,4:9,12)],"/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/emsci.longitudinal.results_6mMWT.csv", row.names = F)
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
+
