@@ -21,7 +21,7 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -65,8 +65,8 @@ rm(list = ls())
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -320,7 +320,7 @@ age_overall <- ggplot(
 age_overall
 
 ggsave(
-  "age_overall.pdf",
+  "age.overall.emsci.pdf",
   plot = age_overall,
   device = 'pdf',
   path = outdir_figures,   
@@ -379,7 +379,7 @@ age_para <- ggplot(
 age_para
 
 ggsave(
-  "age_para.pdf",
+  "age.para.emsci.pdf",
   plot = age_para,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -437,7 +437,7 @@ age_tetra <- ggplot(
 age_tetra
 
 ggsave(
-  "age_tetra.pdf",
+  "age.tetra.emsci.pdf",
   plot = age_tetra,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -497,7 +497,7 @@ age_ais_a <- ggplot(
 age_ais_a
 
 ggsave(
-  "age_ais_a.pdf",
+  "age.ais_a.emsci.pdf",
   plot = age_ais_a,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -557,7 +557,7 @@ age_ais_b <- ggplot(
 age_ais_b
 
 ggsave(
-  "age_ais_b.pdf",
+  "age.ais_b.emsci.pdf",
   plot = age_ais_b,
   device = 'pdf',
   path = outdir_figures,    
@@ -616,7 +616,7 @@ age_ais_c <- ggplot(
 age_ais_c
 
 ggsave(
-  "age_ais_c.pdf",
+  "age.ais_c.emsci.pdf",
   plot = age_ais_c,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -676,7 +676,7 @@ age_ais_d <- ggplot(
 age_ais_d
 
 ggsave(
-  "age_ais_d.pdf",
+  "age.ais_d.emsci.pdf",
   plot = age_ais_d,
   device = 'pdf',
   path = outdir_figures,    

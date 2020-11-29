@@ -19,7 +19,7 @@
 ##   
 #### ---------------------------
 
-## set working directory for Mac and PC
+## set working directory
 
 setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI")
 
@@ -30,6 +30,7 @@ library(sjPlot)
 library(scales)
 library(lmerTest)
 library(dplyr)
+library(splitstackshape)
 
 
 ## ----------------------------
@@ -37,18 +38,20 @@ library(dplyr)
 
 #if(!require(lme4)){install.packages("lme4")}
 #if(!require(sjPlot)){install.packages("sjPlot")}
+#if(!require(scales)){install.packages("scales")}
+#if(!require(lmerTest)){install.packages("lmerTest")}
+#if(!require(dplyr)){install.packages("dplyr")}
+#if(!require(splitstackshape)){install.packages("splitstackshape")}
 
 #### ---------------------------
 #Set output directorypaths
 outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
-
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 #load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
-
 
 #Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Age at DOI and Sex
@@ -149,8 +152,7 @@ for (h in rescaled.sex) {
 }
 
 
-
-library(splitstackshape)
+#Reformat the data frame created above
 
 new_data <-merged.stack(results,                ## Add the id if it doesn't exist
              var.stubs = c("estimate", "std", "df", "tval", "pval"),   ## Specify the stubs

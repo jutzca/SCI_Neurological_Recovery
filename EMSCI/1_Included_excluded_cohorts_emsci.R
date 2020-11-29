@@ -23,7 +23,7 @@
 rm(list = ls())
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -87,8 +87,8 @@ library(scales)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 #-------------------------Data wrangling------------------------------------------------------------------------------------------------------
 
@@ -165,7 +165,7 @@ patients_enrolled_per_year
 
 ##Save plot
 ggsave(
-  "patients_enrolled_per_year.pdf",
+  "patients_enrolled_per_year.emsci.pdf",
   plot = patients_enrolled_per_year,
   device = 'pdf',
   path = outdir_figures,
@@ -203,7 +203,7 @@ patients_enrolled_per_country
 
 ##Save plot
 ggsave(
-  "patients_enrolled_per_country.pdf",
+  "patients_enrolled_per_country.emsci.pdf",
   plot = patients_enrolled_per_country,
   device = 'pdf',
   path = outdir_figures,
@@ -265,3 +265,4 @@ t.test(AgeAtDOI ~ status, data = merged_data)
 ggplot(merged_data, aes(x=AgeAtDOI, fill = status)) + 
   geom_histogram(alpha = .5, bins = 20, position = "identity") + 
   theme_classic()
+

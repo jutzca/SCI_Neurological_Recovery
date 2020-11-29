@@ -2,7 +2,7 @@
 ##
 ## Script name: 9_Heat_plots_outcomes_emsci
 ##
-## Purpose of script: To visualize the longitudinal functional and neurological scores
+## Purpose of script: To visualize the change of means of UEMS, LEMS, and TSS using geom_tile.
 ##
 ## Author: Dr. Catherine Jutzeler
 ##
@@ -21,7 +21,7 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzelec/Documents/GitHub/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzca/Documents/GitHub/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -63,12 +63,17 @@ library(viridis)
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
+# if(!require(data.table)){install.packages("data.table")}
+# if(!require(magrittr)){install.packages("magrittr")}
+# if(!require(gridExtra)){install.packages("gridExtra")}
+# if(!require(grid)){install.packages("grid")}
+# if(!require(forcats)){install.packages("forcats")}
+# if(!require(viridis)){install.packages("viridis")}
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -123,7 +128,7 @@ lems.emsci.plot <- ggplot(new.data.lems,aes(x = as.factor(ExamStage_weeks),y = A
 lems.emsci.plot 
 
 ggsave(
-  "lems.emsci.plot.pdf",
+  "longitudinal_lems.emsci.pdf",
   plot = lems.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   
@@ -174,7 +179,7 @@ uems.emsci.plot <- ggplot(new.data.uems,aes(x = as.factor(ExamStage_weeks),y = A
 uems.emsci.plot 
 
 ggsave(
-  "uems.emsci.plot.pdf",
+  "longitudinal_uems.emsci.pdf",
   plot = uems.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   
@@ -226,7 +231,7 @@ tss.emsci.plot <- ggplot(new.data.tss,aes(x = as.factor(ExamStage_weeks),y = AIS
 tss.emsci.plot 
 
 ggsave(
-  "tss.emsci.plot.pdf",
+  "longitudinal_tss.emsci.pdf",
   plot = tss.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   

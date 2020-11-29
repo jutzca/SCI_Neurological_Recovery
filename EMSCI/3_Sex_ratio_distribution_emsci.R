@@ -21,7 +21,7 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -65,8 +65,8 @@ library(grid)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -303,7 +303,7 @@ sex.overall <- grid.arrange(gg.female,
 
 
 ggsave(
-  "sex.overall.pdf",
+  "sex.overall.emsci.pdf",
   plot = sex.overall,
   device = 'pdf',
   path = outdir_figures,
@@ -396,7 +396,7 @@ sex.paraplegia <- grid.arrange(gg.female.para,
 
 
 ggsave(
-  "sex.paraplegia.pdf",
+  "sex.para.emsci.pdf",
   plot = sex.paraplegia,
   device = 'pdf',
   path = outdir_figures,
@@ -487,7 +487,7 @@ sex.tetrapelgia <- grid.arrange(gg.female.tetra,
 )
 
 ggsave(
-  "sex.tetrapelgia.pdf",
+  "sex.tetra.emsci.pdf",
   plot = sex.tetrapelgia,
   device = 'pdf',
   path = outdir_figures,
@@ -581,7 +581,7 @@ sex.ais_a <- grid.arrange(gg.female.ais_a,
 sex.ais_a
 
 ggsave(
-  "sex.ais_a.pdf",
+  "sex.ais_a.emsci.pdf",
   plot = sex.ais_a,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -676,7 +676,7 @@ sex.ais_b <- grid.arrange(gg.female.ais_b,
 sex.ais_b
 
 ggsave(
-  "sex.ais_b.pdf",
+  "sex.ais_b.emsci.pdf",
   plot = sex.ais_b,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -770,7 +770,7 @@ sex.ais_c <- grid.arrange(gg.female.ais_c,
 sex.ais_b
 
 ggsave(
-  "sex.ais_c.pdf",
+  "sex.ais_c.emsci.pdf",
   plot = sex.ais_c,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -863,7 +863,7 @@ sex.ais_d <- grid.arrange(gg.female.ais_d,
 sex.ais_d
 
 ggsave(
-  "sex.ais_d.pdf",
+  "sex.ais_d.emsci.pdf",
   plot = sex.ais_d,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures

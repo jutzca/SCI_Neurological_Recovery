@@ -110,7 +110,7 @@ missing_data_examstage<-gg_miss_var(emsci_subset_newnames, facet=ExamStage, show
 missing_data_examstage
 
 ggsave(
-  "missing_data_examstage_emsci.pdf",
+  "missing_data_examstage.emsci.pdf",
   plot = missing_data_examstage,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures

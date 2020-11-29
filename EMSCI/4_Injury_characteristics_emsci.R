@@ -19,9 +19,13 @@
 ##   
 #### ---------------------------
 
-## set working directory for Mac and PC
+## Clear working space
 
-setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+rm(list=ls())
+
+## set working directory
+
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -65,8 +69,8 @@ library(grid)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -326,7 +330,7 @@ emsci.ais.plot
 
 
 ggsave(
-  "emsci.ais.overall.pdf",
+  "ais.overall.emsci.pdf",
   plot = emsci.ais.plot,
   device = 'pdf',
   path = outdir_figures,
@@ -374,7 +378,7 @@ emsci.ais.plot.tetra
 
 
 ggsave(
-  "ais.distribitution_tetra.pdf",
+  "ais.tetra.emsci.pdf",
   plot = emsci.ais.plot.tetra,
   device = 'pdf',
   path = outdir_figures,
@@ -421,7 +425,7 @@ emsci.ais.plot.para
 
 
 ggsave(
-  "ais.distribitution_para.pdf",
+  "ais.para.emsci.pdf",
   plot = emsci.ais.plot.para,
   device = 'pdf',
   path = outdir_figures,
@@ -471,7 +475,7 @@ emsci.nli.plot <- ggplot(data = emsci.nli.proportions, aes(x = YEARDOI, y = freq
 emsci.nli.plot
 
 ggsave(
-  "nli.distribitution_overall.pdf",
+  "nli.overall.emsci.pdf",
   plot = emsci.nli.plot,
   device = 'pdf',
   path = outdir_figures,
@@ -520,7 +524,7 @@ emsci.nli.ais.a <- ggplot(data = subset(emsci.nli.proportions, AIS=='A'), aes(x 
 emsci.nli.ais.a
 
 ggsave(
-  "nli.ais.a.pdf",
+  "nli.ais.a.emsci.pdf",
   plot = emsci.nli.ais.a,
   device = 'pdf',
   path = outdir_figures,
@@ -570,7 +574,7 @@ emsci.nli.ais.b <- ggplot(data = subset(emsci.nli.proportions, AIS=='B'), aes(x 
 emsci.nli.ais.b
 
 ggsave(
-  "nli.ais.b.pdf",
+  "nli.ais.b.emsci.pdf",
   plot = emsci.nli.ais.b,
   device = 'pdf',
   path = outdir_figures,
@@ -619,7 +623,7 @@ emsci.nli.ais.c <- ggplot(data = subset(emsci.nli.proportions, AIS=='C'), aes(x 
 emsci.nli.ais.c
 
 ggsave(
-  "nli.ais.c.pdf",
+  "nli.ais.c.emsci.pdf",
   plot = emsci.nli.ais.c,
   device = 'pdf',
   path = outdir_figures,
@@ -668,7 +672,7 @@ emsci.nli.ais.d <- ggplot(data = subset(emsci.nli.proportions, AIS=='D'), aes(x 
 emsci.nli.ais.d
 
 ggsave(
-  "nli.ais.d.pdf",
+  "nli.ais.d.emsci.pdf",
   plot = emsci.nli.ais.d,
   device = 'pdf',
   path = outdir_figures,
