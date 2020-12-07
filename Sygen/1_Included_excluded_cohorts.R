@@ -13,7 +13,7 @@
 ##
 ## ---------------------------
 ##
-## Data source: Sygen Trial
+## Data source: Sygen Clinical Trial
 ##
 ## Notes: Code for the publication XXX
 ##   
@@ -89,8 +89,8 @@ rm(list = ls())
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures=''
-outdir_tables=''
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -181,3 +181,4 @@ ggplot(merged_data.sygen, aes(x=age, fill = status)) +
 
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
+

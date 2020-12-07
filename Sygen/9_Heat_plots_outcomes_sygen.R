@@ -21,7 +21,7 @@
 
 ## set working directory for Mac and PC
 
-setwd("/Users/jutzelec/Documents/GitHub/SCI_Neurological_Recovery/Sygen") 
+setwd("/Users/jutzca/Documents/GitHub/SCI_Neurological_Recovery/Sygen") 
 
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
@@ -67,8 +67,8 @@ library(viridis)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
-outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
 
 
 #load original dataset
@@ -93,7 +93,7 @@ new.data.lems.sygen =sygen.included.cohort.all.times.2 %>%
     sd_LEMS = sd(LEMS, na.rm=TRUE))
 
 #Write data file
-write.csv(new.data.lems.sygen, '/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables/lems.sygen.csv')
+write.csv(new.data.lems.sygen, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables/lems.sygen.csv')
 
 #To reverse the order of levels of AIS
 new.data.lems.sygen$AIS <- factor(new.data.lems.sygen$AIS, levels=rev(levels(new.data.lems.sygen$AIS)))
@@ -108,7 +108,7 @@ lems.sygen.plot <- ggplot(new.data.lems.sygen,aes(x = as.factor(Time),y = AIS,fi
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 50))+
   facet_grid(.~new.data.lems.sygen$Plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(new.data.lems.sygen$mean_LEMS)), size=3, color='white')+
-  labs(title = "Lower Extremity Motor Score (LEMS)", x = "Weeks post injury", y = "AIS Score", fill='LEMS') +
+  labs(title = "Lower Extremity Motor Score (LEMS)", x = "Weeks Post Injury", y = "AIS Score", fill='LEMS') +
   theme(plot.title = element_text(hjust = 0.5, size= 14),
         axis.title = element_text(size=12),
         axis.text = element_text(size=10),
@@ -131,6 +131,35 @@ ggsave(
 )
 
 dev.off()
+
+###Create longitudinal lems trajectory figure
+
+lems.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(LEMS), group=AIS)) +
+  stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
+  facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
+  ylab('Lower Extremity Motor Score')+xlab("Weeks Post Injury")+
+  scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
+  theme_bw()+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        axis.text.x = element_text(face='bold'))
+lems.trajectory.sygen.plot
+
+
+ggsave(
+  "lems.trajectory.sygen.plot.pdf",
+  plot = lems.trajectory.sygen.plot,
+  device = 'pdf',
+  path = outdir_figures,   
+  scale = 1,
+  width = 5,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
 
 
 #------UEMS Sygen ----
@@ -160,7 +189,7 @@ uems.sygen.plot <- ggplot(new.data.uems.sygen,aes(x = as.factor(Time),y = AIS,fi
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 50))+
   facet_grid(.~new.data.uems.sygen$Plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_uems)), size=3, color='white')+
-  labs(title = "Upper Extremity Motor Score (UEMS)", x = "Weeks post injury", y = "AIS Score", fill='UEMS') +
+  labs(title = "Upper Extremity Motor Score (UEMS)", x = "Weeks Post Injury", y = "AIS Score", fill='UEMS') +
   theme(plot.title = element_text(hjust = 0.5, size= 14),
         axis.title = element_text(size=12),
         axis.text = element_text(size=10),
@@ -178,6 +207,35 @@ ggsave(
   scale = 1,
   width = 6,
   height = 3,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+###Create longitudinal uems trajectory figure
+
+uems.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(UEMS), group=AIS)) +
+  stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
+  facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
+  ylab('Upper Extremity Motor Score')+xlab("Weeks Post Injury")+
+  scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
+  theme_bw()+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        axis.text.x = element_text(face='bold'))
+uems.trajectory.sygen.plot
+
+
+ggsave(
+  "uems.trajectory.sygen.plot.pdf",
+  plot = uems.trajectory.sygen.plot,
+  device = 'pdf',
+  path = outdir_figures,   
+  scale = 1,
+  width = 5,
+  height = 4,
   units = "in",
   dpi = 300
 )
@@ -212,7 +270,7 @@ tss.sygen.plot <- ggplot(new.data.tss.sygen,aes(x = as.factor(Time),y = AIS,fill
   geom_tile()+scale_fill_viridis(option = "viridis",  direction = -1, limits = c(0, 180))+
   facet_grid(.~new.data.tss.sygen$Plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_tss)), size=3, color='white')+
-  labs(title = "Total Sensory Score (TSS)", x = "Weeks post injury", y = "AIS Score", fill='TSS') +
+  labs(title = "Total Sensory Score (TSS)", x = "Weeks Post Injury", y = "AIS Score", fill='TSS') +
   theme(plot.title = element_text(hjust = 0.5, size= 14),
         axis.title = element_text(size=12),
         axis.text = element_text(size=10),
@@ -235,6 +293,127 @@ ggsave(
 )
 
 dev.off()
+
+
+
+###Create longitudinal tss trajectory figure
+
+tss.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TSS), group=AIS)) +
+  stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
+  facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
+  ylab('Total Sensory Score')+xlab("Weeks Post Injury")+
+  scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
+  theme_bw()+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        axis.text.x = element_text(face='bold'))
+tss.trajectory.sygen.plot
+
+
+ggsave(
+  "tss.trajectory.sygen.plot.pdf",
+  plot = tss.trajectory.sygen.plot,
+  device = 'pdf',
+  path = outdir_figures,   
+  scale = 1,
+  width = 5,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+#------TMS Sygen ----
+###Create longitudinal TMS trajectory figure
+
+tms.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TMS), group=AIS)) +
+  stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
+  facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
+  ylab('Total Motor Score')+xlab("Weeks Post Injury")+
+  scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
+  theme_bw()+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        axis.text.x = element_text(face='bold'))
+tms.trajectory.sygen.plot
+
+
+ggsave(
+  "tms.trajectory.sygen.plot.pdf",
+  plot = tms.trajectory.sygen.plot,
+  device = 'pdf',
+  path = outdir_figures,   
+  scale = 1,
+  width = 5,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+#------Pinprick Sygen ----
+pp.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TPP), group=AIS)) +
+  stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
+  facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
+  ylab('Total Pinprick Score')+xlab("Weeks Post Injury")+
+  scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
+  scale_y_continuous( limits = c(0, 120), breaks = seq(0, 120, 20), expand = c(0,0))+
+  theme_bw()+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        axis.text.x = element_text(face='bold'))
+pp.trajectory.sygen.plot
+
+
+ggsave(
+  "pp.trajectory.sygen.plot.pdf",
+  plot = pp.trajectory.sygen.plot,
+  device = 'pdf',
+  path = outdir_figures,   
+  scale = 1,
+  width = 5,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+#------Light Touch Sygen ----
+lt.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TLT), group=AIS)) +
+  stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
+  facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
+  ylab('Total Light Touch Score')+xlab("Weeks Post Injury")+
+  scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
+  scale_y_continuous( limits = c(0, 120), breaks = seq(0, 120, 20), expand = c(0,0))+
+  theme_bw()+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        axis.text.x = element_text(face='bold'))
+lt.trajectory.sygen.plot
+
+
+ggsave(
+  "lt.trajectory.sygen.plot.pdf",
+  plot = lt.trajectory.sygen.plot,
+  device = 'pdf',
+  path = outdir_figures,   
+  scale = 1,
+  width = 5,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+
+
+
+
 
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####

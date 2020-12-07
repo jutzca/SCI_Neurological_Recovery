@@ -21,7 +21,7 @@
 
 ## set working directory
 
-setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI")
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI")
 
 ## ---------------------------
 ## load up the packages we will need:  
@@ -45,8 +45,8 @@ library(splitstackshape)
 
 #### ---------------------------
 #Set output directorypaths
-outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
@@ -60,7 +60,7 @@ emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Ag
                              (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
 #Convert certain columns to numeric
-emsci.trauma.sex[,c(5,6,8,11)] <- sapply(emsci.trauma.sex[,c(5,6,8,11)], as.numeric)
+emsci.trauma.sex[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)] <- sapply(emsci.trauma.sex[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)], as.numeric)
 
 #### ---------------------------Rescale Data
 rescale.many <- function(dat, column.nos) { 
@@ -75,10 +75,13 @@ rescale.many <- function(dat, column.nos) {
 
 emsci.rescaled <-rescale.many(emsci.trauma.sex, c(5,6,8,11)) 
 
+emsci.rescaled <-subset(emsci.rescaled, !(AIS=="B" & Sex=='m'))
+
 ais.score<-unique(emsci.rescaled$AIS)
 rescaled.nli <- unique(emsci.rescaled$plegia)
 rescaled.sex <- unique(emsci.rescaled$Sex)
 emsci.rescaled$Patientennummer <- as.factor(emsci.rescaled$Patientennummer)
+
 
 # create data frame to store results
 results <- data.frame()
@@ -86,8 +89,8 @@ for (h in rescaled.sex) {
   for (j in rescaled.nli){
     for (i in ais.score){
       print(paste("MODEL",h,j, i,  sep = " "))
-      df1 = subset(emsci.rescaled, (AIS == i & plegia == j & Sex == h))
-      mixed.lmer <- lmer(X6min ~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
+      df1 = subset(emsci.rescaled.filtered, (AIS == i & plegia == j & Sex == h))
+      mixed.lmer <- lmer(X10m ~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
       print(summary(mixed.lmer))
       
       # ## capture summary stats

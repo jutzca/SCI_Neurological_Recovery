@@ -1,28 +1,30 @@
-#-------------------------Assess missigness of the data------------------------------------------------------------------------------------------------------
-#Code written by C. Jutzeler, March 20th, 2020
+## ---------------------------
+##
+## Script name: Longitudinal_analysis_sygen
+##
+## Purpose of script: To determine if the neurological and functional recovery changed over the course of the EMSCI study.
+##
+## Author: Dr. Catherine Jutzeler
+##
+## Date Created: 2020-11-28
+##
+## Copyright (c) Catherine Jutzeler, 2020
+## Email: catherine.jutzeler@bsse.ethz.ch
+##
+## ---------------------------
+##
+## Data source: European Multicenter Study about Spinal Cord Injury (2001-20019)
+##
+## Notes: Code for the publication XXXX et al., 2021
+##   
+#### ---------------------------
 
-#Clear workspace
-rm(list = ls())
+## set working directory
 
-#paths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI")
 
-
-#Install r packages as required for analyses and plots
-# if(!require(table1)){install.packages("table1")}
-# if(!require(dplyr)){install.packages('dplyr')}
-# if(!require(naniar)){install.packages(('naniar'))}
-# if(!require(ggplot2)){install.packages("ggplot2")}
-# if(!require(ggthemes)){install.packages("ggthemes")}
-# if(!require(tidyverse)){install.packages('tidyverse')}
-# if(!require(mvnmle)){install.packages('finalfit')}
-# if(!require(ggpubr)){install.packages("ggpubr")}
-# if(!require(Gally)){install.packages("Gally")}
-# if(!require(visdat)){install.packages("visdat")}
-# if(!require(mice)){install.packages("mice")}
-
-#Load libraries
+## ---------------------------
+## load up the packages we will need:  
 library(devtools)
 library(table1)
 library(dplyr)
@@ -37,8 +39,31 @@ library(finalfit)
 library(visdat)
 library(mice)
 
-#-------------------------Data wrangling------------------------------------------------------------------------------------------------------
 
+## ----------------------------
+## Install packages needed:  (uncomment as required)
+
+# if(!require(table1)){install.packages("table1")}
+# if(!require(dplyr)){install.packages('dplyr')}
+# if(!require(naniar)){install.packages(('naniar'))}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggthemes)){install.packages("ggthemes")}
+# if(!require(tidyverse)){install.packages('tidyverse')}
+# if(!require(mvnmle)){install.packages('finalfit')}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(Gally)){install.packages("Gally")}
+# if(!require(visdat)){install.packages("visdat")}
+# if(!require(mice)){install.packages("mice")}
+
+
+#### ---------------------------
+#Set output directorypaths
+outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+
+#### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
+
+#-------------------------Data wrangling-----
 #load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
@@ -55,8 +80,7 @@ emsci <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Age at DOI an
 ##https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html
 
 #Subset Data
-emsci_subset <- emsci[,c(1,3,4,7,8, 10,11,15, 18, 19,20, 23, 26, 29, 32, 35,177, 178, 185,
-                                      187, 189,191, 193, 195, 215)] 
+emsci_subset <- emsci[,c(2,3,4,5,8,9,11,12,16,18,20,23,26,29,32,35,36,178,179,186,188,190,192,196,216)] 
 
 #Subset data to most important variables
 #E.g., total scores of SCIM serve as proxy for the subscores. The rationale for that arises from the fact, that the total scores can not be
@@ -64,8 +88,8 @@ emsci_subset <- emsci[,c(1,3,4,7,8, 10,11,15, 18, 19,20, 23, 26, 29, 32, 35,177,
 
 emsci_subset_newnames<-emsci_subset %>% 
   rename(
-    'Neurological level of Injury' = NLI_level,
-    "Time up and go" = TUG,
+    'Neurological level of Injury' = NLI,
+    #"Time up and go" = TUG,
     "10m walking test" =X10m,
    '6min walking test' = X6min,
    'Plegia' =plegia,
@@ -88,9 +112,9 @@ emsci_subset_newnames<-emsci_subset %>%
 vis_miss(emsci_subset_newnames, sort_miss = T)
 
 #Visualization of patter in missing data
-pattern_missing_data <- gg_miss_upset(emsci_subset_newnames,  nsets = 50,
+pattern_missing_data.emsci <- gg_miss_upset(emsci_subset_newnames,  nsets = 50,
               nintersects = 20)
-pattern_missing_data
+pattern_missing_data.emsci
 
 
 #Visualize the missing data by exam stage
@@ -154,13 +178,5 @@ ggsave(
 
 dev.off()
 
-#Explorative
-library(VIM)
-aggr_plot <- aggr(emsci_subset_newnames, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, 
-                  labels=names(emsci_subset_newnames), cex.axis=.4, gap=0.1, ylab=c("Histogram of missing data","Pattern"))
-aggr_plot
+#### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
-new <- as.data.frame(aggr_plot)
-
-
-marginplot(emsci_subset_newnames[c(1,2)])
