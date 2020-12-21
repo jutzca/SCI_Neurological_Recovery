@@ -1,8 +1,8 @@
 ## ---------------------------
 ##
-## Script name: Longitudinal_analysis_sygen
+## Script name: 5_Missing_data_emsci
 ##
-## Purpose of script: To determine if the neurological and functional recovery changed over the course of the EMSCI study.
+## Purpose of script: To assess the nature and pattern of missing data of the EMSCI study.
 ##
 ## Author: Dr. Catherine Jutzeler
 ##

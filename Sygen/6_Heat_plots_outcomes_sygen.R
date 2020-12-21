@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Script name: 9_Heat_plots_outcomes_sygen
+## Script name: 6_Heat_plots_outcomes_sygen
 ##
 ## Purpose of script: To visualize the longitudinal neurological scores
 ##
