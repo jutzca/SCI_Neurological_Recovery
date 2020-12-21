@@ -44,6 +44,11 @@ library(splitstackshape)
 #if(!require(splitstackshape)){install.packages("splitstackshape")}
 
 #### ---------------------------
+#Clear working space
+
+rm(list = ls())
+
+#### ---------------------------
 #Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
@@ -75,13 +80,10 @@ rescale.many <- function(dat, column.nos) {
 
 emsci.rescaled <-rescale.many(emsci.trauma.sex, c(5,6,8,11)) 
 
-emsci.rescaled <-subset(emsci.rescaled, !(AIS=="B" & Sex=='m'))
-
 ais.score<-unique(emsci.rescaled$AIS)
 rescaled.nli <- unique(emsci.rescaled$plegia)
 rescaled.sex <- unique(emsci.rescaled$Sex)
 emsci.rescaled$Patientennummer <- as.factor(emsci.rescaled$Patientennummer)
-
 
 # create data frame to store results
 results <- data.frame()
@@ -89,8 +91,9 @@ for (h in rescaled.sex) {
   for (j in rescaled.nli){
     for (i in ais.score){
       print(paste("MODEL",h,j, i,  sep = " "))
-      df1 = subset(emsci.rescaled.filtered, (AIS == i & plegia == j & Sex == h))
-      mixed.lmer <- lmer(X10m ~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
+      df1 = subset(emsci.rescaled, (AIS == i & plegia == j & Sex == h))
+      #if (nrow(df1) == 0) next
+      mixed.lmer <- lmer(SCIM23_TotalScore~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
       print(summary(mixed.lmer))
       
       # ## capture summary stats
@@ -261,7 +264,7 @@ new_data_4[is.na(new_data_4)] <- ""
 new_data_4[new_data_4 == "<NA>"] <- ""
 
 #Write csv file with only selected columns
-write.csv(new_data_4[,c(13,4:9,12)],"/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/emsci.longitudinal.results_6mMWT.csv", row.names = F)
+write.csv(new_data_4[,c(13,4:9,12)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/emsci.longitudinal.results_scim23.csv", row.names = F)
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
