@@ -93,7 +93,7 @@ emsci.trauma.sex.2 <- subset(emsci.trauma.sex, (plegia=='para' | plegia=="tetra"
 #------LEMS EMSCI ----
 emsci.trauma.sex.2$LEMS <- as.numeric(emsci.trauma.sex$LEMS)
 
-#Create data frame with mean and sd for lems
+#Create data frame with mean and sd for lems for plot
 new.data.lems =emsci.trauma.sex.2 %>%
   group_by(AIS, X5_year_bins,ExamStage_weeks, plegia) %>%
   dplyr::summarize( 
