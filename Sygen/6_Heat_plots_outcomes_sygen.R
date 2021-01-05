@@ -134,8 +134,8 @@ dev.off()
 
 ###Create longitudinal lems trajectory figure
 
-lems.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(LEMS), group=AIS)) +
-  stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
+lems.trajectory.sygen.plot <- ggplot() +
+  stat_summary(aes(x = as.numeric(Time),y = as.numeric(LEMS), group=AIS), data=sygen.included.cohort.all.times.2, fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
   ylab('Lower Extremity Motor Score')+xlab("Weeks Post Injury")+
   scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+

@@ -78,42 +78,54 @@ outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Ta
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
-emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T)
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, level of injury either cervical, thoracic, or lumbar,
-#and AIS score A, B, C, or D
+#load original dataset
+emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
+
+#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
-                             (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) &(AIS=='A' | AIS=="B"| AIS=="C"| AIS=="D"))
+                             (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) & (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D"))
 
+emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute') , Patientennummer, .keep_all = TRUE)
 
-emsci.trauma.sex.2 <- subset(emsci.trauma.sex, (plegia=='para' | plegia=="tetra"))
+# Create new variable: Baseline AIS grade
+emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
+
+# Merge
+emsci.trauma.sex.baseline.ais <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
+
+# Change levels of AIS grade and plegia
+levels(emsci.trauma.sex.baseline.ais$baseline.ais) <- c("A", "B ", "C", "D", " ", "")
+levels(emsci.trauma.sex.baseline.ais$plegia) <- c("Paraplegia", "Tetraplegia ")
+
+emsci.trauma.sex.baseline.ais2 <- emsci.trauma.sex.baseline.ais
 
 #------LEMS EMSCI ----
-emsci.trauma.sex.2$LEMS <- as.numeric(emsci.trauma.sex$LEMS)
+
+emsci.trauma.sex.baseline.ais2$LEMS <- as.numeric(as.character(emsci.trauma.sex.baseline.ais2$LEMS))
 
 #Create data frame with mean and sd for lems for plot
-new.data.lems =emsci.trauma.sex.2 %>%
-  group_by(AIS, X5_year_bins,ExamStage_weeks, plegia) %>%
+new.data.lems =emsci.trauma.sex.baseline.ais2 %>%
+  group_by(baseline.ais, X5_year_bins, ExamStage_weeks, plegia) %>%
   dplyr::summarize( 
     n = n(),
     mean_LEMS = mean(LEMS, na.rm=TRUE),
     sd_LEMS = sd(LEMS, na.rm=TRUE))
 
 #Write data file
-write.csv(new.data.lems, '/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/lems.emsci.csv')
+write.csv(new.data.lems, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/lems.emsci.csv')
 
-#To reverse the order of levels of AIS
-new.data.lems$AIS <- factor(new.data.lems$AIS, levels=rev(levels(new.data.lems$AIS)))
-levels(new.data.lems$plegia)<-c("", "Paraplegia\n", 'Tetraplegia\n') 
+#To reverse the order of levels of baseline.ais
+new.data.lems$baseline.ais <- factor(new.data.lems$baseline.ais, levels=rev(levels(new.data.lems$baseline.ais)))
+levels(new.data.lems$plegia)<-c("Paraplegia\n", 'Tetraplegia\n') 
 
 #Round values to 1 digits
 new.data.lems$mean_LEMS <- round(new.data.lems$mean_LEMS,1 )
 new.data.lems$mean_LEMS <- round(new.data.lems$mean_LEMS, 1)
 
 #------Plot the data
-lems.emsci.plot <- ggplot(new.data.lems,aes(x = as.factor(ExamStage_weeks),y = AIS,fill = mean_LEMS)) + 
+heatplots.longitudinal_lems.emsci <- ggplot(new.data.lems,aes(x = as.factor(ExamStage_weeks),y = baseline.ais, fill = mean_LEMS)) + 
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 50))+
   facet_grid(as.factor(new.data.lems$X5_year_bins)~new.data.lems$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_LEMS)), size=3, color='white')+
@@ -125,11 +137,11 @@ lems.emsci.plot <- ggplot(new.data.lems,aes(x = as.factor(ExamStage_weeks),y = A
           legend.text = element_text(size=10),
           legend.position = 'right',
           panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-lems.emsci.plot 
+heatplots.longitudinal_lems.emsci 
 
 ggsave(
-  "longitudinal_lems.emsci.pdf",
-  plot = lems.emsci.plot,
+  "heatplots.longitudinal_lems.emsci.pdf",
+  plot = heatplots.longitudinal_lems.emsci,
   device = 'pdf',
   path = outdir_figures,   
   scale = 1,
@@ -142,29 +154,29 @@ ggsave(
 dev.off()
 
 #------UEMS EMSCI ----
-emsci.trauma.sex.2$UEMS <- as.numeric(emsci.trauma.sex$UEMS)
+emsci.trauma.sex.baseline.ais2$UEMS <- as.numeric(as.character(emsci.trauma.sex.baseline.ais2$UEMS))
 
 #Create data frame with mean and sd for lems
-new.data.uems =emsci.trauma.sex.2 %>%
-  group_by(AIS, X5_year_bins,ExamStage_weeks, plegia) %>%
+new.data.uems =emsci.trauma.sex.baseline.ais2 %>%
+  group_by(baseline.ais, X5_year_bins,ExamStage_weeks, plegia) %>%
   dplyr::summarize( 
     n = n(),
     mean_UEMS = mean(UEMS, na.rm=TRUE),
     sd_UEMS = sd(UEMS, na.rm=TRUE))
 
 #Write data file
-write.csv(new.data.uems, '/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/uems.emsci.csv')
+write.csv(new.data.uems, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/uems.emsci.csv')
 
-#To reverse the order of levels of AIS
-new.data.uems$AIS <- factor(new.data.uems$AIS, levels=rev(levels(new.data.uems$AIS)))
-levels(new.data.uems$plegia)<-c("", "Paraplegia\n", 'Tetraplegia\n') 
+#To reverse the order of levels of baseline.ais
+new.data.uems$baseline.ais <- factor(new.data.uems$baseline.ais, levels=rev(levels(new.data.uems$baseline.ais)))
+levels(new.data.uems$plegia)<-c("Paraplegia\n", 'Tetraplegia\n') 
 
 #Round values to 1 digits
 new.data.uems$mean_UEMS <- round(new.data.uems$mean_UEMS,1 )
 new.data.uems$mean_UEMS <- round(new.data.uems$mean_UEMS, 1)
 
 #------Plot the data
-uems.emsci.plot <- ggplot(new.data.uems,aes(x = as.factor(ExamStage_weeks),y = AIS,fill = mean_UEMS)) + 
+uems.emsci.plot <- ggplot(new.data.uems,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_UEMS)) + 
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 50))+
   facet_grid(as.factor(new.data.uems$X5_year_bins)~new.data.uems$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_UEMS)), size=3, color='white')+
@@ -194,29 +206,29 @@ dev.off()
 
 
 #------TSS EMSCI ----
-emsci.trauma.sex.2$TSS <- as.numeric(emsci.trauma.sex$TSS)
+emsci.trauma.sex.baseline.ais2$TSS <- as.numeric(as.character(emsci.trauma.sex.baseline.ais2$TSS))
 
 #Create data frame with mean and sd for lems
-new.data.tss =emsci.trauma.sex.2 %>%
-  group_by(AIS, X5_year_bins,ExamStage_weeks, plegia) %>%
+new.data.tss =emsci.trauma.sex.baseline.ais2 %>%
+  group_by(baseline.ais, X5_year_bins,ExamStage_weeks, plegia) %>%
   dplyr::summarize( 
     n = n(),
     mean_TSS = mean(TSS, na.rm=TRUE),
     sd_TSS = sd(TSS, na.rm=TRUE))
 
 #Write data file
-write.csv(new.data.tss, '/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/tss.emsci.csv')
+write.csv(new.data.tss, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/tss.emsci.csv')
 
-#To reverse the order of levels of AIS
-new.data.tss$AIS <- factor(new.data.tss$AIS, levels=rev(levels(new.data.tss$AIS)))
-levels(new.data.tss$plegia)<-c("", "Paraplegia\n", 'Tetraplegia\n') 
+#To reverse the order of levels of baseline.ais
+new.data.tss$baseline.ais <- factor(new.data.tss$baseline.ais, levels=rev(levels(new.data.tss$baseline.ais)))
+levels(new.data.tss$plegia)<-c("Paraplegia\n", 'Tetraplegia\n') 
 
 #Round values to 1 digits
 new.data.tss$mean_TSS <- round(new.data.tss$mean_TSS,1 )
 new.data.tss$mean_TSS <- round(new.data.tss$mean_TSS, 1)
 
 #------Plot the data
-tss.emsci.plot <- ggplot(new.data.tss,aes(x = as.factor(ExamStage_weeks),y = AIS,fill = mean_TSS)) + 
+tss.emsci.plot <- ggplot(new.data.tss,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_TSS)) + 
   geom_tile()+scale_fill_viridis(option = "viridis",  direction = -1, limits = c(0, 180))+
   facet_grid(as.factor(new.data.tss$X5_year_bins)~new.data.tss$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_TSS)), size=3, color='white')+
@@ -243,6 +255,27 @@ ggsave(
 )
 
 dev.off()
+
+
+
+
+
+
+emsci.trauma.sex.ais.baseline2$SCIM23_TotalScore <- as.numeric(emsci.trauma.sex.baseline.ais$SCIM23_TotalScore)
+
+
+tms.trajectory.merged.plot <- ggplot() +
+  stat_summary(aes(x = as.numeric(ExamStage_weeks),y = as.numeric(SCIM23_TotalScore)), 
+               data=emsci.trauma.sex.ais.baseline2, 
+               fun.data = "mean_sdl", geom="smooth", se = TRUE, size=1)+
+  facet_grid(emsci.trauma.sex.ais.baseline2$plegia~emsci.trauma.sex.ais.baseline2$baseline.ais)+
+  ylab('Total Motor Score')+xlab("Weeks Post Injury")+
+  scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
+  theme_bw()+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        axis.text.x = element_text(face='bold'))
+tms.trajectory.merged.plot
+
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
