@@ -1040,7 +1040,7 @@ plot_predict_emsci_NN <- function(data, score, value){
   
   plot <- ggplot(data, aes_string(x="ExamStage", y=score)) + 
     #geom_point() +
-    geom_jitter() +
+    #geom_jitter(alpha = 0.3) +
     #stat_summary(aes_string(y=score, group=1), fun.data = mean_sd, geom = "ribbon", fill = "pink", alpha = 0.6) +
     #stat_summary(aes_string(y=score, group=1, color="red"), fun=mean, colour="red", geom="line", group=1, size = 1, show.legend=TRUE) +
     geom_text(data = class, aes(y = 53, label = label)) + 
@@ -1078,15 +1078,19 @@ plot_predict_emsci_NN <- function(data, score, value){
   #print(head(df))
   
   plot_final <- add_line_points(plot, score, df)
-  plot_final2 <- plot_final + scale_color_identity("Line.Color",
-                      labels=c('mean', 'individual trajectories'), guide="legend")
+  plot_final2 <- plot_final + 
+                 scale_color_identity(#"Line.Color",
+                                      labels=c('mean', 'individual trajectories'), 
+                                      guide="legend") + 
+                 theme(legend.position = c(0.95, 0.05),
+                       legend.justification = c("right", "top"))
   return(plot_final2)
 }
 
 add_line_points <- function(plot, score, df) {
   plot + 
     #geom_point(aes_string(x="ExamStage", y=score), colour = 'blue', data = df) +
-    geom_jitter() +
+    geom_jitter(alpha = 0.3) +
     geom_line(aes_string(x="ExamStage", y=score, group='Patientennummer'), colour = 'blue', data = df, show.legend=TRUE) +
    
     stat_summary(aes_string(y=score, group=1), fun.data = mean_sd, geom = "ribbon", fill = "skyblue2", alpha = 0.3, data = df) +

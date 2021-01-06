@@ -82,7 +82,7 @@ convertMenuItem <- function(mi,tabName) {
 credentials <- data.frame(
   user = c("user", "admin"), # mandatory
   password = c("sciapp", "sciadmin"), # mandatory
-  start = c("2020-08-31"), # optinal (all others)
+  start = c("2020-08-31"), # optional (all others)
   expire = c(NA, NA),
   admin = c(FALSE, TRUE),
   comment = "Simple and secure authentification mechanism 
