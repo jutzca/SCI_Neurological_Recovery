@@ -72,9 +72,11 @@ levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia")
 #---- Upper extremity motor score ----
 emsci.trauma.sex.ais.baseline.rm.na <- subset(emsci.trauma.sex.ais.baseline, (!is.na(UEMS)))
 
-overall.uems.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseline.rm.na,aes(x = as.numeric(ExamStage_weeks),y = as.numeric(as.character(UEMS)), group=baseline.ais)) +
+emsci.trauma.sex.ais.baseline.rm.na.para <- subset(emsci.trauma.sex.ais.baseline.rm.na, plegia=="Tetraplegia")
+
+overall.uems.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseline.rm.na.para,aes(x = as.numeric(ExamStage_weeks),y = as.numeric(as.character(UEMS)), group=baseline.ais)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
-  facet_grid(emsci.trauma.sex.ais.baseline.rm.na$plegia~emsci.trauma.sex.ais.baseline.rm.na$baseline.ais)+
+  facet_grid(emsci.trauma.sex.ais.baseline.rm.na.para$plegia~emsci.trauma.sex.ais.baseline.rm.na.para$baseline.ais)+
   ylab('Upper Extremity Motor Score')+xlab("Weeks Post Injury")+
   #scale_x_continuous( limits = c(0, 52), breaks = seq(0, 52, 10), expand = c(0,0))+
   #scale_y_continuous( limits = c(0, 120), breaks = seq(0, 120, 20), expand = c(0,0))+
