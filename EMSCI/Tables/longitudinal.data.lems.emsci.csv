@@ -1,0 +1,41 @@
+baseline.ais,ExamStage_weeks,plegia,n,mean_LEMS,sd_LEMS
+A,2,Paraplegia,586,2.834,8.679
+A,2,Tetraplegia ,402,1.2,5.305
+A,4,Paraplegia,934,2.992,8.794
+A,4,Tetraplegia ,662,2.015,7.062
+A,12,Paraplegia,877,4.008,10.291
+A,12,Tetraplegia ,602,3.135,9.123
+A,26,Paraplegia,614,4.003,10.065
+A,26,Tetraplegia ,468,4.013,10.786
+A,52,Paraplegia,576,5.323,11.957
+A,52,Tetraplegia ,368,4.181,11.701
+B ,2,Paraplegia,159,7.132,12.542
+B ,2,Tetraplegia ,151,0.026,0.229
+B ,4,Paraplegia,242,9.407,13.592
+B ,4,Tetraplegia ,258,2.791,7.826
+B ,12,Paraplegia,209,13.861,13.77
+B ,12,Tetraplegia ,243,9.062,13.304
+B ,26,Paraplegia,145,16.51,14.728
+B ,26,Tetraplegia ,184,13.208,16.189
+B ,52,Paraplegia,147,21.116,15.359
+B ,52,Tetraplegia ,119,14.311,17.301
+C,2,Paraplegia,186,11.227,7.596
+C,2,Tetraplegia ,304,12.704,10.225
+C,4,Paraplegia,306,15.446,9.926
+C,4,Tetraplegia ,464,17.553,13.574
+C,12,Paraplegia,279,25.679,13.042
+C,12,Tetraplegia ,397,28.023,14.629
+C,26,Paraplegia,183,28.115,13.967
+C,26,Tetraplegia ,271,31.435,14.592
+C,52,Paraplegia,171,32.688,12.66
+C,52,Tetraplegia ,236,33.957,14.445
+D,2,Paraplegia,234,37.125,9.579
+D,2,Tetraplegia ,558,38.444,11.293
+D,4,Paraplegia,377,38.668,8.415
+D,4,Tetraplegia ,807,40.846,9.794
+D,12,Paraplegia,279,42.051,7.819
+D,12,Tetraplegia ,562,43.42,8.414
+D,26,Paraplegia,191,44.286,6.307
+D,26,Tetraplegia ,377,45.225,8.005
+D,52,Paraplegia,199,45.609,5.536
+D,52,Tetraplegia ,380,46.538,5.501
