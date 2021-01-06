@@ -73,7 +73,7 @@ levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia ")
 longitudinal.trajectory.tms <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('Lower Extremity Motor Score')+xlab("Time since injury [weeks]")+
+  theme_bw()+ ylab('Total Motor Score')+xlab("Time since injury [weeks]")+
   #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
   theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
         axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
@@ -164,9 +164,10 @@ ggsave(
 dev.off()
 
 #-----Upper Extremity Motor Score----
+emsci.trauma.sex.ais.baseline.para <- subset(emsci.trauma.sex.ais.baseline, plegia=="Tetraplegia")
 longitudinal.trajectory.uems <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(UEMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  stat_summary(data=emsci.trauma.sex.ais.baseline.para,aes(x=ExamStage_weeks, y=as.numeric(as.character(UEMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.para$plegia~emsci.trauma.sex.ais.baseline.para$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
   theme_bw()+ ylab('Upper Extremity Motor Score')+xlab("Time since injury [weeks]")+
   #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
   theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
@@ -187,7 +188,7 @@ ggsave(
   path = outdir_figures,
   scale = 1,
   width = 7,
-  height = 4,
+  height = 2.7,
   units = "in",
   dpi = 300
 )
