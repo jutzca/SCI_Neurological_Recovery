@@ -93,7 +93,7 @@ emsci.rescaled <-rescale.many(emsci.trauma.sex.baseline.ais, c(5,6,8,11))
 
 ais.score<-unique(emsci.rescaled$baseline.ais)
 rescaled.nli <- unique(emsci.rescaled$plegia)
-rescaled.sex <- unique(emsci.rescaled$Sex)
+#rescaled.sex <- unique(emsci.rescaled$Sex)
 emsci.rescaled$Patientennummer <- as.factor(emsci.rescaled$Patientennummer)
 
 # create data frame to store results
@@ -104,7 +104,7 @@ for (h in rescaled.sex) {
       print(paste("MODEL",h,j, i,  sep = " "))
       df1 = subset(emsci.rescaled, (baseline.ais == i & plegia == j & Sex == h))
       #if (nrow(df1) == 0) next
-      mixed.lmer <- lmer(SCIM23_TotalScore~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
+      mixed.lmer <- lmer(X10m~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
       print(summary(mixed.lmer))
       
       # ## capture summary stats
@@ -223,7 +223,7 @@ new_data.2$model_temp[(new_data.2$Sex == 'm' & new_data.2$plegia == "para" & new
 
 
 #Add adjusted p-value column
-new_data.2$Adjusted.pval<- as.numeric(new_data.2$`p-value`)*16
+new_data.2$Adjusted.pval<- as.numeric(new_data.2$`p-value`)*8
 
 #Rename column
 names(new_data.2)[names(new_data.2) == 'Adjusted.pval'] <- 'Adjusted p-value'
@@ -275,7 +275,7 @@ new_data_4[is.na(new_data_4)] <- ""
 new_data_4[new_data_4 == "<NA>"] <- ""
 
 #Write csv file with only selected columns
-write.csv(new_data_4[,c(13,4:9,12)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/emsci.longitudinal.results_scim23.csv", row.names = F)
+write.csv(new_data_4[,c(13,4:9,12)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/emsci.longitudinal.results_10m.csv", row.names = F)
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
