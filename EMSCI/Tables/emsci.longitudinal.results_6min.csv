@@ -1,0 +1,21 @@
+Model,Variable,Estimate,Standard Error,DF,t-value,p-value,Adjusted p-value
+Male: Paraplegia: AIS C,Intercept,206.190,39.006,243.162,5.286,0.000,0.000
+,Age at injury,-254.326,59.871,159.436,-4.248,0.000,0.000
+,Time since injury,219.369,39.325,161.359,5.578,0.000,0.000
+,YEARDOI,64.760,58.892,269.890,1.100,0.273,
+,Time since injury*YEARDOI,-88.621,74.719,180.227,-1.186,0.237,
+Male: Paraplegia: AIS D,Intercept,415.658,27.028,407.472,15.379,0.000,0.000
+,Age at injury,-280.959,41.636,330.604,-6.748,0.000,0.000
+,Time since injury,179.867,26.249,380.062,6.852,0.000,0.000
+,YEARDOI,-13.864,34.050,490.834,-0.407,0.684,
+,Time since injury*YEARDOI,-11.944,46.635,435.311,-0.256,0.798,
+Male: Tetraplegia: AIS C,Intercept,309.594,41.125,239.278,7.528,0.000,0.000
+,Age at injury,-264.405,56.602,164.004,-4.671,0.000,0.000
+,Time since injury,121.314,41.086,146.590,2.953,0.004,0.015
+,YEARDOI,-78.440,59.862,265.375,-1.310,0.191,
+,Time since injury*YEARDOI,39.772,75.195,171.270,0.529,0.598,
+Male: Tetraplegia: AIS D,Intercept,435.224,22.906,662.864,19.000,0.000,0.000
+,Age at injury,-204.339,32.399,534.487,-6.307,0.000,0.000
+,Time since injury,128.817,20.737,697.595,6.212,0.000,0.000
+,YEARDOI,-57.637,27.464,813.681,-2.099,0.036,0.145
+,Time since injury*YEARDOI,7.957,35.638,748.220,0.223,0.823,

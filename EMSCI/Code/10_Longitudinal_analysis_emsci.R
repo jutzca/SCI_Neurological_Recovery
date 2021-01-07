@@ -64,8 +64,19 @@ emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Ag
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar')&   ## Neurological level
                              (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
+
+
+emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute') , Patientennummer, .keep_all = TRUE)
+
+# Create new variable: Baseline AIS grade
+emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
+
+# Merge
+emsci.trauma.sex.baseline.ais <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
+
+
 #Convert certain columns to numeric
-emsci.trauma.sex[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)] <- sapply(emsci.trauma.sex[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)], as.numeric)
+emsci.trauma.sex.baseline.ais[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)] <- sapply(emsci.trauma.sex.baseline.ais[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)], as.numeric)
 
 #### ---------------------------Rescale Data
 rescale.many <- function(dat, column.nos) { 
@@ -78,9 +89,9 @@ rescale.many <- function(dat, column.nos) {
   dat 
 } 
 
-emsci.rescaled <-rescale.many(emsci.trauma.sex, c(5,6,8,11)) 
+emsci.rescaled <-rescale.many(emsci.trauma.sex.baseline.ais, c(5,6,8,11)) 
 
-ais.score<-unique(emsci.rescaled$AIS)
+ais.score<-unique(emsci.rescaled$baseline.ais)
 rescaled.nli <- unique(emsci.rescaled$plegia)
 rescaled.sex <- unique(emsci.rescaled$Sex)
 emsci.rescaled$Patientennummer <- as.factor(emsci.rescaled$Patientennummer)
@@ -91,7 +102,7 @@ for (h in rescaled.sex) {
   for (j in rescaled.nli){
     for (i in ais.score){
       print(paste("MODEL",h,j, i,  sep = " "))
-      df1 = subset(emsci.rescaled, (AIS == i & plegia == j & Sex == h))
+      df1 = subset(emsci.rescaled, (baseline.ais == i & plegia == j & Sex == h))
       #if (nrow(df1) == 0) next
       mixed.lmer <- lmer(SCIM23_TotalScore~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
       print(summary(mixed.lmer))

@@ -114,7 +114,7 @@ new.data.lems =emsci.trauma.sex.baseline.ais2 %>%
     sd_LEMS = sd(LEMS, na.rm=TRUE))%>% as.data.frame()%>% mutate(across(where(is.numeric), round, 3))
  
 #Write data file
-write.csv(new.data.lems, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.lems.emsci.csv', row.names = FALSE,quote=FALSE)
+#write.csv(new.data.lems, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.lems.emsci.csv', row.names = FALSE,quote=FALSE)
 
 #To reverse the order of levels of baseline.ais
 new.data.lems$baseline.ais <- factor(new.data.lems$baseline.ais, levels=rev(levels(new.data.lems$baseline.ais)))
@@ -166,7 +166,7 @@ new.data.uems =emsci.trauma.sex.baseline.ais_para %>%
     sd_UEMS = sd(UEMS, na.rm=TRUE)) %>% as.data.frame()
 
 #Write data file 
-write.csv(new.data.uems, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.uems.emsci.csv', row.names = FALSE,quote=FALSE)
+#write.csv(new.data.uems, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.uems.emsci.csv', row.names = FALSE,quote=FALSE)
 
 #To reverse the order of levels of baseline.ais
 new.data.uems$baseline.ais <- factor(new.data.uems$baseline.ais, levels=rev(levels(new.data.uems$baseline.ais)))
@@ -177,7 +177,7 @@ new.data.uems$mean_UEMS <- round(new.data.uems$mean_UEMS,1 )
 new.data.uems$mean_UEMS <- round(new.data.uems$mean_UEMS, 1)
 
 #------Plot the data
-uems.emsci.plot <- ggplot(new.data.uems,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_UEMS)) + 
+heatplots.uems.emsci.plot <- ggplot(new.data.uems,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_UEMS)) + 
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 50))+
   facet_grid(as.factor(new.data.uems$X5_year_bins)~new.data.uems$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_UEMS)), size=3, color='white')+
@@ -189,11 +189,11 @@ uems.emsci.plot <- ggplot(new.data.uems,aes(x = as.factor(ExamStage_weeks),y = b
         legend.text = element_text(size=10),
         legend.position = 'right',
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-uems.emsci.plot 
+heatplots.uems.emsci.plot 
 
 ggsave(
-  "longitudinal_uems.emsci.pdf",
-  plot = uems.emsci.plot,
+  "heatplots.longitudinal_uems.emsci.pdf",
+  plot = heatplots.uems.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   
   scale = 1,
@@ -218,7 +218,7 @@ new.data.tms =emsci.trauma.sex.baseline.ais2 %>%
     sd_tms = sd(TMS, na.rm=TRUE))%>% as.data.frame()%>% mutate(across(where(is.numeric), round, 3))
 
 #Write data file
-write.csv(new.data.tms, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tms.emsci.csv', row.names = FALSE,quote=FALSE)
+#write.csv(new.data.tms, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tms.emsci.csv', row.names = FALSE,quote=FALSE)
 
 #To reverse the order of levels of baseline.ais
 new.data.tms$baseline.ais <- factor(new.data.tms$baseline.ais, levels=rev(levels(new.data.tms$baseline.ais)))
@@ -229,7 +229,7 @@ new.data.tms$mean_tms <- round(new.data.tms$mean_tms,1 )
 new.data.tms$mean_tms <- round(new.data.tms$mean_tms, 1)
 
 #------Plot the data
-tms.emsci.plot <- ggplot(new.data.tms,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_tms)) + 
+heatplots.tms.emsci.plot <- ggplot(new.data.tms,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_tms)) + 
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 100))+
   facet_grid(as.factor(new.data.tms$X5_year_bins)~new.data.tms$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_tms)), size=3, color='white')+
@@ -241,11 +241,11 @@ tms.emsci.plot <- ggplot(new.data.tms,aes(x = as.factor(ExamStage_weeks),y = bas
         legend.text = element_text(size=10),
         legend.position = 'right',
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-tms.emsci.plot 
+heatplots.tms.emsci.plot 
 
 ggsave(
-  "longitudinal_tms.emsci.pdf",
-  plot = tms.emsci.plot,
+  "heatplots.longitudinal_tms.emsci.pdf",
+  plot = heatplots.tms.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   
   scale = 1,
@@ -273,7 +273,7 @@ new.data.tss =emsci.trauma.sex.baseline.ais2 %>%
   mutate_if(is.numeric, round, 3)
 
 #Write data file 
-write.csv(new.data.tss, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tss.emsci.csv', row.names = FALSE,quote=FALSE)
+#write.csv(new.data.tss, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tss.emsci.csv', row.names = FALSE,quote=FALSE)
 
 #To reverse the order of levels of baseline.ais
 new.data.tss$baseline.ais <- factor(new.data.tss$baseline.ais, levels=rev(levels(new.data.tss$baseline.ais)))
@@ -284,7 +284,7 @@ new.data.tss$mean_TSS <- round(new.data.tss$mean_TSS,1 )
 new.data.tss$mean_TSS <- round(new.data.tss$mean_TSS, 1)
 
 #------Plot the data
-tss.emsci.plot <- ggplot(new.data.tss,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_TSS)) + 
+heatplots.tss.emsci.plot <- ggplot(new.data.tss,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_TSS)) + 
   geom_tile()+scale_fill_viridis(option = "viridis",  direction = -1, limits = c(0, 180))+
   facet_grid(as.factor(new.data.tss$X5_year_bins)~new.data.tss$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_TSS)), size=3, color='white')+
@@ -296,11 +296,11 @@ tss.emsci.plot <- ggplot(new.data.tss,aes(x = as.factor(ExamStage_weeks),y = bas
         legend.text = element_text(size=10),
         legend.position = 'right',
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-tss.emsci.plot 
+heatplots.tss.emsci.plot 
 
 ggsave(
-  "longitudinal_tss.emsci.pdf",
-  plot = tss.emsci.plot,
+  "heatplots.longitudinal_tss.emsci.pdf",
+  plot = heatplots.tss.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   
   scale = 1,
@@ -327,7 +327,7 @@ new.data.tpp =emsci.trauma.sex.baseline.ais2 %>%
   mutate_if(is.numeric, round, 3)
 
 #Write data file 
-write.csv(new.data.tpp, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tpp.emsci.csv', row.names = FALSE,quote=FALSE)
+#write.csv(new.data.tpp, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tpp.emsci.csv', row.names = FALSE,quote=FALSE)
 
 #To reverse the order of levels of baseline.ais
 new.data.tpp$baseline.ais <- factor(new.data.tpp$baseline.ais, levels=rev(levels(new.data.tpp$baseline.ais)))
@@ -338,11 +338,11 @@ new.data.tpp$mean_TPP <- round(new.data.tpp$mean_TPP,1 )
 new.data.tpp$mean_TPP <- round(new.data.tpp$mean_TPP, 1)
 
 #------Plot the data
-tpp.emsci.plot <- ggplot(new.data.tpp,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_TPP)) + 
+heatplots.tpp.emsci.plot <- ggplot(new.data.tpp,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_TPP)) + 
   geom_tile()+scale_fill_viridis(option = "viridis",  direction = -1, limits = c(0, 112))+
   facet_grid(as.factor(new.data.tpp$X5_year_bins)~new.data.tpp$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_TPP)), size=3, color='white')+
-  labs(title = "Total Sensory Score (TPP)", x = "Weeks post injury", y = "AIS Score", fill='TPP') +
+  labs(title = "Total Pinprick (TPP)", x = "Weeks post injury", y = "AIS Score", fill='TPP') +
   theme(plot.title = element_text(hjust = 0.5, size= 14),
         axis.title = element_text(size=12),
         axis.text = element_text(size=10),
@@ -350,11 +350,11 @@ tpp.emsci.plot <- ggplot(new.data.tpp,aes(x = as.factor(ExamStage_weeks),y = bas
         legend.text = element_text(size=10),
         legend.position = 'right',
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-tpp.emsci.plot 
+heatplots.tpp.emsci.plot 
 
 ggsave(
-  "longitudinal_tpp.emsci.pdf",
-  plot = tpp.emsci.plot,
+  "heatplots.longitudinal_tpp.emsci.pdf",
+  plot = heatplots.tpp.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   
   scale = 1,
@@ -380,7 +380,7 @@ new.data.tlt =emsci.trauma.sex.baseline.ais2 %>%
   mutate_if(is.numeric, round, 3)
 
 #Write data file
-write.csv(new.data.tlt, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tlt.emsci.csv', row.names = FALSE,quote=FALSE)
+#write.csv(new.data.tlt, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/longitudinal.data.tlt.emsci.csv', row.names = FALSE,quote=FALSE)
 
 #To reverse the order of levels of baseline.ais
 new.data.tlt$baseline.ais <- factor(new.data.tlt$baseline.ais, levels=rev(levels(new.data.tlt$baseline.ais)))
@@ -391,11 +391,11 @@ new.data.tlt$mean_TLT <- round(new.data.tlt$mean_TLT,1 )
 new.data.tlt$mean_TLT <- round(new.data.tlt$mean_TLT, 1)
 
 #------Plot the data
-tlt.emsci.plot <- ggplot(new.data.tlt,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_TLT)) + 
+heatplots.tlt.emsci.plot <- ggplot(new.data.tlt,aes(x = as.factor(ExamStage_weeks),y = baseline.ais,fill = mean_TLT)) + 
   geom_tile()+scale_fill_viridis(option = "viridis",  direction = -1, limits = c(0, 112))+
   facet_grid(as.factor(new.data.tlt$X5_year_bins)~new.data.tlt$plegia)+theme_economist()+
   geom_text(aes(label=as.numeric(mean_TLT)), size=3, color='white')+
-  labs(title = "Total Sensory Score (TLT)", x = "Weeks post injury", y = "AIS Score", fill='TLT') +
+  labs(title = "Total Light Touch (TLT)", x = "Weeks post injury", y = "AIS Score", fill='TLT') +
   theme(plot.title = element_text(hjust = 0.5, size= 14),
         axis.title = element_text(size=12),
         axis.text = element_text(size=10),
@@ -403,11 +403,11 @@ tlt.emsci.plot <- ggplot(new.data.tlt,aes(x = as.factor(ExamStage_weeks),y = bas
         legend.text = element_text(size=10),
         legend.position = 'right',
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-tlt.emsci.plot 
+heatplots.tlt.emsci.plot 
 
 ggsave(
-  "longitudinal_tlt.emsci.pdf",
-  plot = tlt.emsci.plot,
+  "heatplots.longitudinal_tlt.emsci.pdf",
+  plot = heatplots.tlt.emsci.plot,
   device = 'pdf',
   path = outdir_figures,   
   scale = 1,
@@ -418,14 +418,6 @@ ggsave(
 )
 
 dev.off()
-
-
-
-
-
-
-
-
 
 
 
