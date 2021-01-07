@@ -78,25 +78,14 @@ convertMenuItem <- function(mi,tabName) {
   mi
 }
 
-# ref for authentication step : https://datastorm-open.github.io/shinymanager/
-credentials <- data.frame(
-  user = c("user", "admin"), # mandatory
-  password = c("sciapp", "sciadmin"), # mandatory
-  start = c("2020-08-31"), # optional (all others)
-  expire = c(NA, NA),
-  admin = c(FALSE, TRUE),
-  comment = "Simple and secure authentification mechanism 
-  for single ‘Shiny’ applications.",
-  stringsAsFactors = FALSE
-)
 
 # User interface ----
-ui <- dashboardPage(skin = "blue",
-      dashboardHeader(title = 'Menu'),
+ui <- dashboardPage(skin = "blue", # make the frame blue
+      dashboardHeader(title = 'Menu'), # rename the left column 'Menu'
 
       ## Sidebar content
       dashboardSidebar(
-        sidebarMenu(id = "sidebarmenu",
+        sidebarMenu(id = "sidebarmenu", # create the main and sub parts within the sidebar menu
                     convertMenuItem(menuItem("Overview", tabName = "dashboard",icon = icon("object-group"), selected = T, startExpanded = TRUE,
                                    menuSubItem("EMSCI", tabName = "tabEMSCI", icon = icon('hubspot')),
                                    menuSubItem("Sygen", tabName = "tabSygen", icon = icon('database')),
@@ -106,15 +95,18 @@ ui <- dashboardPage(skin = "blue",
                     convertMenuItem(menuItem("Visualize data", tabName = "PlotsTab", icon = icon("chart-bar")), tabName = "plotsG"),
                     convertMenuItem(menuItem("Monitoring", tabName = "PredictTab", icon = icon("clipboard-list")), tabName = "predictG"),
           
+          # make additional choices appear in the sidebar depending on the part chosen
           conditionalPanel("input.sidebarmenu == 'plotsG'",
-                           radioButtons(inputId = "choose_data",
+                           # choose dataset to display
+                           radioButtons(inputId = "choose_data", 
                                         label = "Choose data source",
                                         choices = c("EMSCI" = "EMSCI",
                                                     "Sygen" = "Sygen",
                                                     "SCI Rehab" = "SCI rehab",
                                                     "All" = "All"),
                                         selected = character(0)),
-          
+                           
+                           # choose the outcomes/features of interest
                            radioButtons(inputId = "choose_cat_scores",
                                         label = "Choose type of data",
                                         choices = c("Neurological outcomes" = "neuro",
@@ -122,6 +114,7 @@ ui <- dashboardPage(skin = "blue",
                                                     "Epidemiological features" = "epi"),
                                         selected = character(0)),
                            
+                           # choose among the neurological outcomes available in EMSCI dataset
                            conditionalPanel(condition = "input.choose_data == 'EMSCI' && input.choose_cat_scores == 'neuro'",
                                             radioButtons("EMSCI_neuro",
                                                          label = "Outcomes available",
@@ -132,13 +125,15 @@ ui <- dashboardPage(skin = "blue",
                                                                      "RLT","LLT","TLT"),
                                                          selected = character(0))),
                            
+                           # choose among the functional outcomes available in EMSCI dataset
                            conditionalPanel(condition = "input.choose_data == 'EMSCI' && input.choose_cat_scores == 'funct'",
                                             radioButtons("EMSCI_funct",
                                                          label = "Outcomes available",
                                                          choices = c("WISCI","test_6min","test_10m","TUG","SCIM2","SCIM3"),
                                                          selected = character(0))),
-                                           
-                            conditionalPanel(condition = "input.choose_data == 'Sygen' && input.choose_cat_scores == 'neuro'",
+                            
+                           # choose among the neurological outcomes available in Sygen dataset
+                           conditionalPanel(condition = "input.choose_data == 'Sygen' && input.choose_cat_scores == 'neuro'",
                                              radioButtons("Sygen_neuro",
                                                           label = "Outcomes available",
                                                           choices = c("UEMS", "LEMS", "TEMS",
@@ -146,19 +141,22 @@ ui <- dashboardPage(skin = "blue",
                                                                       "RPP","LPP","TPP",
                                                                       "RLT","LLT","TLT"),
                                                           selected = character(0))),
-                                           
+                           
+                            # choose among the functional outcomes available in Sygen dataset            
                             conditionalPanel(condition = "input.choose_data == 'Sygen' && input.choose_cat_scores == 'funct'",
                                                             radioButtons("Sygen_funct",
                                                                          label = "Outcomes available",
                                                                          choices = c('Modified Benzel score' = 'Benzel'),
                                                                          selected = character(0))),
-                                           
+                           
+                            # choose among the neurological outcomes available in SCIRehab dataset 
                             conditionalPanel(condition = "input.choose_data == 'SCI rehab' && input.choose_cat_scores == 'neuro'",
                                                             radioButtons("SCI_rehab_neuro",
                                                                          label = "Outcomes available",
                                                                          choices = c("RMS","LMS","TMS"),
                                                                          selected = character(0))),
-                                           
+                           
+                            # choose among the functional outcomes available in SCIRehab dataset         
                             conditionalPanel(condition = "input.choose_data == 'SCI rehab' && input.choose_cat_scores == 'funct'",
                                                             radioButtons("SCI_rehab_funct",
                                                                          label = "Outcomes available",
@@ -169,6 +167,7 @@ ui <- dashboardPage(skin = "blue",
                                                                          ) # end radioButtons
                                              ), # end conditionalPanel
                            
+                           # choose among the neurological outcomes available in all datasets 
                            conditionalPanel(condition = "input.choose_data == 'All' && input.choose_cat_scores == 'neuro'",
                                             radioButtons("All_neuro",
                                                          label = "Outcomes available",
@@ -177,6 +176,7 @@ ui <- dashboardPage(skin = "blue",
                                             ) # end radioButtons
                            ), # end conditionalPanel
                            
+                           # choose among the epidemiological features available in EMSCI dataset
                            conditionalPanel(condition = "input.choose_data == 'EMSCI' && input.choose_cat_scores == 'epi'",
                                             radioButtons("EMSCI_epi",
                                                          label = "Features available",
@@ -185,6 +185,7 @@ ui <- dashboardPage(skin = "blue",
                                             ) # end radioButtons
                            ), # end conditionalPanel
                            
+                           # choose among the epidemiological features available in Sygen dataset
                            conditionalPanel(condition = "input.choose_data == 'Sygen' && input.choose_cat_scores == 'epi'",
                                             radioButtons("Sygen_epi",
                                                          label = "Features available",
@@ -193,6 +194,7 @@ ui <- dashboardPage(skin = "blue",
                                             ) # end radioButtons
                            ), # end conditionalPanel
                            
+                           # choose among the epidemiological features available in SCIRehab dataset
                            conditionalPanel(condition = "input.choose_data == 'SCI rehab' && input.choose_cat_scores == 'epi'",
                                             radioButtons("SCI_rehab_epi",
                                                          label = "Features available",
@@ -201,10 +203,12 @@ ui <- dashboardPage(skin = "blue",
                                             ) # end radioButtons
                            ), # end conditionalPanel
                            
+                           # choose among the functional outcomes available in all datasets
                            conditionalPanel(condition = "input.choose_data == 'All' && input.choose_cat_scores == 'funct'",
                                             p('No outcome available.')
                            ), # end conditionalPanel
                            
+                           # choose among the epidemiological features available in all datasets
                            conditionalPanel(condition = "input.choose_data == 'All' && input.choose_cat_scores == 'epi'",
                                             p('No outcome available.')
                            ) # end conditionalPanel
@@ -367,6 +371,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                       
                                       column(width = 4, # create second column for second type of user inputs (filters)
+                                             
+                                            box(status = "primary", width = NULL, # create box 
+                                                 radioButtons("subset_UEMS_EMSCI",
+                                                              label = "Select subset of the cohort ?",
+                                                              choices = c("No" = 1, 'Yes' = 0), 
+                                                              selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                             ), # end box
+                                             
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_UEMS_EMSCI",
                                                              label = "Apply filters ?",
@@ -385,6 +397,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_UEMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_UEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_UEMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_UEMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_UEMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_UEMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
 
                                             conditionalPanel(condition = "input.checkbox_UEMS_EMSCI == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -484,6 +537,14 @@ ui <- dashboardPage(skin = "blue",
                                      
                                      column(width = 4,
                                             box(status = "primary", width = NULL,
+                                                
+                                                box(status = "primary", width = NULL, # create box 
+                                                    radioButtons("subset_RUEMS_EMSCI",
+                                                                 label = "Select subset of the cohort ?",
+                                                                 choices = c("No" = 1, 'Yes' = 0), 
+                                                                 selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                                ), # end box
+                                                
                                                 radioButtons("checkbox_RUEMS_EMSCI",
                                                              label = "Apply filters ?",
                                                              choices = c("No" = 1, 'Yes' = 0), 
@@ -501,6 +562,49 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            
+                                            conditionalPanel(condition = "input.subset_RUEMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RUEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RUEMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RUEMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RUEMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RUEMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
+                                            
                                             
                                             conditionalPanel(condition = "input.checkbox_RUEMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -600,6 +704,14 @@ ui <- dashboardPage(skin = "blue",
                                      
                                      column(width = 4,
                                             box(status = "primary", width = NULL,
+                                                
+                                                box(status = "primary", width = NULL, # create box 
+                                                    radioButtons("subset_LUEMS_EMSCI",
+                                                                 label = "Select subset of the cohort ?",
+                                                                 choices = c("No" = 1, 'Yes' = 0), 
+                                                                 selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                                ), # end box
+                                                
                                                 radioButtons("checkbox_LUEMS_EMSCI",
                                                              label = "Apply filters ?",
                                                              choices = c("No" = 1, 'Yes' = 0), 
@@ -617,6 +729,49 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            
+                                            conditionalPanel(condition = "input.subset_LUEMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LUEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LUEMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LUEMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LUEMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LUEMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
+                                            
                                             
                                             conditionalPanel(condition = "input.checkbox_LUEMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -715,6 +870,15 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                
+                                                radioButtons("subset_LEMS_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_LEMS_EMSCI",
                                                              label = "Apply filters ?",
@@ -733,6 +897,49 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            
+                                            conditionalPanel(condition = "input.subset_LEMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LEMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LEMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LEMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LEMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
+                                            
                                             
                                             conditionalPanel(condition = "input.checkbox_LEMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -831,6 +1038,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RLEMS_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_RLEMS_EMSCI",
                                                              label = "Apply filters ?",
@@ -849,6 +1064,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RLEMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RLEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RLEMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RLEMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RLEMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RLEMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RLEMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -947,6 +1203,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LLEMS_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_LLEMS_EMSCI",
                                                              label = "Apply filters ?",
@@ -965,6 +1229,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LLEMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LLEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LLEMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LLEMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LLEMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LLEMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LLEMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1063,6 +1368,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RMS_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_RMS_EMSCI",
                                                              label = "Apply filters ?",
@@ -1081,6 +1394,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1179,6 +1533,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LMS_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_LMS_EMSCI",
                                                              label = "Apply filters ?",
@@ -1197,6 +1559,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1295,6 +1698,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TMS_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_TMS_EMSCI",
                                                              label = "Apply filters ?",
@@ -1313,6 +1724,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TMS_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TMS_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TMS_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TMS_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TMS_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TMS_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1410,6 +1862,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RPP_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_RPP_EMSCI",
                                                              label = "Apply filters ?",
@@ -1428,6 +1888,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RPP_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RPP_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RPP_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RPP_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RPP_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RPP_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RPP_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1526,6 +2027,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LPP_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_LPP_EMSCI",
                                                              label = "Apply filters ?",
@@ -1544,6 +2053,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LPP_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LPP_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LPP_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LPP_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LPP_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LPP_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LPP_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1642,6 +2192,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TPP_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_TPP_EMSCI",
                                                              label = "Apply filters ?",
@@ -1660,6 +2218,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TPP_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TPP_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TPP_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TPP_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TPP_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TPP_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TPP_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1758,6 +2357,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RLT_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_RLT_EMSCI",
                                                              label = "Apply filters ?",
@@ -1776,6 +2383,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RLT_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RLT_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RLT_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RLT_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RLT_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RLT_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RLT_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1874,6 +2522,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LLT_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_LLT_EMSCI",
                                                              label = "Apply filters ?",
@@ -1892,6 +2548,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LLT_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LLT_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LLT_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LLT_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LLT_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LLT_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LLT_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -1990,6 +2687,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TLT_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_TLT_EMSCI",
                                                              label = "Apply filters ?",
@@ -2008,6 +2713,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TLT_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TLT_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TLT_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TLT_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TLT_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TLT_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TLT_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -2106,6 +2852,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_WISCI_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_WISCI_EMSCI",
                                                              label = "Apply filters ?",
@@ -2124,6 +2878,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_WISCI_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_WISCI_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_WISCI_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_WISCI_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_WISCI_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_WISCI_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_WISCI_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -2222,6 +3017,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_test_6min_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_test_6min_EMSCI",
                                                              label = "Apply filters ?",
@@ -2240,6 +3043,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_test_6min_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_test_6min_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_test_6min_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_test_6min_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_test_6min_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_test_6min_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_test_6min_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -2338,6 +3182,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_test_10m_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_test_10m_EMSCI",
                                                              label = "Apply filters ?",
@@ -2356,6 +3208,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_test_10m_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_test_10m_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_test_10m_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_test_10m_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_test_10m_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_test_10m_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_test_10m_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -2455,6 +3348,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TUG_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_TUG_EMSCI",
                                                              label = "Apply filters ?",
@@ -2473,6 +3374,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TUG_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TUG_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TUG_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TUG_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TUG_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TUG_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TUG_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -2571,6 +3513,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_SCIM2_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_SCIM2_EMSCI",
                                                              label = "Apply filters ?",
@@ -2589,6 +3539,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_SCIM2_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_SCIM2_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_SCIM2_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_SCIM2_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_SCIM2_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_SCIM2_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_SCIM2_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -2687,6 +3678,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4,
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_SCIM3_EMSCI",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL,
                                                 radioButtons("checkbox_SCIM3_EMSCI",
                                                              label = "Apply filters ?",
@@ -2705,6 +3704,47 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_SCIM3_EMSCI == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_SCIM3_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_SCIM3_EMSCI", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_SCIM3_EMSCI", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_SCIM3_EMSCI", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_SCIM3_EMSCI", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral",
+                                                                                            "C1","C2","C3","C4","C5","C6","C7","C8",
+                                                                                            "T1","T2","T3","T4","T5","T6","T7","T8","T9","T1","T11", "T12",
+                                                                                            "L1", "L2", "L3", "L4", "L5",
+                                                                                            "S1", "S2", "S3", "S4", "S5"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_SCIM3_EMSCI == 0",
                                                              box(status = "primary", width = NULL,
@@ -2806,6 +3846,14 @@ ui <- dashboardPage(skin = "blue",
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
                                             box(status = "primary", width = NULL, # create box 
+                                                
+                                                box(status = "primary", width = NULL, # create box 
+                                                    radioButtons("subset_UEMS_Sygen",
+                                                                 label = "Select subset of the cohort ?",
+                                                                 choices = c("No" = 1, 'Yes' = 0), 
+                                                                 selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                                ), # end box
+                                                
                                                 radioButtons("checkbox_UEMS_Sygen",
                                                              label = "Apply filters ?",
                                                              choices = c("No" = 1, 'Yes' = 0), 
@@ -2823,6 +3871,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_UEMS_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_UEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_UEMS_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_UEMS_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_UEMS_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_UEMS_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_UEMS_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -2894,6 +3979,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LEMS_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_LEMS_Sygen",
                                                              label = "Apply filters ?",
@@ -2912,6 +4005,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LEMS_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LEMS_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LEMS_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LEMS_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LEMS_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LEMS_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -2981,6 +4111,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TEMS_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_TEMS_Sygen",
                                                              label = "Apply filters ?",
@@ -2999,6 +4137,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TEMS_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TEMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TEMS_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TEMS_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TEMS_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TEMS_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TEMS_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3068,6 +4243,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RMS_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_RMS_Sygen",
                                                              label = "Apply filters ?",
@@ -3086,6 +4269,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RMS_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RMS_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RMS_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RMS_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RMS_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RMS_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3155,6 +4375,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LMS_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_LMS_Sygen",
                                                              label = "Apply filters ?",
@@ -3173,6 +4401,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LMS_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LMS_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LMS_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LMS_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LMS_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LMS_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3242,6 +4507,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TMS_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_TMS_Sygen",
                                                              label = "Apply filters ?",
@@ -3260,6 +4533,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TMS_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TMS_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TMS_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TMS_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TMS_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TMS_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TMS_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3330,6 +4640,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RPP_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_RPP_Sygen",
                                                              label = "Apply filters ?",
@@ -3348,6 +4666,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RPP_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RPP_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RPP_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RPP_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RPP_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RPP_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RPP_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3417,6 +4772,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LPP_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_LPP_Sygen",
                                                              label = "Apply filters ?",
@@ -3435,6 +4798,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LPP_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LPP_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LPP_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LPP_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LPP_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LPP_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LPP_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3504,6 +4904,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TPP_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_TPP_Sygen",
                                                              label = "Apply filters ?",
@@ -3522,6 +4930,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TPP_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TPP_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TPP_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TPP_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TPP_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TPP_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TPP_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3591,6 +5036,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RLT_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_RLT_Sygen",
                                                              label = "Apply filters ?",
@@ -3609,6 +5062,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RLT_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RLT_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RLT_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RLT_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RLT_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RLT_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RLT_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3678,6 +5168,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LLT_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_LLT_Sygen",
                                                              label = "Apply filters ?",
@@ -3696,6 +5194,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LLT_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LLT_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LLT_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LLT_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LLT_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LLT_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LLT_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3765,6 +5300,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TLT_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_TLT_Sygen",
                                                              label = "Apply filters ?",
@@ -3783,6 +5326,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TLT_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TLT_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TLT_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TLT_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TLT_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TLT_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TLT_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3852,6 +5432,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_Benzel_Sygen",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_Benzel_Sygen",
                                                              label = "Apply filters ?",
@@ -3870,6 +5458,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_Benzel_Sygen == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_Benzel_EMSCI",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_Benzel_Sygen", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_Benzel_Sygen", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_Benzel_Sygen", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "AIS E", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_Benzel_Sygen", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_Benzel_Sygen == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -3939,6 +5564,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RMS_SCI_rehab",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_RMS_SCI_rehab",
                                                              label = "Apply filters ?",
@@ -3957,6 +5590,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RMS_SCI_rehab == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RMS_SCI_rehab",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RMS_SCI_rehab", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RMS_SCI_rehab", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("12-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", 'Unknown'), 
+                                                                 selected = c("Unknown"))
+                                            ), # end box
+                                            
+                                            box(status = "primary", width = NULL, # create a new box
+                                                selectInput("select_ais_RMS_SCI_rehab", 
+                                                            label = "Select baseline AIS", 
+                                                            choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                            selected = c("Unknown"))
+                                            ), # end box
+                                            
+                                            box(status = "primary", width = NULL, # create a new box
+                                                selectInput("select_nli_RMS_SCI_rehab", 
+                                                            label = "Select injury level", 
+                                                            choices = list("Unknown", "Cervical", "Thoracic", "Lumbar"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RMS_SCI_rehab == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4026,6 +5696,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LMS_SCI_rehab",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_LMS_SCI_rehab",
                                                              label = "Apply filters ?",
@@ -4044,6 +5722,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LMS_SCI_rehab == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LMS_SCI_rehab",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LMS_SCI_rehab", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LMS_SCI_rehab", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("12-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LMS_SCI_rehab", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LMS_SCI_rehab", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LMS_SCI_rehab == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4113,6 +5828,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TMS_SCI_rehab",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_TMS_SCI_rehab",
                                                              label = "Apply filters ?",
@@ -4131,6 +5854,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TMS_SCI_rehab == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TMS_SCI_rehab",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TMS_SCI_rehab", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TMS_SCI_rehab", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("12-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TMS_SCI_rehab", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TMS_SCI_rehab", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TMS_SCI_rehab == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4200,6 +5960,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_PHYIND_SCI_rehab",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_PHYIND_SCI_rehab",
                                                              label = "Apply filters ?",
@@ -4218,6 +5986,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_PHYIND_SCI_rehab == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_PHYIND_SCI_rehab",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_PHYIND_SCI_rehab", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_PHYIND_SCI_rehab", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("12-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_PHYIND_SCI_rehab", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_PHYIND_SCI_rehab", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_PHYIND_SCI_rehab == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4287,6 +6092,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_MOBILITY_SCI_rehab",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_MOBILITY_SCI_rehab",
                                                              label = "Apply filters ?",
@@ -4305,6 +6118,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_MOBILITY_SCI_rehab == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_MOBILITY_SCI_rehab",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_MOBILITY_SCI_rehab", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_MOBILITY_SCI_rehab", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("12-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_MOBILITY_SCI_rehab", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_MOBILITY_SCI_rehab", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_MOBILITY_SCI_rehab == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4374,6 +6224,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_OCCUPATION_SCI_rehab",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_OCCUPATION_SCI_rehab",
                                                              label = "Apply filters ?",
@@ -4392,6 +6250,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_OCCUPATION_SCI_rehab == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_OCCUPATION_SCI_rehab",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_OCCUPATION_SCI_rehab", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_OCCUPATION_SCI_rehab", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("12-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_OCCUPATION_SCI_rehab", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_OCCUPATION_SCI_rehab", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_OCCUPATION_SCI_rehab == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4461,6 +6356,14 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_SOCIAL_SCI_rehab",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_SOCIAL_SCI_rehab",
                                                              label = "Apply filters ?",
@@ -4479,6 +6382,43 @@ ui <- dashboardPage(skin = "blue",
                                                                 to_max = NULL, force_edges = T, width = NULL, pre = NULL,
                                                                 post = NULL, dragRange = TRUE)
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_SOCIAL_SCI_rehab == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_SOCIAL_SCI_rehab",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_SOCIAL_SCI_rehab", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_SOCIAL_SCI_rehab", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("12-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_SOCIAL_SCI_rehab", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_SOCIAL_SCI_rehab", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_SOCIAL_SCI_rehab == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4548,12 +6488,57 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_RMS_All",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_RMS_All",
                                                              label = "Apply filters ?",
                                                              choices = c("No" = 1, 'Yes' = 0), 
                                                              selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_RMS_All == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_RMS_All",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_RMS_All", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_RMS_All", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_RMS_All", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_RMS_All", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_RMS_All == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4614,12 +6599,57 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_LMS_All",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_LMS_All",
                                                              label = "Apply filters ?",
                                                              choices = c("No" = 1, 'Yes' = 0), 
                                                              selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_LMS_All == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_LMS_All",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_LMS_All", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_LMS_All", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_LMS_All", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_LMS_All", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_LMS_All == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -4680,12 +6710,57 @@ ui <- dashboardPage(skin = "blue",
                                      ), # end column
                                      
                                      column(width = 4, # create second column for second type of user inputs (filters)
+                                            
+                                            box(status = "primary", width = NULL, # create box 
+                                                radioButtons("subset_TMS_All",
+                                                             label = "Select subset of the cohort ?",
+                                                             choices = c("No" = 1, 'Yes' = 0), 
+                                                             selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
+                                            ), # end box
+                                            
                                             box(status = "primary", width = NULL, # create box 
                                                 radioButtons("checkbox_TMS_All",
                                                              label = "Apply filters ?",
                                                              choices = c("No" = 1, 'Yes' = 0), 
                                                              selected = 1) # checkbox to go to basic plot: no filters, all patients, x-axis=stages, y-axis=value of score
                                             ), # end box
+                                            
+                                            conditionalPanel(condition = "input.subset_TMS_All == 0",
+                                                             # box(status = "primary", width = NULL, # create a new box
+                                                             #     textInput("input_score_TMS_All",
+                                                             #               label = "Patient score at very acute stage", 
+                                                             #               value = "Enter value...")
+                                                             #     
+                                                             # ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_sex_TMS_All", 
+                                                                             label = "Select sex", 
+                                                                             choices = list("Male", "Female", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create box 
+                                                                 selectInput("select_age_TMS_All", 
+                                                                             label = "Select age at injury", 
+                                                                             choices = list("0-19", "20-39", "40-59", "60-79", "80+", 'Unknown'), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_ais_TMS_All", 
+                                                                             label = "Select baseline AIS", 
+                                                                             choices = list("AIS A", "AIS B", "AIS C", "AIS D", "Unknown" = "Unknown"), 
+                                                                             selected = c("Unknown"))
+                                                             ), # end box
+                                                             
+                                                             box(status = "primary", width = NULL, # create a new box
+                                                                 selectInput("select_nli_TMS_All", 
+                                                                             label = "Select injury level", 
+                                                                             choices = list("Unknown", "Cervical", "Thoracic", "Lumbar", "Sacral"), 
+                                                                             selected = c("Unknown"))
+                                                             ) # end box
+                                            ), # end conditionalPanel
                                             
                                             conditionalPanel(condition = "input.checkbox_TMS_All == 0", # if user decides to not display all data and apply filters, make a new panel appear
                                                              box(status = "primary", width = NULL, # create new box
@@ -5673,8 +7748,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_UEMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_UEMS_EMSCI)[1]
+      input_age <- unique(input$select_age_UEMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_UEMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_UEMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_UEMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$UEMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$UEMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_UEMS_EMSCI == 1){ # if user chooses to display all data
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_UEMS_EMSCI == 0){ # if user chooses filters
       if (length(input$checkGroup_UEMS_EMSCI) > 2){ # if user chooses more than 2 filters
@@ -5726,7 +7850,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
 
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, # call function for emsci plots in helper_functions.R 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, # call function for emsci plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -5747,8 +7871,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_RUEMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_RUEMS_EMSCI)[1]
+      input_age <- unique(input$select_age_RUEMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_RUEMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_RUEMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_RUEMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$RUEMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$RUEMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_RUEMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_RUEMS_EMSCI == 0){
       if (length(input$checkGroup_RUEMS_EMSCI) > 2){
@@ -5800,7 +7973,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -5821,8 +7994,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_LUEMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_LUEMS_EMSCI)[1]
+      input_age <- unique(input$select_age_LUEMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_LUEMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_LUEMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_LUEMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$LUEMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$LUEMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_LUEMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_LUEMS_EMSCI == 0){
       if (length(input$checkGroup_LUEMS_EMSCI) > 2){
@@ -5874,7 +8096,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -5895,8 +8117,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_LEMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_LEMS_EMSCI)[1]
+      input_age <- unique(input$select_age_LEMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_LEMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_LEMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_LEMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$LEMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$LEMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_LEMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_LEMS_EMSCI == 0){
       if (length(input$checkGroup_LEMS_EMSCI) > 2){
@@ -5948,7 +8219,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -5969,8 +8240,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_RLEMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_RLEMS_EMSCI)[1]
+      input_age <- unique(input$select_age_RLEMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_RLEMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_RLEMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_RLEMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$RLEMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$RLEMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_RLEMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_RLEMS_EMSCI == 0){
       if (length(input$checkGroup_RLEMS_EMSCI) > 2){
@@ -6022,7 +8342,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6043,8 +8363,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_LLEMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_LLEMS_EMSCI)[1]
+      input_age <- unique(input$select_age_LLEMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_LLEMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_LLEMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_LLEMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$LLEMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$LLEMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_LLEMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_LLEMS_EMSCI == 0){
       if (length(input$checkGroup_LLEMS_EMSCI) > 2){
@@ -6096,7 +8465,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6117,8 +8486,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_RMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_RMS_EMSCI)[1]
+      input_age <- unique(input$select_age_RMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_RMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_RMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_RMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$RMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$RMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_RMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_RMS_EMSCI == 0){
       if (length(input$checkGroup_RMS_EMSCI) > 2){
@@ -6170,7 +8588,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6191,8 +8609,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_LMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_LMS_EMSCI)[1]
+      input_age <- unique(input$select_age_LMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_LMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_LMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_LMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$LMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$LMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_LMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_LMS_EMSCI == 0){
       if (length(input$checkGroup_LMS_EMSCI) > 2){
@@ -6244,7 +8711,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6265,8 +8732,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_TMS_EMSCI == 0){
+      input_sex <- unique(input$select_sex_TMS_EMSCI)[1]
+      input_age <- unique(input$select_age_TMS_EMSCI)[1]
+      input_ais <- unique(input$select_ais_TMS_EMSCI)[1]
+      input_nli <- unique(input$select_nli_TMS_EMSCI)[1]
+      input_indscore <- unique(input$input_score_TMS_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$TMS != 'NA', ]
+      #data_modified <- data_modified[data_modified$TMS != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_TMS_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_TMS_EMSCI == 0){
       if (length(input$checkGroup_TMS_EMSCI) > 2){
@@ -6318,7 +8834,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6339,8 +8855,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_RPP_EMSCI == 0){
+      input_sex <- unique(input$select_sex_RPP_EMSCI)[1]
+      input_age <- unique(input$select_age_RPP_EMSCI)[1]
+      input_ais <- unique(input$select_ais_RPP_EMSCI)[1]
+      input_nli <- unique(input$select_nli_RPP_EMSCI)[1]
+      input_indscore <- unique(input$input_score_RPP_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$RPP != 'NA', ]
+      #data_modified <- data_modified[data_modified$RPP != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_RPP_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_RPP_EMSCI == 0){
       if (length(input$checkGroup_RPP_EMSCI) > 2){
@@ -6392,7 +8957,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6413,8 +8978,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_LPP_EMSCI == 0){
+      input_sex <- unique(input$select_sex_LPP_EMSCI)[1]
+      input_age <- unique(input$select_age_LPP_EMSCI)[1]
+      input_ais <- unique(input$select_ais_LPP_EMSCI)[1]
+      input_nli <- unique(input$select_nli_LPP_EMSCI)[1]
+      input_indscore <- unique(input$input_score_LPP_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$LPP != 'NA', ]
+      #data_modified <- data_modified[data_modified$LPP != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_LPP_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_LPP_EMSCI == 0){
       if (length(input$checkGroup_LPP_EMSCI) > 2){
@@ -6466,7 +9080,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6487,8 +9101,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_TPP_EMSCI == 0){
+      input_sex <- unique(input$select_sex_TPP_EMSCI)[1]
+      input_age <- unique(input$select_age_TPP_EMSCI)[1]
+      input_ais <- unique(input$select_ais_TPP_EMSCI)[1]
+      input_nli <- unique(input$select_nli_TPP_EMSCI)[1]
+      input_indscore <- unique(input$input_score_TPP_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$TPP != 'NA', ]
+      #data_modified <- data_modified[data_modified$TPP != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_TPP_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_TPP_EMSCI == 0){
       if (length(input$checkGroup_TPP_EMSCI) > 2){
@@ -6540,7 +9203,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6561,8 +9224,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_RLT_EMSCI == 0){
+      input_sex <- unique(input$select_sex_RLT_EMSCI)[1]
+      input_age <- unique(input$select_age_RLT_EMSCI)[1]
+      input_ais <- unique(input$select_ais_RLT_EMSCI)[1]
+      input_nli <- unique(input$select_nli_RLT_EMSCI)[1]
+      input_indscore <- unique(input$input_score_RLT_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$RLT != 'NA', ]
+      #data_modified <- data_modified[data_modified$RLT != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_RLT_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_RLT_EMSCI == 0){
       if (length(input$checkGroup_RLT_EMSCI) > 2){
@@ -6614,7 +9326,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6635,8 +9347,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_LLT_EMSCI == 0){
+      input_sex <- unique(input$select_sex_LLT_EMSCI)[1]
+      input_age <- unique(input$select_age_LLT_EMSCI)[1]
+      input_ais <- unique(input$select_ais_LLT_EMSCI)[1]
+      input_nli <- unique(input$select_nli_LLT_EMSCI)[1]
+      input_indscore <- unique(input$input_score_LLT_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$LLT != 'NA', ]
+      #data_modified <- data_modified[data_modified$LLT != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_LLT_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_LLT_EMSCI == 0){
       if (length(input$checkGroup_LLT_EMSCI) > 2){
@@ -6688,7 +9449,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6709,8 +9470,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_TLT_EMSCI == 0){
+      input_sex <- unique(input$select_sex_TLT_EMSCI)[1]
+      input_age <- unique(input$select_age_TLT_EMSCI)[1]
+      input_ais <- unique(input$select_ais_TLT_EMSCI)[1]
+      input_nli <- unique(input$select_nli_TLT_EMSCI)[1]
+      input_indscore <- unique(input$input_score_TLT_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$TLT != 'NA', ]
+      #data_modified <- data_modified[data_modified$TLT != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_TLT_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_neuro, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_neuro, list_time)
     }
     else if (input$checkbox_TLT_EMSCI == 0){
       if (length(input$checkGroup_TLT_EMSCI) > 2){
@@ -6762,7 +9572,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_neuro, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_neuro, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6784,8 +9594,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_WISCI_EMSCI == 0){
+      input_sex <- unique(input$select_sex_WISCI_EMSCI)[1]
+      input_age <- unique(input$select_age_WISCI_EMSCI)[1]
+      input_ais <- unique(input$select_ais_WISCI_EMSCI)[1]
+      input_nli <- unique(input$select_nli_WISCI_EMSCI)[1]
+      input_indscore <- unique(input$input_score_WISCI_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$WISCI != 'NA', ]
+      #data_modified <- data_modified[data_modified$WISCI != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_WISCI_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_funct, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_funct, list_time)
     }
     else if (input$checkbox_WISCI_EMSCI == 0){
       if (length(input$checkGroup_WISCI_EMSCI) > 2){
@@ -6837,7 +9696,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_funct, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_funct, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6858,8 +9717,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_test_6min_EMSCI == 0){
+      input_sex <- unique(input$select_sex_test_6min_EMSCI)[1]
+      input_age <- unique(input$select_age_test_6min_EMSCI)[1]
+      input_ais <- unique(input$select_ais_test_6min_EMSCI)[1]
+      input_nli <- unique(input$select_nli_test_6min_EMSCI)[1]
+      input_indscore <- unique(input$input_score_test_6min_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$test_6min != 'NA', ]
+      #data_modified <- data_modified[data_modified$test_6min != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_test_6min_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_funct, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_funct, list_time)
     }
     else if (input$checkbox_test_6min_EMSCI == 0){
       if (length(input$checkGroup_test_6min_EMSCI) > 2){
@@ -6911,7 +9819,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_funct, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_funct, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -6932,8 +9840,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_test_10m_EMSCI == 0){
+      input_sex <- unique(input$select_sex_test_10m_EMSCI)[1]
+      input_age <- unique(input$select_age_test_10m_EMSCI)[1]
+      input_ais <- unique(input$select_ais_test_10m_EMSCI)[1]
+      input_nli <- unique(input$select_nli_test_10m_EMSCI)[1]
+      input_indscore <- unique(input$input_score_test_10m_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$test_10m != 'NA', ]
+      #data_modified <- data_modified[data_modified$test_10m != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_test_10m_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_funct, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_funct, list_time)
     }
     else if (input$checkbox_test_10m_EMSCI == 0){
       if (length(input$checkGroup_test_10m_EMSCI) > 2){
@@ -6985,7 +9942,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_funct, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_funct, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7006,8 +9963,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_TUG_EMSCI == 0){
+      input_sex <- unique(input$select_sex_TUG_EMSCI)[1]
+      input_age <- unique(input$select_age_TUG_EMSCI)[1]
+      input_ais <- unique(input$select_ais_TUG_EMSCI)[1]
+      input_nli <- unique(input$select_nli_TUG_EMSCI)[1]
+      input_indscore <- unique(input$input_score_TUG_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$TUG != 'NA', ]
+      #data_modified <- data_modified[data_modified$TUG != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_TUG_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_funct, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_funct, list_time)
     }
     else if (input$checkbox_TUG_EMSCI == 0){
       if (length(input$checkGroup_TUG_EMSCI) > 2){
@@ -7059,7 +10065,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_funct, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_funct, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7080,8 +10086,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_SCIM2_EMSCI == 0){
+      input_sex <- unique(input$select_sex_SCIM2_EMSCI)[1]
+      input_age <- unique(input$select_age_SCIM2_EMSCI)[1]
+      input_ais <- unique(input$select_ais_SCIM2_EMSCI)[1]
+      input_nli <- unique(input$select_nli_SCIM2_EMSCI)[1]
+      input_indscore <- unique(input$input_score_SCIM2_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$SCIM2 != 'NA', ]
+      #data_modified <- data_modified[data_modified$SCIM2 != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_SCIM2_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_funct, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_funct, list_time)
     }
     else if (input$checkbox_SCIM2_EMSCI == 0){
       if (length(input$checkGroup_SCIM2_EMSCI) > 2){
@@ -7133,7 +10188,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_funct, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_funct, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7154,8 +10209,57 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE))
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])]
     
+    if (input$subset_SCIM3_EMSCI == 0){
+      input_sex <- unique(input$select_sex_SCIM3_EMSCI)[1]
+      input_age <- unique(input$select_age_SCIM3_EMSCI)[1]
+      input_ais <- unique(input$select_ais_SCIM3_EMSCI)[1]
+      input_nli <- unique(input$select_nli_SCIM3_EMSCI)[1]
+      input_indscore <- unique(input$input_score_SCIM3_EMSCI)[1]
+      
+      data_modified <- data_emsci
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI_level %in% 'lumbar', ]
+        } else {
+          data_modified <- data_modified[data_modified$NLI %in% input_nli, ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        if (input_age == '0-19'){
+          data_modified <- data_modified[data_modified$age_category==0, ]
+        } else if (input_age == '20-39'){
+          data_modified <- data_modified[data_modified$age_category==1, ]
+        } else if (input_age == '40-59'){
+          data_modified <- data_modified[data_modified$age_category==2, ]
+        } else if (input_age == '60-79'){
+          data_modified <- data_modified[data_modified$age_category==3, ]
+        } else if (input_age == '80+'){
+          data_modified <- data_modified[data_modified$age_category==4, ]
+        }
+      }
+      #data_modified <- data_modified[data_modified$SCIM3 != 'NA', ]
+      #data_modified <- data_modified[data_modified$SCIM3 != 'NT', ]
+      data_emsci_copy <- data_modified
+    } else {
+      data_emsci_copy <- data_emsci
+    }
+    
     if (input$checkbox_SCIM3_EMSCI == 1){
-      plot <- plot_base_emsci(data_emsci, score = input$EMSCI_funct, list_time)
+      plot <- plot_base_emsci(data_emsci_copy, score = input$EMSCI_funct, list_time)
     }
     else if (input$checkbox_SCIM3_EMSCI == 0){
       if (length(input$checkGroup_SCIM3_EMSCI) > 2){
@@ -7207,7 +10311,7 @@ server <- function(input, output) {
         }
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_emsci(data_emsci, score = input$EMSCI_funct, 
+        plot <- plot_filters_emsci(data_emsci_copy, score = input$EMSCI_funct, 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7229,8 +10333,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_UEMS_Sygen== 0){
+      input_sex <- unique(input$select_sex_UEMS_Sygen)[1]
+      input_age <- unique(input$select_age_UEMS_Sygen)[1]
+      input_ais <- unique(input$select_ais_UEMS_Sygen)[1]
+      input_nli <- unique(input$select_nli_UEMS_Sygen)[1]
+      #input_indscore <- unique(input$input_score_UEMS_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+                          
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+                          
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_UEMS_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_UEMS_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_UEMS_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7259,7 +10398,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7282,8 +10421,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_LEMS_Sygen== 0){
+      input_sex <- unique(input$select_sex_LEMS_Sygen)[1]
+      input_age <- unique(input$select_age_LEMS_Sygen)[1]
+      input_ais <- unique(input$select_ais_LEMS_Sygen)[1]
+      input_nli <- unique(input$select_nli_LEMS_Sygen)[1]
+      #input_indscore <- unique(input$input_score_LEMS_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_LEMS_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_LEMS_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_LEMS_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7312,7 +10486,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7333,8 +10507,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_TEMS_Sygen== 0){
+      input_sex <- unique(input$select_sex_TEMS_Sygen)[1]
+      input_age <- unique(input$select_age_TEMS_Sygen)[1]
+      input_ais <- unique(input$select_ais_TEMS_Sygen)[1]
+      input_nli <- unique(input$select_nli_TEMS_Sygen)[1]
+      #input_indscore <- unique(input$input_score_TEMS_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_TEMS_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_TEMS_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_TEMS_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7363,7 +10572,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7384,8 +10593,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_RMS_Sygen== 0){
+      input_sex <- unique(input$select_sex_RMS_Sygen)[1]
+      input_age <- unique(input$select_age_RMS_Sygen)[1]
+      input_ais <- unique(input$select_ais_RMS_Sygen)[1]
+      input_nli <- unique(input$select_nli_RMS_Sygen)[1]
+      #input_indscore <- unique(input$input_score_RMS_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_RMS_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_RMS_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_RMS_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7414,7 +10658,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7435,8 +10679,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_LMS_Sygen== 0){
+      input_sex <- unique(input$select_sex_LMS_Sygen)[1]
+      input_age <- unique(input$select_age_LMS_Sygen)[1]
+      input_ais <- unique(input$select_ais_LMS_Sygen)[1]
+      input_nli <- unique(input$select_nli_LMS_Sygen)[1]
+      #input_indscore <- unique(input$input_score_LMS_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_LMS_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_LMS_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_LMS_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7465,7 +10744,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7486,8 +10765,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_TMS_Sygen== 0){
+      input_sex <- unique(input$select_sex_TMS_Sygen)[1]
+      input_age <- unique(input$select_age_TMS_Sygen)[1]
+      input_ais <- unique(input$select_ais_TMS_Sygen)[1]
+      input_nli <- unique(input$select_nli_TMS_Sygen)[1]
+      #input_indscore <- unique(input$input_score_TMS_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_TMS_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_TMS_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_TMS_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7516,7 +10830,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7537,8 +10851,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_RPP_Sygen== 0){
+      input_sex <- unique(input$select_sex_RPP_Sygen)[1]
+      input_age <- unique(input$select_age_RPP_Sygen)[1]
+      input_ais <- unique(input$select_ais_RPP_Sygen)[1]
+      input_nli <- unique(input$select_nli_RPP_Sygen)[1]
+      #input_indscore <- unique(input$input_score_RPP_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_RPP_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_RPP_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_RPP_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7567,7 +10916,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7588,8 +10937,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_LPP_Sygen== 0){
+      input_sex <- unique(input$select_sex_LPP_Sygen)[1]
+      input_age <- unique(input$select_age_LPP_Sygen)[1]
+      input_ais <- unique(input$select_ais_LPP_Sygen)[1]
+      input_nli <- unique(input$select_nli_LPP_Sygen)[1]
+      #input_indscore <- unique(input$input_score_LPP_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_LPP_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_LPP_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_LPP_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7618,7 +11002,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7639,8 +11023,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_TPP_Sygen== 0){
+      input_sex <- unique(input$select_sex_TPP_Sygen)[1]
+      input_age <- unique(input$select_age_TPP_Sygen)[1]
+      input_ais <- unique(input$select_ais_TPP_Sygen)[1]
+      input_nli <- unique(input$select_nli_TPP_Sygen)[1]
+      #input_indscore <- unique(input$input_score_TPP_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_TPP_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_TPP_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_TPP_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7669,7 +11088,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7690,8 +11109,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_RLT_Sygen== 0){
+      input_sex <- unique(input$select_sex_RLT_Sygen)[1]
+      input_age <- unique(input$select_age_RLT_Sygen)[1]
+      input_ais <- unique(input$select_ais_RLT_Sygen)[1]
+      input_nli <- unique(input$select_nli_RLT_Sygen)[1]
+      #input_indscore <- unique(input$input_score_RLT_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_RLT_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_RLT_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_RLT_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7720,7 +11174,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7741,8 +11195,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_LLT_Sygen== 0){
+      input_sex <- unique(input$select_sex_LLT_Sygen)[1]
+      input_age <- unique(input$select_age_LLT_Sygen)[1]
+      input_ais <- unique(input$select_ais_LLT_Sygen)[1]
+      input_nli <- unique(input$select_nli_LLT_Sygen)[1]
+      #input_indscore <- unique(input$input_score_LLT_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_LLT_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_LLT_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_LLT_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7771,7 +11260,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7792,8 +11281,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_TLT_Sygen== 0){
+      input_sex <- unique(input$select_sex_TLT_Sygen)[1]
+      input_age <- unique(input$select_age_TLT_Sygen)[1]
+      input_ais <- unique(input$select_ais_TLT_Sygen)[1]
+      input_nli <- unique(input$select_nli_TLT_Sygen)[1]
+      #input_indscore <- unique(input$input_score_TLT_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_TLT_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_TLT_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_TLT_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7822,7 +11346,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_neuro, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7843,8 +11367,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_Benzel_Sygen== 0){
+      input_sex <- unique(input$select_sex_Benzel_Sygen)[1]
+      input_age <- unique(input$select_age_Benzel_Sygen)[1]
+      input_ais <- unique(input$select_ais_Benzel_Sygen)[1]
+      input_nli <- unique(input$select_nli_Benzel_Sygen)[1]
+      #input_indscore <- unique(input$input_score_Benzel_Sygen)[1]
+      
+      data_modified <- data_sygen
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_sygen_copy <- data_modified
+      
+    } else {
+      data_sygen_copy <- data_sygen
+    }
+    
     if (input$checkbox_Benzel_Sygen == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_sygen, score = input$Sygen_funct, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_sygen_copy, score = input$Sygen_funct, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_Benzel_Sygen == 0){ # if user chooses filters
       if (length(input$checkGroup_Benzel_Sygen) > 2){ # if user chooses more than 2 filters
@@ -7873,7 +11432,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_sygen, score = input$Sygen_funct, # call function for Sygen plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_sygen_copy, score = input$Sygen_funct, # call function for Sygen plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7897,8 +11456,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_RMS_SCI_rehab == 0){
+      input_sex <- unique(input$select_sex_RMS_SCI_rehab)[1]
+      input_age <- unique(input$select_age_RMS_SCI_rehab)[1]
+      input_ais <- unique(input$select_ais_RMS_SCI_rehab)[1]
+      input_nli <- unique(input$select_nli_RMS_SCI_rehab)[1]
+
+      data_modified <- data_SCI_rehab
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_SCI_rehab_copy <- data_modified
+    } else {
+      data_SCI_rehab_copy <- data_SCI_rehab
+    }
+    
     if (input$checkbox_RMS_SCI_rehab == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_SCI_rehab, score = input$SCI_rehab_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_RMS_SCI_rehab == 0){ # if user chooses filters
       if (length(input$checkGroup_RMS_SCI_rehab) > 2){ # if user chooses more than 2 filters
@@ -7925,7 +11519,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_SCI_rehab, score = input$SCI_rehab_neuro, # call function for SCI_rehab plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_neuro, # call function for SCI_rehab plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7946,8 +11540,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_LMS_SCI_rehab == 0){
+      input_sex <- unique(input$select_sex_LMS_SCI_rehab)[1]
+      input_age <- unique(input$select_age_LMS_SCI_rehab)[1]
+      input_ais <- unique(input$select_ais_LMS_SCI_rehab)[1]
+      input_nli <- unique(input$select_nli_LMS_SCI_rehab)[1]
+      
+      data_modified <- data_SCI_rehab
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_SCI_rehab_copy <- data_modified
+    } else {
+      data_SCI_rehab_copy <- data_SCI_rehab
+    }
+    
     if (input$checkbox_LMS_SCI_rehab == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_SCI_rehab, score = input$SCI_rehab_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_LMS_SCI_rehab == 0){ # if user chooses filters
       if (length(input$checkGroup_LMS_SCI_rehab) > 2){ # if user chooses more than 2 filters
@@ -7974,7 +11603,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_SCI_rehab, score = input$SCI_rehab_neuro, # call function for SCI_rehab plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_neuro, # call function for SCI_rehab plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -7996,8 +11625,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_TMS_SCI_rehab == 0){
+      input_sex <- unique(input$select_sex_TMS_SCI_rehab)[1]
+      input_age <- unique(input$select_age_TMS_SCI_rehab)[1]
+      input_ais <- unique(input$select_ais_TMS_SCI_rehab)[1]
+      input_nli <- unique(input$select_nli_TMS_SCI_rehab)[1]
+      
+      data_modified <- data_SCI_rehab
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_SCI_rehab_copy <- data_modified
+    } else {
+      data_SCI_rehab_copy <- data_SCI_rehab
+    }
+    
     if (input$checkbox_TMS_SCI_rehab == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_SCI_rehab, score = input$SCI_rehab_neuro, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_neuro, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_TMS_SCI_rehab == 0){ # if user chooses filters
       if (length(input$checkGroup_TMS_SCI_rehab) > 2){ # if user chooses more than 2 filters
@@ -8024,7 +11688,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_SCI_rehab, score = input$SCI_rehab_neuro, # call function for SCI_rehab plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_neuro, # call function for SCI_rehab plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -8046,8 +11710,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_PHYIND_SCI_rehab == 0){
+      input_sex <- unique(input$select_sex_PHYIND_SCI_rehab)[1]
+      input_age <- unique(input$select_age_PHYIND_SCI_rehab)[1]
+      input_ais <- unique(input$select_ais_PHYIND_SCI_rehab)[1]
+      input_nli <- unique(input$select_nli_PHYIND_SCI_rehab)[1]
+      
+      data_modified <- data_SCI_rehab
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_SCI_rehab_copy <- data_modified
+    } else {
+      data_SCI_rehab_copy <- data_SCI_rehab
+    }
+    
     if (input$checkbox_PHYIND_SCI_rehab == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_PHYIND_SCI_rehab == 0){ # if user chooses filters
       if (length(input$checkGroup_PHYIND_SCI_rehab) > 2){ # if user chooses more than 2 filters
@@ -8074,7 +11773,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -8096,8 +11795,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_MOBILITY_SCI_rehab == 0){
+      input_sex <- unique(input$select_sex_MOBILITY_SCI_rehab)[1]
+      input_age <- unique(input$select_age_MOBILITY_SCI_rehab)[1]
+      input_ais <- unique(input$select_ais_MOBILITY_SCI_rehab)[1]
+      input_nli <- unique(input$select_nli_MOBILITY_SCI_rehab)[1]
+      
+      data_modified <- data_SCI_rehab
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_SCI_rehab_copy <- data_modified
+    } else {
+      data_SCI_rehab_copy <- data_SCI_rehab
+    }
+    
     if (input$checkbox_MOBILITY_SCI_rehab == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_MOBILITY_SCI_rehab == 0){ # if user chooses filters
       if (length(input$checkGroup_MOBILITY_SCI_rehab) > 2){ # if user chooses more than 2 filters
@@ -8124,7 +11858,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -8145,8 +11879,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_OCCUPATION_SCI_rehab == 0){
+      input_sex <- unique(input$select_sex_OCCUPATION_SCI_rehab)[1]
+      input_age <- unique(input$select_age_OCCUPATION_SCI_rehab)[1]
+      input_ais <- unique(input$select_ais_OCCUPATION_SCI_rehab)[1]
+      input_nli <- unique(input$select_nli_OCCUPATION_SCI_rehab)[1]
+      
+      data_modified <- data_SCI_rehab
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_SCI_rehab_copy <- data_modified
+    } else {
+      data_SCI_rehab_copy <- data_SCI_rehab
+    }
+    
     if (input$checkbox_OCCUPATION_SCI_rehab == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_OCCUPATION_SCI_rehab == 0){ # if user chooses filters
       if (length(input$checkGroup_OCCUPATION_SCI_rehab) > 2){ # if user chooses more than 2 filters
@@ -8173,7 +11942,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -8195,8 +11964,43 @@ server <- function(input, output) {
     indices_time = which(list_all_stages %in% unlist(times, use.names=FALSE)) # find which indices of all stages match the user input
     list_time = list_all_stages[c(indices_time[1]:indices_time[2])] # select all stages in between the 2 stages selected by user in slider
     
+    if (input$subset_SOCIAL_SCI_rehab == 0){
+      input_sex <- unique(input$select_sex_SOCIAL_SCI_rehab)[1]
+      input_age <- unique(input$select_age_SOCIAL_SCI_rehab)[1]
+      input_ais <- unique(input$select_ais_SOCIAL_SCI_rehab)[1]
+      input_nli <- unique(input$select_nli_SOCIAL_SCI_rehab)[1]
+      
+      data_modified <- data_SCI_rehab
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_SCI_rehab_copy <- data_modified
+    } else {
+      data_SCI_rehab_copy <- data_SCI_rehab
+    }
+    
     if (input$checkbox_SOCIAL_SCI_rehab == 1){ # if user chooses to display all data
-      plot <- plot_base_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, list_time) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_SOCIAL_SCI_rehab == 0){ # if user chooses filters
       if (length(input$checkGroup_SOCIAL_SCI_rehab) > 2){ # if user chooses more than 2 filters
@@ -8223,7 +12027,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_Sygen(data_SCI_rehab, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
+        plot <- plot_filters_Sygen(data_SCI_rehab_copy, score = input$SCI_rehab_funct, # call function for SCI_rehab plots in helper_functions.R 
                                    list_time, 
                                    list_names[filters[1]], 
                                    list_names[filters[2]],
@@ -8241,10 +12045,47 @@ server <- function(input, output) {
   
   
   output$plot_RMS_All <- renderPlot({ # create output function for plot of interest
+    
+    if (input$subset_RMS_All == 0){
+      input_sex <- unique(input$select_sex_RMS_All)[1]
+      input_age <- unique(input$select_age_RMS_All)[1]
+      input_ais <- unique(input$select_ais_RMS_All)[1]
+      input_nli <- unique(input$select_nli_RMS_All)[1]
+      
+      data_modified <- data_All
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        } else if (input_nli == 'Sacral'){
+          data_modified <- data_modified[data_modified$NLI %in% 'sacral', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_All_copy <- data_modified
+    } else {
+      data_All_copy <- data_All
+    }
 
     if (input$checkbox_RMS_All == 1){ # if user chooses to display all data
       #plot <- plot_error()
-      plot <- plot_base_All(data_All, score = input$All_neuro) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_All(data_All_copy, score = input$All_neuro) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_RMS_All == 0){ # if user chooses filters
       if (length(input$checkGroup_RMS_All) > 2){ # if user chooses more than 2 filters
@@ -8269,7 +12110,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_All(data_All, score = input$All_neuro, # call function for All plots in helper_functions.R
+        plot <- plot_filters_All(data_All_copy, score = input$All_neuro, # call function for All plots in helper_functions.R
                                  list_names[filters[1]],
                                  list_names[filters[2]],
                                  cat1,
@@ -8286,9 +12127,46 @@ server <- function(input, output) {
   
   output$plot_LMS_All <- renderPlot({ # create output function for plot of interest
     
+    if (input$subset_LMS_All == 0){
+      input_sex <- unique(input$select_sex_LMS_All)[1]
+      input_age <- unique(input$select_age_LMS_All)[1]
+      input_ais <- unique(input$select_ais_LMS_All)[1]
+      input_nli <- unique(input$select_nli_LMS_All)[1]
+      
+      data_modified <- data_All
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        } else if (input_nli == 'Sacral'){
+          data_modified <- data_modified[data_modified$NLI %in% 'sacral', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_All_copy <- data_modified
+    } else {
+      data_All_copy <- data_All
+    }
+    
     if (input$checkbox_LMS_All == 1){ # if user chooses to display all data
       #plot <- plot_error()
-      plot <- plot_base_All(data_All, score = input$All_neuro) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_All(data_All_copy, score = input$All_neuro) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_LMS_All == 0){ # if user chooses filters
       if (length(input$checkGroup_LMS_All) > 2){ # if user chooses more than 2 filters
@@ -8313,7 +12191,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_All(data_All, score = input$All_neuro, # call function for All plots in helper_functions.R
+        plot <- plot_filters_All(data_All_copy, score = input$All_neuro, # call function for All plots in helper_functions.R
                                  list_names[filters[1]],
                                  list_names[filters[2]],
                                  cat1,
@@ -8330,9 +12208,46 @@ server <- function(input, output) {
   
   output$plot_TMS_All <- renderPlot({ # create output function for plot of interest
     
+    if (input$subset_TMS_All == 0){
+      input_sex <- unique(input$select_sex_TMS_All)[1]
+      input_age <- unique(input$select_age_TMS_All)[1]
+      input_ais <- unique(input$select_ais_TMS_All)[1]
+      input_nli <- unique(input$select_nli_TMS_All)[1]
+      
+      data_modified <- data_All
+      
+      if (!(input_sex == 'Unknown')){
+        data_modified <- data_modified[data_modified$Sex %in% input_sex, ]
+      }
+      
+      if (!(input_ais == 'Unknown')){
+        data_modified <- data_modified[data_modified$AIS %in% input_ais, ]
+      }
+      
+      if (!(input_nli == 'Unknown')){
+        if (input_nli == 'Cervical'){
+          data_modified <- data_modified[data_modified$NLI %in% 'cervical', ]
+        } else if (input_nli == 'Thoracic'){
+          data_modified <- data_modified[data_modified$NLI %in% 'thoracic', ]
+        } else if (input_nli == 'Lumbar'){
+          data_modified <- data_modified[data_modified$NLI %in% 'lumbar', ]
+        } else if (input_nli == 'Sacral'){
+          data_modified <- data_modified[data_modified$NLI %in% 'sacral', ]
+        }
+      }
+      
+      if (!(input_age == 'Unknown')){
+        data_modified <- data_modified[data_modified$Age %in% input_age, ]
+      }
+      
+      data_All_copy <- data_modified
+    } else {
+      data_All_copy <- data_All
+    }
+    
     if (input$checkbox_TMS_All == 1){ # if user chooses to display all data
       #plot <- plot_error()
-      plot <- plot_base_All(data_All, score = input$All_neuro) # display basic plot with all patients, and user selected stages
+      plot <- plot_base_All(data_All_copy, score = input$All_neuro) # display basic plot with all patients, and user selected stages
     }
     else if (input$checkbox_TMS_All == 0){ # if user chooses filters
       if (length(input$checkGroup_TMS_All) > 2){ # if user chooses more than 2 filters
@@ -8357,7 +12272,7 @@ server <- function(input, output) {
         cat2 = as.vector(filter2_all[c(which(filter2_all %in% unlist(inputs[filters[2]], use.names=FALSE)))])
         cat1 = as.vector(filter1_all[c(which(filter1_all %in% unlist(inputs[filters[1]], use.names=FALSE)))])
         
-        plot <- plot_filters_All(data_All, score = input$All_neuro, # call function for All plots in helper_functions.R
+        plot <- plot_filters_All(data_All_copy, score = input$All_neuro, # call function for All plots in helper_functions.R
                                  list_names[filters[1]],
                                  list_names[filters[2]],
                                  cat1,
