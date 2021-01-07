@@ -1,0 +1,41 @@
+baseline.ais,ExamStage_weeks,plegia,n,mean_TSS,sd_TSS
+A,2,Paraplegia,586,98.131,23.768
+A,2,Tetraplegia ,402,40.424,24.13
+A,4,Paraplegia,934,98.857,24.198
+A,4,Tetraplegia ,662,47.625,29.089
+A,12,Paraplegia,877,101.341,25.6
+A,12,Tetraplegia ,602,54.702,32.437
+A,26,Paraplegia,614,99.728,25.71
+A,26,Tetraplegia ,468,55.009,31.823
+A,52,Paraplegia,576,101.183,26.384
+A,52,Tetraplegia ,368,57.787,32.721
+B ,2,Paraplegia,159,130.424,23.373
+B ,2,Tetraplegia ,151,86.52,33.184
+B ,4,Paraplegia,242,133.824,23.1
+B ,4,Tetraplegia ,258,94.945,33.647
+B ,12,Paraplegia,209,137.182,21.742
+B ,12,Tetraplegia ,243,105.475,35.776
+B ,26,Paraplegia,145,135.896,23.186
+B ,26,Tetraplegia ,184,108.874,35.015
+B ,52,Paraplegia,147,137.76,20.451
+B ,52,Tetraplegia ,119,108.169,33.559
+C,2,Paraplegia,186,138.77,18.958
+C,2,Tetraplegia ,304,103.03,34.136
+C,4,Paraplegia,306,142.136,18.744
+C,4,Tetraplegia ,464,113.906,33.462
+C,12,Paraplegia,279,145.87,18.585
+C,12,Tetraplegia ,397,124.36,32.019
+C,26,Paraplegia,183,146.731,17.532
+C,26,Tetraplegia ,271,123.524,30.613
+C,52,Paraplegia,171,147.503,16.887
+C,52,Tetraplegia ,236,122.384,30.543
+D,2,Paraplegia,234,148.76,15.877
+D,2,Tetraplegia ,558,129.942,31.988
+D,4,Paraplegia,377,150.564,15.013
+D,4,Tetraplegia ,807,136.455,29.944
+D,12,Paraplegia,279,151.447,14.931
+D,12,Tetraplegia ,562,140.031,28.43
+D,26,Paraplegia,191,152.753,13.445
+D,26,Tetraplegia ,377,138.947,29.017
+D,52,Paraplegia,199,153.99,13.228
+D,52,Tetraplegia ,380,136.483,29.334
