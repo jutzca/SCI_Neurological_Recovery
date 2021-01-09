@@ -93,7 +93,7 @@ emsci.rescaled <-rescale.many(emsci.trauma.sex.baseline.ais, c(5,6,8,11))
 
 ais.score<-unique(emsci.rescaled$baseline.ais)
 rescaled.nli <- unique(emsci.rescaled$plegia)
-#rescaled.sex <- unique(emsci.rescaled$Sex)
+rescaled.sex <- unique(emsci.rescaled$Sex)
 emsci.rescaled$Patientennummer <- as.factor(emsci.rescaled$Patientennummer)
 
 # create data frame to store results
@@ -104,8 +104,18 @@ for (h in rescaled.sex) {
       print(paste("MODEL",h,j, i,  sep = " "))
       df1 = subset(emsci.rescaled, (baseline.ais == i & plegia == j & Sex == h))
       #if (nrow(df1) == 0) next
-      mixed.lmer <- lmer(X10m~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
-      print(summary(mixed.lmer))
+      #mixed.lmer <- nlme(LEMS~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
+      #print(summary(mixed.lmer))
+      
+      mixed.lmer <- nlme::nlme(LEMS ~ SSasympOff(ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled, Asym, R0, lrc),
+                 data = df1,
+                 fixed = Asym + R0 + lrc ~ 1,
+                 random = Asym ~ 1,
+                 na.action=na.exclude, 
+                 na.fail(emsci.rescaled),
+                 naPattern = ~ !is.na(LEMS),
+                 method="ML",verbose=TRUE)
+      
       
       # ## capture summary stats
       intercept.estimate <- coef(summary(mixed.lmer))[1]
