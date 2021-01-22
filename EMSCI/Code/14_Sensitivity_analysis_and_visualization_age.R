@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Script name: 13_Sensitivity_analysis_age
+## Script name: 14_Sensitivity_analysis_age
 ##
 ## Purpose of script: To visualize the longitudinal changes in functional and neurological outcomes after spinal cord injury and to compare the recovery trajectories between 2001 and 2019 for different age groups.
 ##

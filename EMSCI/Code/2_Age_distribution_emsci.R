@@ -89,7 +89,6 @@ emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Ag
 #Subset data to only patients with valid entry at stage 'very acute' or 'acute I' and remove duplicate patient numbers
 emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute') , Patientennummer, .keep_all = TRUE)
 
-
 #### ---------------------------Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
@@ -105,6 +104,24 @@ emsci.trauma.sex.va.a1 <-rescale.many(emsci.trauma.sex.va.a1, c(8))
 
 
 #### ---------------------------Age distribution over time: Data analysis ---------------------------
+
+#------Calculate the mean and sd of age per year
+age.year <- emsci.trauma.sex.va.a1 %>%
+  dplyr::select(YEARDOI, AgeAtDOI, Sex)%>%
+  dplyr::group_by(YEARDOI, Sex) %>%
+  dplyr::mutate(mean.age =sprintf("%0.2f", mean(AgeAtDOI)))%>%
+  dplyr::mutate(sd.age =sprintf("%0.2f", sd(AgeAtDOI)))%>%
+  dplyr::select(YEARDOI, Sex, mean.age,sd.age)%>%
+  dplyr::distinct()%>%
+  dplyr::arrange(Sex, YEARDOI)%>%
+  as.data.frame()
+
+write.csv(age.year,"/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/mean_age_per_year.csv" )
+
+
+
+
+
 
 #------Calculate the change in age distribution over time - OVERALL
 age_model.overall <-lm(AgeAtDOI~YEARDOI.rescaled, data=emsci.trauma.sex.va.a1)
