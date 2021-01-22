@@ -1,14 +1,14 @@
 ## ---------------------------
 ##
-## Script name: 12_Longitudinal_recovery_trajectory_visualization
+## Script name: 13_Sensitivity_analysis_age
 ##
-## Purpose of script: To visualize the longitudinal changes in functional and neurological outcomes after spinal cord injury and to compare the recovery trajectories between 2001 and 2019.
+## Purpose of script: To visualize the longitudinal changes in functional and neurological outcomes after spinal cord injury and to compare the recovery trajectories between 2001 and 2019 for different age groups.
 ##
 ## Author: Dr. Catherine Jutzeler
 ##
-## Date Created: 2020-11-19
+## Date Created: 2021-01-22
 ##
-## Copyright (c) Catherine Jutzeler, 2020
+## Copyright (c) Catherine Jutzeler, 2021
 ## Email: catherine.jutzeler@bsse.ethz.ch
 ##
 ## ---------------------------
@@ -63,191 +63,45 @@ emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 # Merge
 emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
 
-
-# Change levels of AIS grade and plegia
-levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
+# Change names of levels of AIS grade and plegia
+levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B", "AIS-C", "AIS-D", " ", "")
 levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia ")
 
+# Create age groups
+labs <- c(paste(seq(0, 89, by = 30), seq(0 + 30 - 1, 90 - 1, by = 30),
+              sep = "-"))
+labs
 
-#-----Total Motor Score----
-longitudinal.trajectory.tms <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('Total Motor Score')+xlab("Time since injury [weeks]")+
+# Add new varianle AgeGroup to the main dataframe
+emsci.trauma.sex.ais.baseline$AgeGroup <- cut(emsci.trauma.sex.ais.baseline$AgeAtDOI, breaks = c(seq(0, 89, by = 30), Inf), labels = labs, right = FALSE)
+
+# Create subset according to AIS grades
+emsci.trauma.sex.ais.baseline.ais.a= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-A') )
+emsci.trauma.sex.ais.baseline.ais.b= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-B') )
+emsci.trauma.sex.ais.baseline.ais.c= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-C') )
+emsci.trauma.sex.ais.baseline.ais.d= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-D') )
+
+#-----Total Motor Score - AIS-A Patients ----
+longitudinal.trajectory.tms.age.ais.a <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.a,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.a$plegia~emsci.trauma.sex.ais.baseline.ais.a$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Motor Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-A')+
   #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
   theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
         axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
         axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
         strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
         plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
         panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.tms
+longitudinal.trajectory.tms.age.ais.a
 
 
 ## Save plot
 ggsave(
-  "longitudinal.trajectory.tms.pdf",
-  plot = longitudinal.trajectory.tms,
-  device = 'pdf',
-  path = outdir_figures,
-  scale = 1,
-  width = 7,
-  height = 4,
-  units = "in",
-  dpi = 300
-)
-
-dev.off()
-
-
-#-----Total Sensory Score----
-longitudinal.trajectory.tss <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('Total Sensory Score')+xlab("Time since injury [weeks]")+
-  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
-  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
-        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
-        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
-        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
-        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
-        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
-        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.tss
-
-
-## Save plot
-ggsave(
-  "longitudinal.trajectory.tss.pdf",
-  plot = longitudinal.trajectory.tss,
-  device = 'pdf',
-  path = outdir_figures,
-  scale = 1,
-  width = 7,
-  height = 4,
-  units = "in",
-  dpi = 300
-)
-
-dev.off()
-
-#-----Lower Extremity Motor Score----
-longitudinal.trajectory.lems <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(LEMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('Lower Extremity Motor Score')+xlab("Time since injury [weeks]")+
-  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
-  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
-          axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
-          axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
-          strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
-          plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
-          panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
-        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.lems
-
-
-## Save plot
-ggsave(
-  "longitudinal.trajectory.lems.pdf",
-  plot = longitudinal.trajectory.lems,
-  device = 'pdf',
-  path = outdir_figures,
-  scale = 1,
-  width = 7,
-  height = 4,
-  units = "in",
-  dpi = 300
-)
-
-dev.off()
-
-#-----Upper Extremity Motor Score----
-emsci.trauma.sex.ais.baseline.para <- subset(emsci.trauma.sex.ais.baseline, plegia=="Tetraplegia")
-longitudinal.trajectory.uems <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline.para,aes(x=ExamStage_weeks, y=as.numeric(as.character(UEMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline.para$plegia~emsci.trauma.sex.ais.baseline.para$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('Upper Extremity Motor Score')+xlab("Time since injury [weeks]")+
-  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
-  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
-        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
-        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
-        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
-        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
-        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
-        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.uems
-
-
-## Save plot
-ggsave(
-  "longitudinal.trajectory.uems.pdf",
-  plot = longitudinal.trajectory.uems,
-  device = 'pdf',
-  path = outdir_figures,
-  scale = 1,
-  width = 7,
-  height = 2.7,
-  units = "in",
-  dpi = 300
-)
-
-dev.off()
-
-
-#-----SCIM2 and 3 Total score----
-longitudinal.trajectory.scim <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(SCIM23_TotalScore)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('Total SCIM Score')+xlab("Time since injury [weeks]")+
-  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
-  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
-        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
-        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
-        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
-        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
-        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
-        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.scim
-
-
-## Save plot
-ggsave(
-  "longitudinal.trajectory.scim.pdf",
-  plot = longitudinal.trajectory.scim,
-  device = 'pdf',
-  path = outdir_figures,
-  scale = 1,
-  width = 7,
-  height = 4,
-  units = "in",
-  dpi = 300
-)
-
-dev.off()
-
-
-#-----WISCI----
-longitudinal.trajectory.wisci <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(WISCI)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('Walking Index for Spinal Cord Injury')+xlab("Time since injury [weeks]")+
-  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
-  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
-        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
-        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
-        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
-        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
-        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
-        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.wisci
-
-
-## Save plot
-ggsave(
-  "longitudinal.trajectory.wisci.pdf",
-  plot = longitudinal.trajectory.wisci,
+  "longitudinal.trajectory.tms.age.ais.a.pdf",
+  plot = longitudinal.trajectory.tms.age.ais.a,
   device = 'pdf',
   path = outdir_figures,
   scale = 1,
@@ -261,67 +115,27 @@ dev.off()
 
 
 
-#----- 6min Walking Test----
-
-# Subset data to AIS C and D patients
-emsci.trauma.sex.ais.baseline.walking <-subset(emsci.trauma.sex.ais.baseline, baseline.ais=='AIS-C' | baseline.ais=="AIS-D")
-
-#Create plot
-longitudinal.trajectory.x6min <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline.walking,aes(x=ExamStage_weeks, y=as.numeric(as.character(X6min)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline.walking$plegia~emsci.trauma.sex.ais.baseline.walking$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('6min Walking Test [m]')+xlab("Time since injury [weeks]")+
+#-----Total Motor Score - AIS-B Patients ----
+longitudinal.trajectory.tms.age.ais.b <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.b,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.b$plegia~emsci.trauma.sex.ais.baseline.ais.b$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Motor Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-B')+
   #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
   theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
         axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
         axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
         strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
         plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
         panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.x6min
+longitudinal.trajectory.tms.age.ais.b
 
 
 ## Save plot
 ggsave(
-  "longitudinal.trajectory.x6min.pdf",
-  plot = longitudinal.trajectory.x6min,
-  device = 'pdf',
-  path = outdir_figures,
-  scale = 1,
-  width = 7,
-  height = 4,
-  units = "in",
-  dpi = 300
-)
-
-dev.off()
-
-#----- 10m Walking Test----
-
-# Subset data to AIS C and D patients
-emsci.trauma.sex.ais.baseline.walking <-subset(emsci.trauma.sex.ais.baseline, baseline.ais=='AIS-C' | baseline.ais=="AIS-D")
-
-#Create plot
-longitudinal.trajectory.X10m <-ggplot() +
-  stat_summary(data=emsci.trauma.sex.ais.baseline.walking,aes(x=ExamStage_weeks, y=as.numeric(as.character(X10m)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
-  facet_grid(emsci.trauma.sex.ais.baseline.walking$plegia~emsci.trauma.sex.ais.baseline.walking$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
-  theme_bw()+ ylab('10m Walking Test [s]')+xlab("Time since injury [weeks]")+
-  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
-  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
-        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
-        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
-        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
-        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
-        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
-        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
-longitudinal.trajectory.X10m
-
-
-## Save plot
-ggsave(
-  "longitudinal.trajectory.X10m.pdf",
-  plot = longitudinal.trajectory.X10m,
+  "longitudinal.trajectory.tms.age.ais.b.pdf",
+  plot = longitudinal.trajectory.tms.age.ais.b,
   device = 'pdf',
   path = outdir_figures,
   scale = 1,
@@ -335,6 +149,207 @@ dev.off()
 
 
 
+#-----Total Motor Score - AIS-C Patients ----
+longitudinal.trajectory.tms.age.ais.c <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.c,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.c$plegia~emsci.trauma.sex.ais.baseline.ais.c$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Motor Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-C')+
+  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
+        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
+        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
+        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
+        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
+        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
+        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
+longitudinal.trajectory.tms.age.ais.c
+
+
+## Save plot
+ggsave(
+  "longitudinal.trajectory.tms.age.ais.c.pdf",
+  plot = longitudinal.trajectory.tms.age.ais.c,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 7,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+#-----Total Motor Score - AIS-D Patients ----
+longitudinal.trajectory.tms.age.ais.d <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.d,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.d$plegia~emsci.trauma.sex.ais.baseline.ais.d$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Motor Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-D')+
+  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
+        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
+        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
+        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
+        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
+        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
+        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
+longitudinal.trajectory.tms.age.ais.d
+
+
+## Save plot
+ggsave(
+  "longitudinal.trajectory.tms.age.ais.d.pdf",
+  plot = longitudinal.trajectory.tms.age.ais.d,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 7,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+#-----Total Sensory Score - AIS-A Patients ----
+longitudinal.trajectory.tss.age.ais.a <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.a,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.a$plegia~emsci.trauma.sex.ais.baseline.ais.a$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Sensory Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-A')+
+  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
+        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
+        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
+        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
+        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
+        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
+        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
+longitudinal.trajectory.tss.age.ais.a
+
+
+## Save plot
+ggsave(
+  "longitudinal.trajectory.tss.age.ais.a.pdf",
+  plot = longitudinal.trajectory.tss.age.ais.a,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 7,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+#-----Total Sensory Score - AIS-B Patients ----
+longitudinal.trajectory.tss.age.ais.b <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.b,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.b$plegia~emsci.trauma.sex.ais.baseline.ais.b$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Sensory Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-B')+
+  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
+        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
+        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
+        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
+        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
+        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
+        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
+longitudinal.trajectory.tss.age.ais.b
+
+
+## Save plot
+ggsave(
+  "longitudinal.trajectory.tss.age.ais.b.pdf",
+  plot = longitudinal.trajectory.tss.age.ais.b,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 7,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+#-----Total Sensory Score - AIS-C Patients ----
+longitudinal.trajectory.tss.age.ais.c <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.c,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.c$plegia~emsci.trauma.sex.ais.baseline.ais.c$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Sensory Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-C')+
+  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
+        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
+        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
+        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
+        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
+        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
+        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
+longitudinal.trajectory.tss.age.ais.c
+
+
+## Save plot
+ggsave(
+  "longitudinal.trajectory.tss.age.ais.c.pdf",
+  plot = longitudinal.trajectory.tss.age.ais.c,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 7,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+#-----Total Sensory Score - AIS-D Patients ----
+longitudinal.trajectory.tss.age.ais.d <-ggplot() +
+  stat_summary(data=emsci.trauma.sex.ais.baseline.ais.d,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
+  facet_grid(emsci.trauma.sex.ais.baseline.ais.d$plegia~emsci.trauma.sex.ais.baseline.ais.d$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
+  theme_bw()+ ylab('Total Sensory Score')+xlab("Time since injury [weeks]")+ggtitle('AIS-D')+
+  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
+        plot.title = element_text(size=12, hjust=0.5, face="bold", family='Times'),
+        axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
+        axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
+        strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
+        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
+        panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
+        legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
+longitudinal.trajectory.tss.age.ais.d
+
+
+## Save plot
+ggsave(
+  "longitudinal.trajectory.tss.age.ais.d.pdf",
+  plot = longitudinal.trajectory.tss.age.ais.d,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 7,
+  height = 4,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
 
 
 
