@@ -26,7 +26,7 @@ This repository is maintained by:
 
 ## Funding
 
-This study was funded by a research grant from the [Swiss National Science Foundation](http://www.snf.ch/en/Pages/default.aspx) (Ambizione Grant #PZ00P3_186101, Jutzeler).
+This study was funded by a research grant from the [Swiss National Science Foundation](http://www.snf.ch/en/Pages/default.aspx) (Ambizione Grant #PZ00P3_186101, Jutzeler), [Wings for Life Research Foundation](https://www.wingsforlife.com/en/research/blood-biomarkers-to-predict-outcome-after-spinal-cord-injury-a-precision-medicine-approach-3486/) (#2017_044), the [International Foundation for Research in Paraplegia](https://www.irp.ch/en/foundation/) (IRP, Curt), and the [Craig H. Neilsen Foundation](https://chnfoundation.org/). This study has further received funding from the [European Union's Horizon 2020 research and innovation programme](https://ec.europa.eu/programmes/horizon2020/en) under the grant agreement No 681094, and is supported by the [Swiss State Secretariat for Education, Research and Innovation](https://www.sbfi.admin.ch/sbfi/en/home.html) (SERI) under contract number 15.0255. 
 
 
 
