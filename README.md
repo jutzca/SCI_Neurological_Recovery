@@ -11,3 +11,5 @@
 **Contact**: [Lucie Bourguignon](mailto:lucie.Bourguignon@bsse.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans) or [Dr. Catherine Jutzeler](mailto:catherine.jutzeler@bsse.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
 
 **Link to paper**: [Preprint](https://www.sciencedirect.com/science/article/pii/S1477893920303215?via%3Dihub)
+
+**Link to web application**: [Neurosurveillance Platform](https://jutzelec.shinyapps.io/neurosurveillance/)
