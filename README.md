@@ -9,3 +9,5 @@ Our study addresses two aims: Firstly, we will investigate the changes in profil
 **Funding**: This study was funded by a research grant from the [Swiss National Science Foundation](http://www.snf.ch/en/Pages/default.aspx) (Ambizione Grant #PZ00P3_186101, Jutzeler).
 
 **Contact**: [Lucie Bourguignon](mailto:lucie.Bourguignon@bsse.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans) or [Dr. Catherine Jutzeler](mailto:catherine.jutzeler@bsse.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
+
+**Link to paper**: [Preprint](https://www.sciencedirect.com/science/article/pii/S1477893920303215?via%3Dihub)
