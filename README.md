@@ -12,7 +12,7 @@
 
 ## External resources
 
-* [EMSCI]((https://www.emsci.org/)
+* [EMSCI](https://www.emsci.org/)
 
 ## Contact
 Questions or comments related to the manuscript:
