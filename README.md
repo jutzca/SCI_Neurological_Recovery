@@ -1,4 +1,4 @@
-# Surveillance Study of Spinal Cord Injury: A 20-Year Study across Europe
+# Benchmarking the spontaneous functional and neurological recovery following spinal cord injury: A European population-based surveillance study from 2001 to 2019
 
 **Authors of this study**: Lucie Bourguignon, Bobo Tong, Rene Koller, Orpheus Mach, Fred Geisler, Norbert Weidner, Doris Maier, [EMSCI members](https://www.emsci.org/index.php/members), Karsten Borgwardt, John L.K. Kramer, Armin Curt, Catherine R. Jutzeler
 
