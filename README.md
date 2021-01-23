@@ -1,6 +1,6 @@
 # Benchmarking the spontaneous functional and neurological recovery following spinal cord injury: A European population-based surveillance study from 2001 to 2019
 
-### Abstract
+## Abstract
 
 **Authors**: Lucie Bourguignon, Bobo Tong, Rene Koller, Orpheus Mach, Fred Geisler, Norbert Weidner, Doris Maier, [EMSCI members](https://www.emsci.org/index.php/members), Karsten Borgwardt, John L.K. Kramer, Armin Curt, Catherine R. Jutzeler
 
@@ -12,8 +12,7 @@
 
 ## External resources
 
-* [UK Biobank](https://www.ukbiobank.ac.uk/)
-* [PLINK](https://www.cog-genomics.org/plink/2.0/)
+* [EMSCI]((https://www.emsci.org/)
 
 ## Contact
 Questions or comments related to the manuscript:
