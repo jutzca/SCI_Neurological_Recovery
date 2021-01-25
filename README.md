@@ -1,4 +1,4 @@
-# Benchmarking the spontaneous functional and neurological recovery following spinal cord injury: A European population-based surveillance study from 2001 to 2019
+# Benchmarking the spontaneous functional and neurological recovery following spinal cord injury: A European Population-Based Surveillance Study from 2001 to 2019
 
 ## Abstract
 
