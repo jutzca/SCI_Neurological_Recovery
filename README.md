@@ -10,7 +10,7 @@
 
 * **Link to web application:** [Neurosurveillance Platform](https://jutzelec.shinyapps.io/neurosurveillance/)
 
-* **Data Source:**[EMSCI](https://www.emsci.org/)
+* **Data Source:** [EMSCI](https://www.emsci.org/)
 
 ## Contact
 Questions or comments related to the manuscript:
