@@ -6,11 +6,11 @@
 
 ## External resources
 
-* **Link to paper**: [Preprint](https://www.sciencedirect.com/science/article/pii/S1477893920303215?via%3Dihub)
+* **Link to paper:** [Preprint](https://www.sciencedirect.com/science/article/pii/S1477893920303215?via%3Dihub)
 
-* **Link to web application**: [Neurosurveillance Platform](https://jutzelec.shinyapps.io/neurosurveillance/)
+* **Link to web application:** [Neurosurveillance Platform](https://jutzelec.shinyapps.io/neurosurveillance/)
 
-* [EMSCI](https://www.emsci.org/)
+* **Data Source:**[EMSCI](https://www.emsci.org/)
 
 ## Contact
 Questions or comments related to the manuscript:
