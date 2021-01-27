@@ -85,12 +85,12 @@ emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Ag
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar')&   ## Neurological level
                              (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
-#------ Data Analysis: Change in ratio between female and male patients over 20 years and display in table ----
+#---------- Data Analysis: Change in ratio between female and male patients over 20 years and display in table ----
 
 # Subset data to only patients with valid entry at stage 'very acute' or 'acute I' and remove duplicate patient numbers
 emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute'), Patientennummer, .keep_all = TRUE)
 
-#### Rescale Data
+#---------- Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -104,17 +104,17 @@ rescale.many <- function(dat, column.nos) {
 emsci.trauma.sex.va.a1 <-rescale.many(emsci.trauma.sex.va.a1, c(8)) 
 
 
-#Count percentage of female and male subjects by Year of Injury - OVERALL-----
+#---------- Count percentage of female and male subjects by Year of Injury - OVERALL --------#
 sex_ratios.overall = emsci.trauma.sex.va.a1 %>%
   dplyr::count(Sex, YEARDOI.rescaled) %>%
   dplyr::group_by(YEARDOI.rescaled)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
 
-#Reshape data from long to wide in order to calculate ratios
+# Reshape data from long to wide in order to calculate ratios
 sex_ratios.overall <- dcast(sex_ratios.overall, YEARDOI.rescaled ~ Sex, value.var="n")
 sex_ratios.overall
 
-#Calculate ratios
+# Calculate ratios
 sex_ratios.overall$Ratios <-
   case_when(
     is.na(sex_ratios.overall$m) & is.na(sex_ratios.overall$f) ~ 1,
@@ -123,22 +123,22 @@ sex_ratios.overall$Ratios <-
     TRUE ~ sex_ratios.overall$m / sex_ratios.overall$f
   )
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.emsci.overall.lm <- lm(Ratios~YEARDOI.rescaled, data=sex_ratios.overall)
 summary(sex_ratios.emsci.overall.lm)
 
 
-#Count percentage of female and male subjects by Year of Injury - AIS Grades-----
+#---------- Count percentage of female and male subjects by Year of Injury - AIS Grades --------#
 sex_ratios = emsci.trauma.sex.va.a1 %>%
   dplyr::count(Sex, YEARDOI.rescaled, AIS) %>%
   dplyr::group_by(YEARDOI.rescaled)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
 
-#Reshape data from long to wide in order to calculate ratios
+# Reshape data from long to wide in order to calculate ratios
 sex_ratios <- dcast(sex_ratios, YEARDOI.rescaled ~ Sex+AIS, value.var="n")
 sex_ratios
 
-#Calculate ratios
+# Calculate ratios
 sex_ratios$Ratios_A <-
   case_when(
     is.na(sex_ratios$m_A) & is.na(sex_ratios$f_A) ~ 1,
@@ -172,34 +172,34 @@ sex_ratios$Ratios_D <-
   )
 
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.emsci.ais.a.lm <- lm(Ratios_A~YEARDOI.rescaled, data=sex_ratios)
 summary(sex_ratios.emsci.ais.a.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.emsci.ais.b.lm <- lm(Ratios_B~YEARDOI.rescaled, data=sex_ratios)
 summary(sex_ratios.emsci.ais.b.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.emsci.ais.c.lm <- lm(Ratios_C~YEARDOI.rescaled, data=sex_ratios)
 summary(sex_ratios.emsci.ais.c.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.emsci.ais.d.lm <- lm(Ratios_D~YEARDOI.rescaled, data=sex_ratios)
 summary(sex_ratios.emsci.ais.d.lm)
 
 
-#Count percentage of female and male subjects by Year of Injury - Plegia-----
+#---------- Count percentage of female and male subjects by Year of Injury - Plegia --------#
 sex_ratios.plegia = emsci.trauma.sex.va.a1 %>%
   dplyr::count(Sex, YEARDOI.rescaled, plegia) %>%
   dplyr::group_by(YEARDOI.rescaled)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
 
-#Reshape data from long to wide in order to calculate ratios
+# Reshape data from long to wide in order to calculate ratios
 sex_ratios.plegia <- dcast(sex_ratios.plegia, YEARDOI.rescaled ~ Sex+plegia, value.var="n")
 sex_ratios.plegia
 
-#Calculate ratios
+# Calculate ratios
 sex_ratios.plegia$Ratios_para <-
   case_when(
     is.na(sex_ratios.plegia$m_para) & is.na(sex_ratios.plegia$f_para) ~ 1,
@@ -216,22 +216,22 @@ sex_ratios.plegia$Ratios_tetra <-
     TRUE ~ sex_ratios.plegia$m_tetra / sex_ratios.plegia$f_tetra
   )
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.emsci.para.lm <- lm(Ratios_para~YEARDOI.rescaled, data=sex_ratios.plegia)
 summary(sex_ratios.emsci.para.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.emsci.tetra.lm <- lm(Ratios_tetra~YEARDOI.rescaled, data=sex_ratios.plegia)
 summary(sex_ratios.emsci.tetra.lm)
 
-
-#------Calculate the number of patients per year by sex - Overall----
+#---------- Calculate the number of patients per year by sex - Overall --------#
 emsci.sex.long <- emsci.trauma.sex.va.a1 %>%
   dplyr::count(Sex, YEARDOI)%>%
   dplyr::group_by(YEARDOI)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by sex - OVERALL ----
-##Plot data for the male patients
+
+#---------- Plot population pyramide for year and color by sex - OVERALL --------#
+# Plot data for the male patients
 gg.male <- ggplot(data = subset(emsci.sex.long,Sex=='m'), 
                   mapping = aes(
                     x = as.factor(YEARDOI), 
@@ -263,7 +263,7 @@ gg.male <- ggplot(data = subset(emsci.sex.long,Sex=='m'),
   ggtitle("Male") + 
   coord_flip()    
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female <-  ggplot(data = subset(emsci.sex.long,Sex=='f'), 
                      mapping = aes(
                        x = as.factor(YEARDOI), 
@@ -295,7 +295,7 @@ gg.female <-  ggplot(data = subset(emsci.sex.long,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-## Plutting the graphs together together
+# Putting the graphs together together
 sex.overall <- grid.arrange(gg.female,
              gg.male,
              widths=c(0.4,0.4),
@@ -304,7 +304,7 @@ sex.overall <- grid.arrange(gg.female,
 
 
 ggsave(
-  "sex.overall.emsci.pdf",
+  "sex.ratio.overall.emsci.pdf",
   plot = sex.overall,
   device = 'pdf',
   path = outdir_figures,
@@ -317,14 +317,14 @@ ggsave(
 
 dev.off()
 
-#------Calculate the number of patients per year by sex - PARAPLEGIA----
+#---------- Calculate the number of patients per year by sex - PARAPLEGIA --------#
 emsci.sex.long.para <- subset(emsci.trauma.sex.va.a1, plegia=='para') %>%
   dplyr::count(Sex, YEARDOI)%>%
   dplyr::group_by(YEARDOI)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
 
-#------Plot population pyramide for year and color by Sex - PARAPLEGIA ----
-##Plot data for the male patients
+#---------- Plot population pyramide for year and color by Sex - PARAPLEGIA --------#
+# Plot data for the male patients
 gg.male.para <- ggplot(data = subset(emsci.sex.long.para,Sex=='m'), 
                   mapping = aes(
                     x = as.factor(YEARDOI), 
@@ -356,7 +356,7 @@ gg.male.para <- ggplot(data = subset(emsci.sex.long.para,Sex=='m'),
   ggtitle("Male") + 
   coord_flip()    
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.para <-  ggplot(data = subset(emsci.sex.long.para,Sex=='f'), 
                      mapping = aes(
                        x = as.factor(YEARDOI), 
@@ -388,7 +388,7 @@ gg.female.para <-  ggplot(data = subset(emsci.sex.long.para,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-## Plutting the graphs together together
+# Putting the graphs together together
 sex.paraplegia <- grid.arrange(gg.female.para,
              gg.male.para,
              widths=c(0.4,0.4),
@@ -397,7 +397,7 @@ sex.paraplegia <- grid.arrange(gg.female.para,
 
 
 ggsave(
-  "sex.para.emsci.pdf",
+  "sex.ratio.para.emsci.pdf",
   plot = sex.paraplegia,
   device = 'pdf',
   path = outdir_figures,
@@ -410,13 +410,14 @@ ggsave(
 
 dev.off()
 
-#------Calculate the number of patients per year by sex - TETRAPLEGIA----
+#---------- Calculate the number of patients per year by sex - TETRAPLEGIA --------#
 emsci.sex.long.tetra <- subset(emsci.trauma.sex.va.a1, plegia=='tetra') %>%
   dplyr::count(Sex, YEARDOI)%>%
   dplyr::group_by(YEARDOI)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by Sex - TETRAPLEGIA ----
-##Plot data for the male patients
+
+#---------- Plot population pyramide for year and color by Sex - TETRAPLEGIA --------#
+# Plot data for the male patients
 gg.male.tetra <- ggplot(data = subset(emsci.sex.long.tetra,Sex=='m'), 
                        mapping = aes(
                          x = as.factor(YEARDOI), 
@@ -448,7 +449,7 @@ gg.male.tetra <- ggplot(data = subset(emsci.sex.long.tetra,Sex=='m'),
   ggtitle("Male") + 
   coord_flip()    
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.tetra <-  ggplot(data = subset(emsci.sex.long.tetra,Sex=='f'), 
                           mapping = aes(
                             x = as.factor(YEARDOI), 
@@ -480,7 +481,7 @@ gg.female.tetra <-  ggplot(data = subset(emsci.sex.long.tetra,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-## Plutting the graphs together together
+# Putting the graphs together together
 sex.tetrapelgia <- grid.arrange(gg.female.tetra,
              gg.male.tetra,
              widths=c(0.4,0.4),
@@ -488,7 +489,7 @@ sex.tetrapelgia <- grid.arrange(gg.female.tetra,
 )
 
 ggsave(
-  "sex.tetra.emsci.pdf",
+  "sex.ratio.tetra.emsci.pdf",
   plot = sex.tetrapelgia,
   device = 'pdf',
   path = outdir_figures,
@@ -501,13 +502,14 @@ ggsave(
 
 dev.off()
 
-#------Calculate the number of patients per year by sex - AIS A----
+#---------- Calculate the number of patients per year by sex - AIS A --------#
 emsci.sex.long.ais_a <- subset(emsci.trauma.sex.va.a1, AIS=='A') %>%
   dplyr::count(Sex, YEARDOI)%>%
   dplyr::group_by(YEARDOI)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by Sex - AIS A ----
-##Plot data for the male patients
+
+#---------- Plot population pyramide for year and color by Sex - AIS A --------#
+#Plot data for the male patients
 gg.male.ais_a <- ggplot(data = subset(emsci.sex.long.ais_a,Sex=='m'), 
                        mapping = aes(
                          x = as.factor(YEARDOI), 
@@ -540,7 +542,7 @@ gg.male.ais_a <- ggplot(data = subset(emsci.sex.long.ais_a,Sex=='m'),
   coord_flip()    
 gg.male.ais_a
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.ais_a <-  ggplot(data = subset(emsci.sex.long.ais_a,Sex=='f'), 
                           mapping = aes(
                             x = as.factor(YEARDOI), 
@@ -572,7 +574,7 @@ gg.female.ais_a <-  ggplot(data = subset(emsci.sex.long.ais_a,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-## Plutting the graphs together together
+# Putting the graphs together together
 sex.ais_a <- grid.arrange(gg.female.ais_a,
                                gg.male.ais_a,
                                widths=c(0.4,0.4),
@@ -582,7 +584,7 @@ sex.ais_a <- grid.arrange(gg.female.ais_a,
 sex.ais_a
 
 ggsave(
-  "sex.ais_a.emsci.pdf",
+  "sex.ratio.ais_a.emsci.pdf",
   plot = sex.ais_a,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -596,13 +598,14 @@ ggsave(
 dev.off()
 
 
-#------Calculate the number of patients per year by sex - AIS B----
+#---------- Calculate the number of patients per year by sex - AIS B --------#
 emsci.sex.long.ais_b <- subset(emsci.trauma.sex.va.a1, AIS=='B') %>%
   dplyr::count(Sex, YEARDOI)%>%
   dplyr::group_by(YEARDOI)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by Sex - AIS B ----
-##Plot data for the male patients
+
+#---------- Plot population pyramide for year and color by Sex - AIS B --------#
+# Plot data for the male patients
 gg.male.ais_b <- ggplot(data = subset(emsci.sex.long.ais_b,Sex=='m'), 
                         mapping = aes(
                           x = as.factor(YEARDOI), 
@@ -635,7 +638,7 @@ gg.male.ais_b <- ggplot(data = subset(emsci.sex.long.ais_b,Sex=='m'),
   coord_flip()    
 gg.male.ais_b
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.ais_b <-  ggplot(data = subset(emsci.sex.long.ais_b,Sex=='f'), 
                            mapping = aes(
                              x = as.factor(YEARDOI), 
@@ -667,7 +670,7 @@ gg.female.ais_b <-  ggplot(data = subset(emsci.sex.long.ais_b,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-## Plutting the graphs together together
+# Plutting the graphs together together
 sex.ais_b <- grid.arrange(gg.female.ais_b,
                           gg.male.ais_b,
                           widths=c(0.4,0.4),
@@ -677,7 +680,7 @@ sex.ais_b <- grid.arrange(gg.female.ais_b,
 sex.ais_b
 
 ggsave(
-  "sex.ais_b.emsci.pdf",
+  "sex.ratio.ais_b.emsci.pdf",
   plot = sex.ais_b,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -690,12 +693,13 @@ ggsave(
 
 dev.off()
 
-#------Calculate the number of patients per year by sex - AIS C----
+#---------- Calculate the number of patients per year by sex - AIS C --------#
 emsci.sex.long.ais_c <- subset(emsci.trauma.sex.va.a1, AIS=='C') %>%
   dplyr::count(Sex, YEARDOI)%>%
   dplyr::group_by(YEARDOI)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by Sex - AIS C ----
+
+#---------- Plot population pyramide for year and color by Sex - AIS C --------#
 ##Plot data for the male patients
 gg.male.ais_c <- ggplot(data = subset(emsci.sex.long.ais_c,Sex=='m'), 
                         mapping = aes(
@@ -729,7 +733,7 @@ gg.male.ais_c <- ggplot(data = subset(emsci.sex.long.ais_c,Sex=='m'),
   coord_flip()    
 gg.male.ais_c
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.ais_c <-  ggplot(data = subset(emsci.sex.long.ais_c,Sex=='f'), 
                            mapping = aes(
                              x = as.factor(YEARDOI), 
@@ -761,7 +765,7 @@ gg.female.ais_c <-  ggplot(data = subset(emsci.sex.long.ais_c,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-## Plutting the graphs together together
+# Putting the graphs together together
 sex.ais_c <- grid.arrange(gg.female.ais_c,
                           gg.male.ais_c,
                           widths=c(0.4,0.4),
@@ -771,7 +775,7 @@ sex.ais_c <- grid.arrange(gg.female.ais_c,
 sex.ais_b
 
 ggsave(
-  "sex.ais_c.emsci.pdf",
+  "sex.ratio.ais_c.emsci.pdf",
   plot = sex.ais_c,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
@@ -783,13 +787,14 @@ ggsave(
 )
 
 dev.off()
-#------Calculate the number of patients per year by sex - AIS D----
+
+#---------- Calculate the number of patients per year by sex - AIS D --------#
 emsci.sex.long.ais_d <- subset(emsci.trauma.sex.va.a1, AIS=='D') %>%
   dplyr::count(Sex, YEARDOI)%>%
   dplyr::group_by(YEARDOI)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by Sex - AIS D ----
-##Plot data for the male patients
+#---------- Plot population pyramide for year and color by Sex - AIS D --------#
+# Plot data for the male patients
 gg.male.ais_d <- ggplot(data = subset(emsci.sex.long.ais_d,Sex=='m'), 
                         mapping = aes(
                           x = as.factor(YEARDOI), 
@@ -822,7 +827,7 @@ gg.male.ais_d <- ggplot(data = subset(emsci.sex.long.ais_d,Sex=='m'),
   coord_flip()    
 gg.male.ais_d
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.ais_d <-  ggplot(data = subset(emsci.sex.long.ais_d,Sex=='f'), 
                            mapping = aes(
                              x = as.factor(YEARDOI), 
@@ -854,7 +859,7 @@ gg.female.ais_d <-  ggplot(data = subset(emsci.sex.long.ais_d,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-## Plutting the graphs together together
+# Putting the graphs together together
 sex.ais_d <- grid.arrange(gg.female.ais_d,
                           gg.male.ais_d,
                           widths=c(0.4,0.4),
@@ -864,7 +869,7 @@ sex.ais_d <- grid.arrange(gg.female.ais_d,
 sex.ais_d
 
 ggsave(
-  "sex.ais_d.emsci.pdf",
+  "sex.ratio.ais_d.emsci.pdf",
   plot = sex.ais_d,
   device = 'pdf',
   path = outdir_figures,    ###Set path to save figures
