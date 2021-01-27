@@ -6,7 +6,7 @@
 
 ## External resources
 
-* **Link to paper:** [Preprint](https://www.sciencedirect.com/science/article/pii/S1477893920303215?via%3Dihub)
+* **Link to paper:** [Bourguignon et al, 2021 (Preprint)](https://www.google.com/)
 
 * **Link to web application:** [Neurosurveillance Platform](https://jutzelec.shinyapps.io/neurosurveillance/)
 
