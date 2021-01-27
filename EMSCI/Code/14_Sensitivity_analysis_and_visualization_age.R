@@ -47,10 +47,10 @@ outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Ta
 ##   
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) & (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D"))
@@ -81,7 +81,7 @@ emsci.trauma.sex.ais.baseline.ais.b= subset(emsci.trauma.sex.ais.baseline, (base
 emsci.trauma.sex.ais.baseline.ais.c= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-C') )
 emsci.trauma.sex.ais.baseline.ais.d= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-D') )
 
-#-----Total Motor Score - AIS-A Patients ----
+#---------- Total Motor Score - AIS-A Patients --------#
 longitudinal.trajectory.tms.age.ais.a <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.a,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.a$plegia~emsci.trauma.sex.ais.baseline.ais.a$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -98,7 +98,7 @@ longitudinal.trajectory.tms.age.ais.a <-ggplot() +
 longitudinal.trajectory.tms.age.ais.a
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tms.age.ais.a.pdf",
   plot = longitudinal.trajectory.tms.age.ais.a,
@@ -113,9 +113,7 @@ ggsave(
 
 dev.off()
 
-
-
-#-----Total Motor Score - AIS-B Patients ----
+#---------- Total Motor Score - AIS-B Patients --------#
 longitudinal.trajectory.tms.age.ais.b <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.b,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.b$plegia~emsci.trauma.sex.ais.baseline.ais.b$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -132,7 +130,7 @@ longitudinal.trajectory.tms.age.ais.b <-ggplot() +
 longitudinal.trajectory.tms.age.ais.b
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tms.age.ais.b.pdf",
   plot = longitudinal.trajectory.tms.age.ais.b,
@@ -147,9 +145,7 @@ ggsave(
 
 dev.off()
 
-
-
-#-----Total Motor Score - AIS-C Patients ----
+#---------- Total Motor Score - AIS-C Patients --------#
 longitudinal.trajectory.tms.age.ais.c <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.c,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.c$plegia~emsci.trauma.sex.ais.baseline.ais.c$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -166,7 +162,7 @@ longitudinal.trajectory.tms.age.ais.c <-ggplot() +
 longitudinal.trajectory.tms.age.ais.c
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tms.age.ais.c.pdf",
   plot = longitudinal.trajectory.tms.age.ais.c,
@@ -181,9 +177,7 @@ ggsave(
 
 dev.off()
 
-
-
-#-----Total Motor Score - AIS-D Patients ----
+#---------- Total Motor Score - AIS-D Patients --------#
 longitudinal.trajectory.tms.age.ais.d <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.d,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.d$plegia~emsci.trauma.sex.ais.baseline.ais.d$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -200,7 +194,7 @@ longitudinal.trajectory.tms.age.ais.d <-ggplot() +
 longitudinal.trajectory.tms.age.ais.d
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tms.age.ais.d.pdf",
   plot = longitudinal.trajectory.tms.age.ais.d,
@@ -215,9 +209,7 @@ ggsave(
 
 dev.off()
 
-
-
-#-----Total Sensory Score - AIS-A Patients ----
+#---------- Total Sensory Score - AIS-A Patients --------#
 longitudinal.trajectory.tss.age.ais.a <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.a,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.a$plegia~emsci.trauma.sex.ais.baseline.ais.a$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -234,7 +226,7 @@ longitudinal.trajectory.tss.age.ais.a <-ggplot() +
 longitudinal.trajectory.tss.age.ais.a
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tss.age.ais.a.pdf",
   plot = longitudinal.trajectory.tss.age.ais.a,
@@ -249,9 +241,7 @@ ggsave(
 
 dev.off()
 
-
-
-#-----Total Sensory Score - AIS-B Patients ----
+#---------- Total Sensory Score - AIS-B Patients --------#
 longitudinal.trajectory.tss.age.ais.b <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.b,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.b$plegia~emsci.trauma.sex.ais.baseline.ais.b$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -268,7 +258,7 @@ longitudinal.trajectory.tss.age.ais.b <-ggplot() +
 longitudinal.trajectory.tss.age.ais.b
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tss.age.ais.b.pdf",
   plot = longitudinal.trajectory.tss.age.ais.b,
@@ -283,9 +273,7 @@ ggsave(
 
 dev.off()
 
-
-
-#-----Total Sensory Score - AIS-C Patients ----
+#---------- Total Sensory Score - AIS-C Patients --------#
 longitudinal.trajectory.tss.age.ais.c <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.c,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.c$plegia~emsci.trauma.sex.ais.baseline.ais.c$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -302,7 +290,7 @@ longitudinal.trajectory.tss.age.ais.c <-ggplot() +
 longitudinal.trajectory.tss.age.ais.c
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tss.age.ais.c.pdf",
   plot = longitudinal.trajectory.tss.age.ais.c,
@@ -317,9 +305,7 @@ ggsave(
 
 dev.off()
 
-
-
-#-----Total Sensory Score - AIS-D Patients ----
+#---------- Total Sensory Score - AIS-D Patients --------#
 longitudinal.trajectory.tss.age.ais.d <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.ais.d,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.ais.d$plegia~emsci.trauma.sex.ais.baseline.ais.d$AgeGroup, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -336,7 +322,7 @@ longitudinal.trajectory.tss.age.ais.d <-ggplot() +
 longitudinal.trajectory.tss.age.ais.d
 
 
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tss.age.ais.d.pdf",
   plot = longitudinal.trajectory.tss.age.ais.d,
@@ -350,8 +336,6 @@ ggsave(
 )
 
 dev.off()
-
-
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
