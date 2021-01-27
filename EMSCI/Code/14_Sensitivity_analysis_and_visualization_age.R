@@ -2,7 +2,7 @@
 ##
 ## Script name: 14_Sensitivity_analysis_age
 ##
-## Purpose of script: To visualize the longitudinal changes in functional and neurological outcomes after spinal cord injury and to compare the recovery trajectories between 2001 and 2019 for different age groups.
+## Purpose of script: To assess if there is a bias related to age.
 ##
 ## Author: Dr. Catherine Jutzeler
 ##
@@ -17,34 +17,34 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## Clear working space
-
-rm(list=ls())
-
-## set working directory
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
-
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
 library(ggplot2)
 library(grid)
 library(ggthemes)
-
+##   
 ## ----------------------------
 ## Install packages needed:  (uncomment as required)
-
+##   
 #if(!require(ggplot2)){install.packages("ggplot2")}
 #if(!require(grid)){install.packages("grid")}
-
+#if(!require(grid)){install.packages("ggthemes")}
+##   
 #### ---------------------------
-#Set output directorypaths
+# R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##   
+#### ---------------------------
+## set working directory
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##   
+# Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
-
+##   
+##   
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 #load original dataset
