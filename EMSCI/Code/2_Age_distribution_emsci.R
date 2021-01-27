@@ -17,12 +17,6 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## set working directory for Mac and PC
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
-
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
 library(lme4)
@@ -39,10 +33,11 @@ library(Hmisc)
 library(scales)  #To recale the data
 library(splitstackshape) #To format the model output to a table
 library(lmerTest) #To run the mixed effect models
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
+##
 #if(!require(lme4)){install.packages("lme4")}
 #if(!require(sjPlot)){install.packages("sjPlot")}
 #if(!require(jtools)){install.packages("jtools")}
@@ -57,14 +52,22 @@ library(lmerTest) #To run the mixed effect models
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
+##
 #### ---------------------------
-#Clear working space
-
-rm(list = ls())
-
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 
@@ -72,24 +75,24 @@ outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Ta
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 
+#### ---------- Data wrangling ---------
 
-#-------------------------Data wrangling------------------------------------------------------------------------------------------------------
-
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Age at DOI and Sex
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar')&   ## Neurological level
                              (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
-#-------------------------Data analysis and visualization------------------------------------------------------------------------------------------------------
-#Subset data to only patients with valid entry at stage 'very acute' or 'acute I' and remove duplicate patient numbers
+
+#### ---------- Data analysis and visualization ---------
+# Subset data to only patients with valid entry at stage 'very acute' or 'acute I' and remove duplicate patient numbers
 emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute') , Patientennummer, .keep_all = TRUE)
 
-#### ---------------------------Rescale Data
+#---------- Rescale Data ---------#
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -105,7 +108,7 @@ emsci.trauma.sex.va.a1 <-rescale.many(emsci.trauma.sex.va.a1, c(8))
 
 #### ---------------------------Age distribution over time: Data analysis ---------------------------
 
-#------Calculate the mean and sd of age per year
+#---------- Calculate the mean and sd of age per year --------#
 age.year <- emsci.trauma.sex.va.a1 %>%
   dplyr::select(YEARDOI, AgeAtDOI, Sex)%>%
   dplyr::group_by(YEARDOI, Sex) %>%
@@ -118,25 +121,19 @@ age.year <- emsci.trauma.sex.va.a1 %>%
 
 write.csv(age.year,"/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/mean_age_per_year.csv" )
 
-
-
-
-
-
-#------Calculate the change in age distribution over time - OVERALL
+#---------- Calculate the change in age distribution over time - OVERALL --------#
 age_model.overall <-lm(AgeAtDOI~YEARDOI.rescaled, data=emsci.trauma.sex.va.a1)
 summary(age_model.overall)
 
-
-#------Calculate the change in age distribution over time - OVERALL FEMALE
+#---------- Calculate the change in age distribution over time - OVERALL FEMALE --------#
 age_model.overall.female <-lm(AgeAtDOI~YEARDOI.rescaled, data=subset(emsci.trauma.sex.va.a1, Sex=='f'))
 summary(age_model.overall.female)
 
-#------Calculate the change in age distribution over time - OVERALL MALE
+#---------- Calculate the change in age distribution over time - OVERALL MALE --------#
 age_model.overall.male <-lm(AgeAtDOI~YEARDOI.rescaled, data=subset(emsci.trauma.sex.va.a1, Sex=='m'))
 summary(age_model.overall.female)
 
-
+# Create table with model summary
 tab_model(
   age_model.overall, age_model.overall.female, age_model.overall.male,
   pred.labels = c("Intercept", "Year of injury"),
@@ -147,13 +144,12 @@ tab_model(
   digits.p = 3
 )
 
-
-#------Calculate the change sex distribution over time for subgroups ----
+#---------- Calculate the change sex distribution over time for subgroups --------#
 ais.score<- unique(emsci.trauma.sex.va.a1$AIS)
 rescaled.nli <- unique(emsci.trauma.sex.va.a1$plegia)
 rescaled.sex <- unique(emsci.trauma.sex.va.a1$Sex)
 
-# create data frame to store results
+# Create data frame to store results
 results.emsci.age <- data.frame()
 for (h in rescaled.sex) {
   for (j in rescaled.nli){
@@ -163,7 +159,7 @@ for (h in rescaled.sex) {
       mixed.lmer <- lm(AgeAtDOI ~ YEARDOI.rescaled, data = df1, na.action = na.omit)
       print(summary(mixed.lmer))
       
-      # ## capture summary stats
+      # Capture summary stats
       intercept.estimate <- coef(summary(mixed.lmer))[1]
       YEARDOI.estimate <- coef(summary(mixed.lmer))[2]
       intercept.std <- coef(summary(mixed.lmer))[3]
@@ -173,17 +169,17 @@ for (h in rescaled.sex) {
       intercept.pval <- coef(summary(mixed.lmer))[7]
       YEARDOI.pval <- coef(summary(mixed.lmer))[8]
 
-      # get coefficents of mixed.lmer
+      # Get coefficents of mixed.lmer
       cfit <- coef(summary(mixed.lmer))
       
-      # # create temporary data frame
+      # Create temporary data frame
       df <- data.frame(Sex= h, plegia= j,AIS = i, intercept.estimate = cfit[1], YEARDOI.estimate = cfit[2], intercept.std =cfit[3],
                        YEARDOI.std= cfit[4], intercept.tval= cfit[5],YEARDOI.tval= cfit[6],
                        intercept.pval =cfit[7],
                        YEARDOI.pval =cfit[8],
                        stringsAsFactors = F)
       
-      #bind rows of temporary data frame to the results data frame
+      # Bind rows of temporary data frame to the results data frame
       results.emsci.age <- rbind(results.emsci.age, df)
       
     }
@@ -191,7 +187,7 @@ for (h in rescaled.sex) {
 }
 
 
-#------Create Table to export
+#------ Create table to export  --------#
 
 results.emsci.age.new <-merged.stack(results.emsci.age,                ## Add the id if it doesn't exist
                         var.stubs = c("estimate", "std", "tval", "pval"),   ## Specify the stubs
@@ -200,22 +196,22 @@ results.emsci.age.new <-merged.stack(results.emsci.age,                ## Add th
 
 results.emsci.age.new.df <- as.data.frame(results.emsci.age.new)
 
-#Rename variables
+# Rename variables
 names(results.emsci.age.new.df)[names(results.emsci.age.new.df) == '.time_1'] <- 'Variable'
 names(results.emsci.age.new.df)[names(results.emsci.age.new.df) == 'estimate'] <- 'Estimate'
 names(results.emsci.age.new.df)[names(results.emsci.age.new.df) == 'std'] <- 'Standard Error'
 names(results.emsci.age.new.df)[names(results.emsci.age.new.df) == 'tval'] <- 't-value'
 names(results.emsci.age.new.df)[names(results.emsci.age.new.df) == 'pval'] <- 'p-value'
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.emsci.age.new.df$order[(results.emsci.age.new.df$Variable == 'intercept.')] <- 1
 results.emsci.age.new.df$order[(results.emsci.age.new.df$Variable == 'YEARDOI.')] <- 2
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.emsci.age.new.df$Variable[(results.emsci.age.new.df$Variable == 'intercept.')] <- "Intercept"
 results.emsci.age.new.df$Variable[(results.emsci.age.new.df$Variable == 'YEARDOI.')] <- "YEARDOI"
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.emsci.age.new.df$model_temp[(results.emsci.age.new.df$Sex == 'f' & results.emsci.age.new.df$plegia == "para" & results.emsci.age.new.df$AIS == "A")] <- 'Female:Paraplegia:AIS A'
 results.emsci.age.new.df$model_temp[(results.emsci.age.new.df$Sex == 'f' & results.emsci.age.new.df$plegia == "para" & results.emsci.age.new.df$AIS == "B")] <- 'Female:Paraplegia:AIS B'
 results.emsci.age.new.df$model_temp[(results.emsci.age.new.df$Sex == 'f' & results.emsci.age.new.df$plegia == "para" & results.emsci.age.new.df$AIS == "C" )] <- 'Female:Paraplegia:AIS C'
@@ -237,18 +233,18 @@ results.emsci.age.new.df$model_temp[(results.emsci.age.new.df$Sex == 'm' & resul
 results.emsci.age.new.df$model_temp[(results.emsci.age.new.df$Sex == 'm' & results.emsci.age.new.df$plegia == "tetra" & results.emsci.age.new.df$AIS == "D" )] <- 'Male:Tetraplegia:AIS D'
 
 
-#Add adjusted p-value column
+# Add adjusted p-value column
 results.emsci.age.new.df$Adjusted.pval<- as.numeric(results.emsci.age.new.df$`p-value`)*16
 
-#Rename column
+# Rename column
 names(results.emsci.age.new.df)[names(results.emsci.age.new.df) == 'Adjusted.pval'] <- 'Adjusted p-value'
 
-#Make t-value, p-value, and Adjusted p-value numeric
+# Make t-value, p-value, and Adjusted p-value numeric
 results.emsci.age.new.df$`t-value`<-as.numeric(results.emsci.age.new.df$`t-value`)
 results.emsci.age.new.df$`p-value`<-as.numeric(results.emsci.age.new.df$`p-value`)
 results.emsci.age.new.df$`Adjusted p-value`<-as.numeric(results.emsci.age.new.df$`Adjusted p-value`)
 
-#Function to round to 3 digits
+# Function to round to 3 digits
 round_df <- function(x, digits) {
   # round all numeric variables
   # x: data frame 
@@ -260,8 +256,7 @@ round_df <- function(x, digits) {
 
 results.emsci.age.new.df.2 <- round_df(results.emsci.age.new.df, 3)
 
-
-#Sort data
+# Sort data
 results.emsci.age.new.df.3digits <- arrange(results.emsci.age.new.df.2,model_temp,order)
 
 #Create a new variable based on condition
@@ -289,20 +284,18 @@ results.emsci.age.new.df.3digits$Model[(results.emsci.age.new.df.3digits$Sex == 
 results.emsci.age.new.df.3digits[is.na(results.emsci.age.new.df.3digits)] <- ""
 results.emsci.age.new.df.3digits[results.emsci.age.new.df.3digits == "<NA>"] <- ""
 
-#Write csv file with only selected columns
+# Write csv file with only selected columns
 write.csv(results.emsci.age.new.df.3digits[,c(12,4:8,11)],"/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/Age_distribution_emsci.csv", row.names = F)
 
 
-
-#------Visualization: Change in age distribution over 20 years - OVERALL-----
-
-#Set theme
+#---------- Visualization: Change in age distribution over 20 years - OVERALL --------#
+# Set theme
 theme_set(theme_ridges())
 
+# Change labels of levels 
 levels(emsci.trauma.sex.va.a1$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_overall <- ggplot(
   emsci.trauma.sex.va.a1, 
   aes(y = as.factor(YEARDOI) , x = AgeAtDOI)
@@ -351,17 +344,17 @@ ggsave(
 dev.off()
 
 
-#------Visualization: Change in age distribution over 20 years - PARAPLEGIA-----
-
-#Set theme
+#---------- Visualization: Change in age distribution over 20 years - PARAPLEGIA --------#
+# Set theme
 theme_set(theme_ridges())
 
+# Subset data
 emsci.trauma.sex.va.a1.para <-subset(emsci.trauma.sex.va.a1, plegia =='para')
 
+# Change labels of levels 
 levels(emsci.trauma.sex.va.a1.para$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_para <- ggplot(
   emsci.trauma.sex.va.a1.para, 
   aes(y = as.factor(YEARDOI) , x = AgeAtDOI)
@@ -409,17 +402,17 @@ ggsave(
 
 dev.off()
 
-#------Visualization: Change in age distribution over 20 years - TETRAPLEGIA-----
-
-#Set theme
+#---------- Visualization: Change in age distribution over 20 years - TETRAPLEGIA --------#
+# Set theme
 theme_set(theme_ridges())
 
+# Subset data
 emsci.trauma.sex.va.a1.tetra <-subset(emsci.trauma.sex.va.a1, plegia =='tetra')
 
+# Change labels of levels 
 levels(emsci.trauma.sex.va.a1.tetra$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_tetra <- ggplot(
   emsci.trauma.sex.va.a1.tetra, 
   aes(y = as.factor(YEARDOI) , x = AgeAtDOI)
@@ -468,18 +461,17 @@ ggsave(
 dev.off()
 
 
-
-#------Visualization: Change in age distribution over 20 years - AIS A-----
-
-#Set theme
+#---------- Visualization: Change in age distribution over 20 years - AIS A --------#
+# Set theme
 theme_set(theme_ridges())
 
+#Subset data
 emsci.trauma.sex.va.a1.ais_a <-subset(emsci.trauma.sex.va.a1, AIS =='A')
 
+# Change labels of levels 
 levels(emsci.trauma.sex.va.a1.ais_a$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_ais_a <- ggplot(
   emsci.trauma.sex.va.a1.ais_a, 
   aes(y = as.factor(YEARDOI) , x = AgeAtDOI)
@@ -529,17 +521,17 @@ dev.off()
 
 
 
-#------Visualization: Change in age distribution over 20 years - AIS B-----
-
-#Set theme
+#---------- Visualization: Change in age distribution over 20 years - AIS B --------#
+# Set theme
 theme_set(theme_ridges())
 
+#Subset data
 emsci.trauma.sex.va.a1.ais_b <-subset(emsci.trauma.sex.va.a1, AIS =='B')
 
+# Change labels of levels 
 levels(emsci.trauma.sex.va.a1.ais_b$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_ais_b <- ggplot(
   emsci.trauma.sex.va.a1.ais_b, 
   aes(y = as.factor(YEARDOI) , x = AgeAtDOI)
@@ -588,17 +580,17 @@ ggsave(
 dev.off()
 
 
-#------Visualization: Change in age distribution over 20 years - AIS C-----
-
-#Set theme
+#---------- Visualization: Change in age distribution over 20 years - AIS C --------#
+# Set theme
 theme_set(theme_ridges())
 
+#Subset data
 emsci.trauma.sex.va.a1.ais_c <-subset(emsci.trauma.sex.va.a1, AIS =='C')
 
+# Change labels of levels 
 levels(emsci.trauma.sex.va.a1.ais_c$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_ais_c <- ggplot(
   emsci.trauma.sex.va.a1.ais_c, 
   aes(y = as.factor(YEARDOI) , x = AgeAtDOI)
@@ -648,17 +640,17 @@ dev.off()
 
 
 
-#------Visualization: Change in age distribution over 20 years - AIS D-----
-
-#Set theme
+#---------- Visualization: Change in age distribution over 20 years - AIS D --------#
+# Set theme
 theme_set(theme_ridges())
 
+#Subset data
 emsci.trauma.sex.va.a1.ais_d <-subset(emsci.trauma.sex.va.a1, AIS =='D')
 
+# Change labels of levels 
 levels(emsci.trauma.sex.va.a1.ais_d$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_ais_d <- ggplot(
   emsci.trauma.sex.va.a1.ais_d, 
   aes(y = as.factor(YEARDOI) , x = AgeAtDOI)

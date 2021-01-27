@@ -18,10 +18,13 @@
 ## Notes: Code for the publication XXX
 ##   
 #### ---------------------------
+# R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
 
-## 
-rm(list = ls())
-## set working directory for Mac and PC
+#### ---------------------------
+## set working directory
 
 setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 
@@ -134,7 +137,6 @@ units(emsci.trauma.sex.va.a1$YEARDOI) <- "years"
 
 #Print table
 table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level, data = emsci.trauma.sex.va.a1)
-
 
 #------Data analysis, creation of table, and figure: Patients enrolled in EMSCI per year and country------
 #Create Supplemantray Table 1: Number of patients enrolled per country (5 year bins)
@@ -265,4 +267,6 @@ t.test(AgeAtDOI ~ status, data = merged_data)
 ggplot(merged_data, aes(x=AgeAtDOI, fill = status)) + 
   geom_histogram(alpha = .5, bins = 20, position = "identity") + 
   theme_classic()
+
+#### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 

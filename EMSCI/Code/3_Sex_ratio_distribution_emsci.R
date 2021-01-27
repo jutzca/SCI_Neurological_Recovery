@@ -17,12 +17,6 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## set working directory for Mac and PC
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
-
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
 library(lme4)
@@ -43,10 +37,10 @@ library(data.table)
 library(magrittr)
 library(gridExtra)
 library(grid)
-
+## 
 ## ----------------------------
 ## Install packages needed:  (uncomment as required)
-
+## 
 #if(!require(lme4)){install.packages("lme4")}
 #if(!require(sjPlot)){install.packages("sjPlot")}
 #if(!require(jtools)){install.packages("jtools")}
@@ -61,33 +55,42 @@ library(grid)
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
-
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
-
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Age at DOI and Sex
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar')&   ## Neurological level
                              (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
-#------Data Analysis: Change in ratio between female and male patients over 20 years and display in table----
+#------ Data Analysis: Change in ratio between female and male patients over 20 years and display in table ----
 
-#Load data
+# Subset data to only patients with valid entry at stage 'very acute' or 'acute I' and remove duplicate patient numbers
 emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute'), Patientennummer, .keep_all = TRUE)
 
-
-#### ---------------------------Rescale Data
+#### Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -103,9 +106,9 @@ emsci.trauma.sex.va.a1 <-rescale.many(emsci.trauma.sex.va.a1, c(8))
 
 #Count percentage of female and male subjects by Year of Injury - OVERALL-----
 sex_ratios.overall = emsci.trauma.sex.va.a1 %>%
-  count(Sex, YEARDOI.rescaled) %>%
-  group_by(YEARDOI.rescaled)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI.rescaled) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 #Reshape data from long to wide in order to calculate ratios
 sex_ratios.overall <- dcast(sex_ratios.overall, YEARDOI.rescaled ~ Sex, value.var="n")
@@ -127,9 +130,9 @@ summary(sex_ratios.emsci.overall.lm)
 
 #Count percentage of female and male subjects by Year of Injury - AIS Grades-----
 sex_ratios = emsci.trauma.sex.va.a1 %>%
-  count(Sex, YEARDOI.rescaled, AIS) %>%
-  group_by(YEARDOI.rescaled)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI.rescaled, AIS) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 #Reshape data from long to wide in order to calculate ratios
 sex_ratios <- dcast(sex_ratios, YEARDOI.rescaled ~ Sex+AIS, value.var="n")
@@ -186,13 +189,11 @@ sex_ratios.emsci.ais.d.lm <- lm(Ratios_D~YEARDOI.rescaled, data=sex_ratios)
 summary(sex_ratios.emsci.ais.d.lm)
 
 
-
 #Count percentage of female and male subjects by Year of Injury - Plegia-----
-
 sex_ratios.plegia = emsci.trauma.sex.va.a1 %>%
-  count(Sex, YEARDOI.rescaled, plegia) %>%
-  group_by(YEARDOI.rescaled)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI.rescaled, plegia) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 #Reshape data from long to wide in order to calculate ratios
 sex_ratios.plegia <- dcast(sex_ratios.plegia, YEARDOI.rescaled ~ Sex+plegia, value.var="n")
@@ -226,9 +227,9 @@ summary(sex_ratios.emsci.tetra.lm)
 
 #------Calculate the number of patients per year by sex - Overall----
 emsci.sex.long <- emsci.trauma.sex.va.a1 %>%
-                  count(Sex, YEARDOI)%>%
-                  group_by(YEARDOI)%>%
-                  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 #------Plot population pyramide for year and color by sex - OVERALL ----
 ##Plot data for the male patients
 gg.male <- ggplot(data = subset(emsci.sex.long,Sex=='m'), 
@@ -318,9 +319,9 @@ dev.off()
 
 #------Calculate the number of patients per year by sex - PARAPLEGIA----
 emsci.sex.long.para <- subset(emsci.trauma.sex.va.a1, plegia=='para') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 #------Plot population pyramide for year and color by Sex - PARAPLEGIA ----
 ##Plot data for the male patients
@@ -411,9 +412,9 @@ dev.off()
 
 #------Calculate the number of patients per year by sex - TETRAPLEGIA----
 emsci.sex.long.tetra <- subset(emsci.trauma.sex.va.a1, plegia=='tetra') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 #------Plot population pyramide for year and color by Sex - TETRAPLEGIA ----
 ##Plot data for the male patients
 gg.male.tetra <- ggplot(data = subset(emsci.sex.long.tetra,Sex=='m'), 
@@ -502,9 +503,9 @@ dev.off()
 
 #------Calculate the number of patients per year by sex - AIS A----
 emsci.sex.long.ais_a <- subset(emsci.trauma.sex.va.a1, AIS=='A') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 #------Plot population pyramide for year and color by Sex - AIS A ----
 ##Plot data for the male patients
 gg.male.ais_a <- ggplot(data = subset(emsci.sex.long.ais_a,Sex=='m'), 
@@ -597,9 +598,9 @@ dev.off()
 
 #------Calculate the number of patients per year by sex - AIS B----
 emsci.sex.long.ais_b <- subset(emsci.trauma.sex.va.a1, AIS=='B') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 #------Plot population pyramide for year and color by Sex - AIS B ----
 ##Plot data for the male patients
 gg.male.ais_b <- ggplot(data = subset(emsci.sex.long.ais_b,Sex=='m'), 
@@ -691,9 +692,9 @@ dev.off()
 
 #------Calculate the number of patients per year by sex - AIS C----
 emsci.sex.long.ais_c <- subset(emsci.trauma.sex.va.a1, AIS=='C') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 #------Plot population pyramide for year and color by Sex - AIS C ----
 ##Plot data for the male patients
 gg.male.ais_c <- ggplot(data = subset(emsci.sex.long.ais_c,Sex=='m'), 
@@ -784,9 +785,9 @@ ggsave(
 dev.off()
 #------Calculate the number of patients per year by sex - AIS D----
 emsci.sex.long.ais_d <- subset(emsci.trauma.sex.va.a1, AIS=='D') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 #------Plot population pyramide for year and color by Sex - AIS D ----
 ##Plot data for the male patients
 gg.male.ais_d <- ggplot(data = subset(emsci.sex.long.ais_d,Sex=='m'), 
