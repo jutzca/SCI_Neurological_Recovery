@@ -39,16 +39,17 @@ library(gridExtra)
 library(grid)
 ## 
 ## ----------------------------
+
 ## Install packages needed:  (uncomment as required)
 ## 
-#if(!require(lme4)){install.packages("lme4")}
-#if(!require(sjPlot)){install.packages("sjPlot")}
-#if(!require(jtools)){install.packages("jtools")}
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(ggridges)){install.packages("ggridges")}
-#if(!require(ggpubr)){install.packages("ggpubr")}
-#if(!require(plyr)){install.packages("plyr")}
-#if(!require(dplyr)){install.packages("dplyr")}
+# if(!require(lme4)){install.packages("lme4")}
+# if(!require(sjPlot)){install.packages("sjPlot")}
+# if(!require(jtools)){install.packages("jtools")}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggridges)){install.packages("ggridges")}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(plyr)){install.packages("plyr")}
+# if(!require(dplyr)){install.packages("dplyr")}
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
@@ -73,6 +74,7 @@ setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI")
 ## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 # Load original dataset
@@ -670,7 +672,7 @@ gg.female.ais_b <-  ggplot(data = subset(emsci.sex.long.ais_b,Sex=='f'),
   ggtitle("Female") + 
   coord_flip()
 
-# Plutting the graphs together together
+# Putting the graphs together together
 sex.ais_b <- grid.arrange(gg.female.ais_b,
                           gg.male.ais_b,
                           widths=c(0.4,0.4),

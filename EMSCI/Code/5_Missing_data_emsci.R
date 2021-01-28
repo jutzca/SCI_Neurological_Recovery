@@ -16,14 +16,10 @@
 ## Data source: European Multicenter Study about Spinal Cord Injury (2001-20019)
 ##
 ## Notes: Code for the publication XXXX et al., 2021
+##        https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html
 ##   
-#### ---------------------------
-
-## set working directory
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI")
-
 ## ---------------------------
+##   
 ## load up the packages we will need:  
 library(devtools)
 library(table1)
@@ -38,11 +34,11 @@ library(naniar)
 library(finalfit)
 library(visdat)
 library(mice)
-
-
+##   
 ## ----------------------------
+##   
 ## Install packages needed:  (uncomment as required)
-
+##   
 # if(!require(table1)){install.packages("table1")}
 # if(!require(dplyr)){install.packages('dplyr')}
 # if(!require(naniar)){install.packages(('naniar'))}
@@ -54,32 +50,37 @@ library(mice)
 # if(!require(Gally)){install.packages("Gally")}
 # if(!require(visdat)){install.packages("visdat")}
 # if(!require(mice)){install.packages("mice")}
-
-
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 #-------------------------Data wrangling-----
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 emsci <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & ###Age at DOI and Sex
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar')&   ## Neurological level
                              (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D")) #AIS Grades
 
-
-
-
-#Visualize missingness in the masterfile
-##https://cran.r-project.org/web/packages/naniar/vignettes/naniar-visualisation.html
-
-#Subset Data
+# Subset Data
 emsci_subset <- emsci[,c(2,3,4,5,8,9,11,12,16,18,20,23,26,29,32,35,36,178,179,186,188,190,192,196,216)] 
 
 #Subset data to most important variables
