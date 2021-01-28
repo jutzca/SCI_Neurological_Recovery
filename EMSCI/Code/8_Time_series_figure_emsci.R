@@ -17,39 +17,44 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## Clear working space
-
-rm(list=ls())
-
-## set working directory
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
-
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
 library(ggplot2)
 library(grid)
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(grid)){install.packages("grid")}
-
+##
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(grid)){install.packages("grid")}
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
-
+##
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) & (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D"))
@@ -64,10 +69,10 @@ emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 # Merge
 emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
 
-
 levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
 abbrev_x <- c("", "'01/02", ""  ,"2003 "," ","2004","","2005"," ","2006"," ","2007"," ","2008"," ","2009 "," ","2010"," ","2011"," ","2012"," ","2013 "," ","2014 "," ","2015"," ","2016"," ","2017"," ","'18/19", '')
 
+# Create plot for time series
 plot <-ggplot(emsci.trauma.sex.ais.baseline,aes(x=newtimeline, y=as.numeric(as.character(SCIM23_TotalScore)), fill=baseline.ais, color=baseline.ais)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, color='black', fill="gray") +
   facet_grid(emsci.trauma.sex.ais.baseline$baseline.ais~.)+theme_bw()+ ylab('SCIM 2 and 3 Total Score')+
@@ -96,7 +101,6 @@ pos = gt$layout[grep("panel", gt$layout$name), c("t", "l")]  # Positions of the 
 pushViewport(viewport(layout.pos.col = pos$l, layout.pos.row = min(pos$t):max(pos$t)))
 
 x.axis.limits = summarise_layout(ggplot_build(plot))[1, c('xmin', 'xmax')]
-
 
 # Set up a data viewport,
 # so that the x-axis units are, in effect, "native", 
@@ -142,7 +146,6 @@ grid.rect(x = 780, y = 0,
 # Back to the root viewport
 upViewport(0)
 
-
-#Save 4x7
+# Save: Dimensions 4x7 inches
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
