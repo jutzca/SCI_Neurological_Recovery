@@ -18,12 +18,15 @@
 ## Notes: Code for the publication XXX
 ##   
 ## ---------------------------
+##   
 ## load up the packages we will need:  (uncomment as required)
+##   
 library(ggplot2)
 library(grid)
 library(ggthemes)
 ##   
 ## ----------------------------
+##   
 ## Install packages needed:  (uncomment as required)
 ##   
 #if(!require(ggplot2)){install.packages("ggplot2")}
@@ -45,13 +48,12 @@ outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/F
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 ##   
 ##   
-
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) & (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D"))
@@ -68,8 +70,9 @@ emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,
 levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B", "AIS-C", "AIS-D", " ", "")
 levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia ")
 
+#---------- Total Motor Score --------#
 
-#-----Total Motor Score ----
+# Generate plot
 longitudinal.trajectory.tms.geography <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS))), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$Country, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -85,8 +88,7 @@ longitudinal.trajectory.tms.geography <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.tms.geography
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tms.geography.pdf",
   plot = longitudinal.trajectory.tms.geography,
@@ -101,10 +103,9 @@ ggsave(
 
 dev.off()
 
+#---------- Total Sensory Score --------#
 
-
-
-#-----Total Sensory Score ----
+# Generate plot
 longitudinal.trajectory.tss.geography <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$Country, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -120,8 +121,7 @@ longitudinal.trajectory.tss.geography <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.tss.geography
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tss.geography.pdf",
   plot = longitudinal.trajectory.tss.geography,
@@ -135,8 +135,6 @@ ggsave(
 )
 
 dev.off()
-
-
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 

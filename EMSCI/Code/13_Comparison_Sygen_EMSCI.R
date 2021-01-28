@@ -16,15 +16,11 @@
 ## Data source: Sygen Clinical Trial and EMSCI study
 ##
 ## Notes: Code for the publication XXX
-##   
-#### ---------------------------
-
-## set working directory for Mac and PC
-
-setwd("/Users/jutzca/Documents/GitHub/SCI_Neurological_Recovery/EMSCI") 
-
+##
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
+##
 library(lme4)
 library(sjPlot) #To creats tables
 library(jtools)#To creats tables
@@ -45,37 +41,51 @@ library(gridExtra)
 library(grid)
 library(forcats)
 library(viridis)
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(lme4)){install.packages("lme4")}
-#if(!require(sjPlot)){install.packages("sjPlot")}
-#if(!require(jtools)){install.packages("jtools")}
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(ggridges)){install.packages("ggridges")}
-#if(!require(ggpubr)){install.packages("ggpubr")}
-#if(!require(plyr)){install.packages("plyr")}
-#if(!require(dplyr)){install.packages("dplyr")}
+##
+# if(!require(lme4)){install.packages("lme4")}
+# if(!require(sjPlot)){install.packages("sjPlot")}
+# if(!require(jtools)){install.packages("jtools")}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggridges)){install.packages("ggridges")}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(plyr)){install.packages("plyr")}
+# if(!require(dplyr)){install.packages("dplyr")}
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
-
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+##
+##
+#### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-
-#load sygen original dataset
+# Load sygen original dataset
 emsci.sygen.merged<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_sygen_merged_for_visualization.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-
-###Create longitudinal lems trajectory figure
+#---------- Create longitudinal lems trajectory plot --------#
 tms.trajectory.merged.plot <- ggplot() +
   stat_summary(aes(x = as.numeric(ExamStage_weeks),y = as.numeric(TMS), color=study), 
                data=subset(emsci.sygen.merged), 
@@ -88,6 +98,7 @@ tms.trajectory.merged.plot <- ggplot() +
         axis.text.x = element_text(face='bold'))
 tms.trajectory.merged.plot
 
+#Save plot
 ggsave(
   "tms.trajectory.merged.plott.pdf",
   plot = tms.trajectory.merged.plot,
@@ -100,5 +111,6 @@ ggsave(
   dpi = 300
 )
 
+#### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
 

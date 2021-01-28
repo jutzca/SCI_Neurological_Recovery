@@ -17,40 +17,45 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## Clear working space
-
-rm(list=ls())
-
-## set working directory
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
-
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
+##
 library(ggplot2)
 library(grid)
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(grid)){install.packages("grid")}
-
+##
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(grid)){install.packages("grid")}
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
-
+##
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) & (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D"))
@@ -63,17 +68,19 @@ emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 # Merge
 emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
 
-
 # Change levels of AIS grade and plegia
 levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
 levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia")
 
 
-#---- Upper extremity motor score ----
+#---------- Upper extremity motor score --------#
+
+# Subset data to only include tetraplegic SCI
 emsci.trauma.sex.ais.baseline.rm.na <- subset(emsci.trauma.sex.ais.baseline, (!is.na(UEMS)))
 
 emsci.trauma.sex.ais.baseline.rm.na.para <- subset(emsci.trauma.sex.ais.baseline.rm.na, plegia=="Tetraplegia")
 
+# Generate plot
 overall.uems.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseline.rm.na.para,aes(x = as.numeric(ExamStage_weeks),y = as.numeric(as.character(UEMS)), group=baseline.ais)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(emsci.trauma.sex.ais.baseline.rm.na.para$plegia~emsci.trauma.sex.ais.baseline.rm.na.para$baseline.ais)+
@@ -88,7 +95,7 @@ overall.uems.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.basel
         panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"))
 overall.uems.recovery.trajectory.emsci.plot
 
-
+# Save the plot
 ggsave(
   "overall.uems.recovery.trajectory.emsci.plot.pdf",
   plot = overall.uems.recovery.trajectory.emsci.plot,
@@ -103,8 +110,9 @@ ggsave(
 
 dev.off()
 
+#---------- Lower extremity motor score --------#
 
-#---- Lower extremity motor score ----
+# Generate plot
 overall.lems.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseline.rm.na,aes(x = as.numeric(ExamStage_weeks), y= as.numeric(as.character(LEMS)), group=baseline.ais)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(emsci.trauma.sex.ais.baseline.rm.na$plegia~emsci.trauma.sex.ais.baseline.rm.na$baseline.ais)+
@@ -119,7 +127,7 @@ overall.lems.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.basel
         panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"))
 overall.lems.recovery.trajectory.emsci.plot
 
-
+# Save the plot
 ggsave(
   "overall.lems.recovery.trajectory.emsci.plot.pdf",
   plot = overall.lems.recovery.trajectory.emsci.plot,
@@ -134,7 +142,9 @@ ggsave(
 
 dev.off()
 
-#---- Total motor score ----
+#---------- Total motor score --------#
+
+# Generate plot
 overall.tms.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseline.rm.na,aes(x = as.numeric(ExamStage_weeks),y = as.numeric(as.character(TMS)), group=baseline.ais)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(emsci.trauma.sex.ais.baseline.rm.na$plegia~emsci.trauma.sex.ais.baseline.rm.na$baseline.ais)+
@@ -149,7 +159,7 @@ overall.tms.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseli
         panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"))
 overall.tms.recovery.trajectory.emsci.plot
 
-
+# Save the plot
 ggsave(
   "overall.tms.recovery.trajectory.emsci.plot.pdf",
   plot = overall.tms.recovery.trajectory.emsci.plot,
@@ -164,10 +174,9 @@ ggsave(
 
 dev.off()
 
+#---------- Total sensory score --------#
 
-
-#---- Total sensory score ----
-
+# Generate plot
 overall.tss.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseline.rm.na,aes(x = as.numeric(ExamStage_weeks),y = as.numeric(as.character(TSS)), group=baseline.ais)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(emsci.trauma.sex.ais.baseline.rm.na$plegia~emsci.trauma.sex.ais.baseline.rm.na$baseline.ais)+
@@ -182,7 +191,7 @@ overall.tss.recovery.trajectory.emsci.plot <- ggplot(emsci.trauma.sex.ais.baseli
         panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"))
 overall.tss.recovery.trajectory.emsci.plot
 
-
+# Save the plot
 ggsave(
   "overall.tss.recovery.trajectory.emsci.plot.pdf",
   plot = overall.tss.recovery.trajectory.emsci.plot,
@@ -196,8 +205,5 @@ ggsave(
 )
 
 dev.off()
-
-
-
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####

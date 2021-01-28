@@ -16,41 +16,46 @@
 ## Data source: European Multi-center Study about Spinal Cord Injury
 ##
 ## Notes: Code for the publication XXX
-##   
-#### ---------------------------
-
-## Clear working space
-
-rm(list=ls())
-
-## set working directory
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
-
+##
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
 library(ggplot2)
 library(grid)
 library(ggthemes)
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(grid)){install.packages("grid")}
-
+##
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(grid)){install.packages("grid")}
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
-
+##
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) & (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D"))
@@ -63,13 +68,13 @@ emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 # Merge
 emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
 
-
 # Change levels of AIS grade and plegia
 levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
 levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia ")
 
+#---------- Total Motor Score --------#
 
-#-----Total Motor Score----
+# Generate plot 
 longitudinal.trajectory.tms <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -84,8 +89,7 @@ longitudinal.trajectory.tms <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.tms
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tms.pdf",
   plot = longitudinal.trajectory.tms,
@@ -101,7 +105,9 @@ ggsave(
 dev.off()
 
 
-#-----Total Sensory Score----
+#---------- Total Sensory Score --------#
+
+# Generate plot 
 longitudinal.trajectory.tss <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TSS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -116,8 +122,7 @@ longitudinal.trajectory.tss <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.tss
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.tss.pdf",
   plot = longitudinal.trajectory.tss,
@@ -132,7 +137,9 @@ ggsave(
 
 dev.off()
 
-#-----Lower Extremity Motor Score----
+#---------- Lower Extremity Motor Score --------#
+
+# Generate plot 
 longitudinal.trajectory.lems <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(LEMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -147,8 +154,7 @@ longitudinal.trajectory.lems <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.lems
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.lems.pdf",
   plot = longitudinal.trajectory.lems,
@@ -163,7 +169,9 @@ ggsave(
 
 dev.off()
 
-#-----Upper Extremity Motor Score----
+#---------- Upper Extremity Motor Score --------#
+
+# Generate plot 
 emsci.trauma.sex.ais.baseline.para <- subset(emsci.trauma.sex.ais.baseline, plegia=="Tetraplegia")
 longitudinal.trajectory.uems <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.para,aes(x=ExamStage_weeks, y=as.numeric(as.character(UEMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
@@ -179,8 +187,7 @@ longitudinal.trajectory.uems <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.uems
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.uems.pdf",
   plot = longitudinal.trajectory.uems,
@@ -195,8 +202,9 @@ ggsave(
 
 dev.off()
 
+#---------- SCIM2 and 3 Total score --------#
 
-#-----SCIM2 and 3 Total score----
+# Generate plot 
 longitudinal.trajectory.scim <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(SCIM23_TotalScore)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -211,8 +219,7 @@ longitudinal.trajectory.scim <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.scim
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.scim.pdf",
   plot = longitudinal.trajectory.scim,
@@ -227,8 +234,9 @@ ggsave(
 
 dev.off()
 
+#---------- WISCI --------#
 
-#-----WISCI----
+# Generate plot 
 longitudinal.trajectory.wisci <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(WISCI)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -243,8 +251,7 @@ longitudinal.trajectory.wisci <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.wisci
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.wisci.pdf",
   plot = longitudinal.trajectory.wisci,
@@ -259,14 +266,12 @@ ggsave(
 
 dev.off()
 
+#---------- 6min Walking Test --------#
 
-
-#----- 6min Walking Test----
-
-# Subset data to AIS C and D patients
+# Subset data to only inlude ambulatory patients (AIS C and D patients)
 emsci.trauma.sex.ais.baseline.walking <-subset(emsci.trauma.sex.ais.baseline, baseline.ais=='AIS-C' | baseline.ais=="AIS-D")
 
-#Create plot
+# Generate plot 
 longitudinal.trajectory.x6min <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.walking,aes(x=ExamStage_weeks, y=as.numeric(as.character(X6min)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.walking$plegia~emsci.trauma.sex.ais.baseline.walking$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -281,8 +286,7 @@ longitudinal.trajectory.x6min <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.x6min
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.x6min.pdf",
   plot = longitudinal.trajectory.x6min,
@@ -297,12 +301,12 @@ ggsave(
 
 dev.off()
 
-#----- 10m Walking Test----
+#---------- 10m Walking Test --------#
 
-# Subset data to AIS C and D patients
+# Subset data to only inlude ambulatory patients (AIS C and D patients)
 emsci.trauma.sex.ais.baseline.walking <-subset(emsci.trauma.sex.ais.baseline, baseline.ais=='AIS-C' | baseline.ais=="AIS-D")
 
-#Create plot
+# Generate plot 
 longitudinal.trajectory.X10m <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline.walking,aes(x=ExamStage_weeks, y=as.numeric(as.character(X10m)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline.walking$plegia~emsci.trauma.sex.ais.baseline.walking$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
@@ -317,8 +321,7 @@ longitudinal.trajectory.X10m <-ggplot() +
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.X10m
 
-
-## Save plot
+# Save plot
 ggsave(
   "longitudinal.trajectory.X10m.pdf",
   plot = longitudinal.trajectory.X10m,
@@ -332,11 +335,6 @@ ggsave(
 )
 
 dev.off()
-
-
-
-
-
 
 
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
