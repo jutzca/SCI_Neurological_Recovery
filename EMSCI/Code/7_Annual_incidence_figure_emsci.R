@@ -17,47 +17,49 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-## Clear working space
-
-rm(list=ls())
-
-## set working directory for Mac
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
-
 ## ---------------------------
 ## load up the packages we will need:  (uncomment as required)
 library(easyGgplot2)
 library(ggthemes)
 library(dplyr)
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(easyGgplot2)){install.packages("easyGgplot2")}
-#if(!require(ggthemes)){install.packages("ggthemes")}
-#if(!require(dplyr)){install.packages("dplyr")}
-
+##
+# if(!require(easyGgplot2)){install.packages("easyGgplot2")}
+# if(!require(ggthemes)){install.packages("ggthemes")}
+# if(!require(dplyr)){install.packages("dplyr")}
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
-
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
+# Load original dataset
 emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T)
 emsci_incidence <- subset(emsci, ExamStage=='acute I' &  AgeAtDOI >= 0 & (!(is.na( Sex))))
 
-
-#Calculate the annual incidence
+# Calculate the annual incidence
 value <-as.data.frame(emsci_incidence%>%
-  count(YEARDOI))
+                        dplyr::count(YEARDOI))
 
-
-#Plot the annual incidence
+# Plot the annual incidence
 annual.incidence.emsci <- ggplot2.barplot(data=value, xName="YEARDOI", yName='n',
                 width=0.9, color="black")+
   geom_text(aes(label=n), vjust=-0.12, color="black", size=3)+
@@ -73,23 +75,22 @@ annual.incidence.emsci <- ggplot2.barplot(data=value, xName="YEARDOI", yName='n'
         axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
         axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0))
   )
+annual.incidence.emsci
 
-#Save Plot
+# Save Plot
 ggsave(
   "annual.incidence.emsci.pdf",
   plot = annual.incidence.emsci,
   device = 'pdf',
   path = outdir_figures,
   scale = 1,
-  width = 6,
+  width = 7,
   height = 5,
   units = "in",
   dpi = 300
 )
 
 dev.off()
-
-
 
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####

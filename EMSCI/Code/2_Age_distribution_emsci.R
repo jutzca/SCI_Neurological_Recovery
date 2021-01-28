@@ -18,6 +18,7 @@
 ## Notes: Code for the publication XXX
 ##   
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
 library(lme4)
 library(sjPlot) #To creats tables
@@ -70,10 +71,9 @@ setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI")
 ## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
-
-
+##
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
-
 
 #### ---------- Data wrangling ---------
 
