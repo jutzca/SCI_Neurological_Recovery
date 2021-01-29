@@ -17,12 +17,6 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## set working directory for Mac and PC
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
-
 ## ---------------------------
 ## load up the packages we will need: 
 library(lme4)
@@ -53,20 +47,21 @@ library(Hmisc)
 library(scales)
 
 ## ----------------------------
+## 
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(lme4)){install.packages("lme4")}
-#if(!require(sjPlot)){install.packages("sjPlot")}
-#if(!require(jtools)){install.packages("jtools")}
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(ggridges)){install.packages("ggridges")}
-#if(!require(ggpubr)){install.packages("ggpubr")}
-#if(!require(plyr)){install.packages("plyr")}
-#if(!require(dplyr)){install.packages("dplyr")}
-#if(!require(gridExtra)){install.packages("gridExtra")}
-#if(!require(reshape2)){install.packages("reshape2")}
-#if(!require(PMCMRplus)){install.packages("PMCMRplus")}
-#if(!require(naniar)){install.packages("naniar")}
+## 
+# if(!require(lme4)){install.packages("lme4")}
+# if(!require(sjPlot)){install.packages("sjPlot")}
+# if(!require(jtools)){install.packages("jtools")}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggridges)){install.packages("ggridges")}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(plyr)){install.packages("plyr")}
+# if(!require(dplyr)){install.packages("dplyr")}
+# if(!require(gridExtra)){install.packages("gridExtra")}
+# if(!require(reshape2)){install.packages("reshape2")}
+# if(!require(PMCMRplus)){install.packages("PMCMRplus")}
+# if(!require(naniar)){install.packages("naniar")}
 # if(!require(EpiReport)){install.packages("EpiReport")}
 # if(!require(epiDisplay)){install.packages("epiDisplay")}
 # devtools::install_github("hadley/devtools")
@@ -81,65 +76,70 @@ library(scales)
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
-
+##
 #### ---------------------------
-#Clear working space
-
-rm(list = ls())
-
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
-
-
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
-#load original dataset
+# Load original dataset
 sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/Sygen.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 sygen.included.cohort<- subset(sygen, (age > 0) & (sex=="female" | sex=="male") & ###Age at DOI and Sex
                                  (splvl1 == 'C' | splvl1 == 'T')&   ## Neurological level
                                  (ais1=="AIS A"| ais1=="AIS B"| ais1=="AIS C"| ais1=="AIS D")) #AIS Grades
 
 
-#Create Summary Table
-#Formatting of table: Customize levels, labels, and units of listed variables
-#Change names of levels of variables
+# Create Summary Table
+# Formatting of table: Customize levels, labels, and units of listed variables
+# Change names of levels of variables
 levels(sygen.included.cohort$sex) <- c("Female", "Male")
 levels(sygen.included.cohort$ais1) <- c("A", "B", "C", "D")
 levels(sygen.included.cohort$splvl1) <- c("Cervical", "Thoracic")
 
-#Relable variables
+# Relable variables
 label(sygen.included.cohort$sex) <- "Sex"
 label(sygen.included.cohort$age) <- "Age"
-# label(emsci.trauma.sex.va.a1$NLI_level)<- "Neurological level of injury"
+# Label(emsci.trauma.sex.va.a1$NLI_level)<- "Neurological level of injury"
 label(sygen.included.cohort$yeardoi) <- "Year of injury"
 label(sygen.included.cohort$ais1) <- "AIS"
 label(sygen.included.cohort$splvl1) <- "Neurological level of injury"
 
-#Assign units to Age at Injury and Year of Injury
+# Assign units to Age at Injury and Year of Injury
 units(sygen.included.cohort$age) <- "years"
 units(sygen.included.cohort$yeardoi) <- "years"
 
-#Print table
+# Print table
 table1::table1(~ sex+age+ais1+splvl1 | yeardoi, data = sygen.included.cohort)
 
-
 #------Data analysis and creation of table: Excluded cohort------
-#####Summary Table: Excluded cohort
-#Extract excluded cohort
+# Summary Table: Excluded cohort
+# Extract excluded cohort
 sygen.missing<-anti_join(sygen,sygen.included.cohort, by ="ptid")
 sygen.missing.unique<-distinct(sygen.missing, ptid, .keep_all = TRUE)
 
-
-#Formatting of table: Customize levels, labels, and units of listed variables
-#Change names of levels of variables
+# Formatting of table: Customize levels, labels, and units of listed variables
+# Change names of levels of variables
 levels(sygen.missing.unique$sex) <- c("Female", "Male")
 levels(sygen.missing.unique$ais1) <- c("A", "B", "C", "D")
 levels(sygen.missing.unique$splvl1) <- c("Cervical", "Thoracic")
 
-#Relable variables
+#R elable variables
 label(sygen.missing.unique$sex) <- "Sex"
 label(sygen.missing.unique$age) <- "Age"
 
@@ -148,13 +148,12 @@ label(sygen.missing.unique$yeardoi) <- "Year of injury"
 label(sygen.missing.unique$ais1) <- "AIS"
 label(sygen.missing.unique$splvl1) <- "Neurological level of injury"
 
-#Assign units to Age at Injury and Year of Injury
+# Assign units to Age at Injury and Year of Injury
 units(sygen.missing.unique$age) <- "years"
 units(sygen.missing.unique$yeardoi) <- "years"
 
-#Print table
+# Print table
 table1::table1(~ sex+age+ais1+splvl1, data = sygen.missing.unique)
-
 
 #------Comparison between included and exlcuded Sygen cohorts------
 
