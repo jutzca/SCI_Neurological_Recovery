@@ -17,14 +17,10 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## set working directory for Mac and PC
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
-
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
+##
 library(lme4)
 library(sjPlot) #To creats tables
 library(jtools)#To creats tables
@@ -39,42 +35,50 @@ library(Hmisc)
 library(scales)  #To recale the data
 library(splitstackshape) #To format the model output to a table
 library(lmerTest) #To run the mixed effect models
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(lme4)){install.packages("lme4")}
-#if(!require(sjPlot)){install.packages("sjPlot")}
-#if(!require(jtools)){install.packages("jtools")}
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(ggridges)){install.packages("ggridges")}
-#if(!require(ggpubr)){install.packages("ggpubr")}
-#if(!require(plyr)){install.packages("plyr")}
-#if(!require(dplyr)){install.packages("dplyr")}
+##
+# if(!require(lme4)){install.packages("lme4")}
+# if(!require(sjPlot)){install.packages("sjPlot")}
+# if(!require(jtools)){install.packages("jtools")}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggridges)){install.packages("ggridges")}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(plyr)){install.packages("plyr")}
+# if(!require(dplyr)){install.packages("dplyr")}
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
+##
 #### ---------------------------
-#Clear working space
-
-rm(list = ls())
-
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
-
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-
-#load original dataset
+# Load original dataset
 sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 sygen.included.cohort.all.times<- subset(sygen, (!is.na(Age)) & (Sex=="Female" | Sex=="Male") & ###Age at DOI and Sex
                                            (NLI == 'cervical' | NLI == 'thoracic')&   ## Neurological level
                                            (AIS=="AIS A"| AIS=="AIS B"| AIS=="AIS C"| AIS=="AIS D")) #AIS Grades
@@ -83,7 +87,7 @@ sygen.included.cohort <- distinct(subset(sygen.included.cohort.all.times, Time==
 
 #### -------------------------------------------------------------------------- Data Analysis ------------------------------------------------------------------------------------------------####
 
-#### Rescale Data
+# Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -97,56 +101,51 @@ rescale.many <- function(dat, column.nos) {
 sygen.included.cohort <-rescale.many(sygen.included.cohort, c(9)) 
 
 
-#Count percentage of Female and male subjects by Year of Injury - OVERALL-----
-sygen.ais.proportions.overall = sygen.included.cohort %>%
-  count(YEARDOI.rescaled,AIS,Sex) %>%
-  group_by(YEARDOI.rescaled)%>% 
-  mutate(frequency = (n / sum(n))*100)
+#---------- Count percentage of Female and male subjects by Year of Injury - OVERALL --------#
+sygen.ais.proportions.overall.df = sygen.included.cohort %>%
+  dplyr::count(YEARDOI.rescaled,AIS,Sex) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>%
+  as.data.frame()
 
 
-sygen.ais.proportions.overall.df <- as.data.frame(sygen.ais.proportions.overall)
-
-#All AIS A patients (male and Female pooled)
+# All AIS A patients (male and Female pooled)
 sygen.ais.proportions.overall.ais.a <- subset(sygen.ais.proportions.overall.df, AIS=="AIS A")
 
 sygen.ais.proportions.overall.ais.a.lm <- lm(frequency~YEARDOI.rescaled, data = sygen.ais.proportions.overall.ais.a, na.action = na.omit)
 summary(sygen.ais.proportions.overall.ais.a.lm)
 
-#All AIS B patients (male and Female pooled)
+# All AIS B patients (male and Female pooled)
 sygen.ais.proportions.overall.ais.b <- subset(sygen.ais.proportions.overall.df, AIS=="AIS B")
 
 sygen.ais.proportions.overall.ais.b.lm <- lm(frequency~YEARDOI.rescaled, data = sygen.ais.proportions.overall.ais.b, na.action = na.omit)
 summary(sygen.ais.proportions.overall.ais.b.lm)
 
-#All AIS C patients (male and Female pooled)
+# All AIS C patients (male and Female pooled)
 sygen.ais.proportions.overall.ais.c <- subset(sygen.ais.proportions.overall.df, AIS=="AIS C")
 
 sygen.ais.proportions.overall.ais.c.lm <- lm(frequency~YEARDOI.rescaled, data = sygen.ais.proportions.overall.ais.c, na.action = na.omit)
 summary(sygen.ais.proportions.overall.ais.c.lm)
 
-#All AIS D patients (male and Female pooled)
+# All AIS D patients (male and Female pooled)
 sygen.ais.proportions.overall.ais.d <- subset(sygen.ais.proportions.overall.df, AIS=="AIS D")
 
 sygen.ais.proportions.overall.ais.d.lm <- lm(frequency~YEARDOI.rescaled, data = sygen.ais.proportions.overall.ais.d, na.action = na.omit)
 summary(sygen.ais.proportions.overall.ais.d.lm)
 
+#---------- Count percentage of Female and male subjects by Year of Injury - SUBGROUPS stratified by Sex and Plegia-----
+sygen.ais.proportions.overall.sex.plegia.df = sygen.included.cohort %>%
+  dplyr::count(YEARDOI.rescaled,AIS,Plegia) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>%
+  as.data.frame()
 
-#Count percentage of Female and male subjects by Year of Injury - SUBGROUPS stratified by Sex and Plegia-----
-sygen.ais.proportions.overall.sex.plegia = sygen.included.cohort %>%
-  count(YEARDOI.rescaled,AIS,Plegia) %>%
-  group_by(YEARDOI.rescaled)%>% 
-  mutate(frequency = (n / sum(n))*100)
-
-
-sygen.ais.proportions.overall.sex.plegia.df <- as.data.frame(sygen.ais.proportions.overall.sex.plegia)
-
-
-#------Calculate the change sex distribution over time for subgroups ----
+#---------- Calculate the change sex distribution over time for subgroups --------#
 ais.score<- unique(sygen.ais.proportions.overall.sex.plegia.df$AIS)
 
 rescaled.nli <- unique(sygen.ais.proportions.overall.sex.plegia.df$Plegia) 
 
-# create data frame to store results
+# Create data frame to store results
 results.sygen.ais.scores <- data.frame()
   for (j in rescaled.nli){
     for (i in ais.score){
@@ -183,7 +182,7 @@ results.sygen.ais.scores <- data.frame()
 
 
 
-#------Create Table to export
+#---------- Create Table to export --------#
 
 results.sygen.ais.scores.new <-merged.stack(results.sygen.ais.scores,                ## Add the id if it doesn't exist
                                             var.stubs = c("estimate", "std", "tval", "pval"),   ## Specify the stubs
@@ -192,22 +191,22 @@ results.sygen.ais.scores.new <-merged.stack(results.sygen.ais.scores,           
 
 results.sygen.ais.scores.new.df <- as.data.frame(results.sygen.ais.scores.new)
 
-#Rename variables
+# Rename variables
 names(results.sygen.ais.scores.new.df)[names(results.sygen.ais.scores.new.df) == '.time_1'] <- 'Variable'
 names(results.sygen.ais.scores.new.df)[names(results.sygen.ais.scores.new.df) == 'estimate'] <- 'Estimate'
 names(results.sygen.ais.scores.new.df)[names(results.sygen.ais.scores.new.df) == 'std'] <- 'Standard Error'
 names(results.sygen.ais.scores.new.df)[names(results.sygen.ais.scores.new.df) == 'tval'] <- 't-value'
 names(results.sygen.ais.scores.new.df)[names(results.sygen.ais.scores.new.df) == 'pval'] <- 'p-value'
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.ais.scores.new.df$order[(results.sygen.ais.scores.new.df$Variable == 'intercept.')] <- 1
 results.sygen.ais.scores.new.df$order[(results.sygen.ais.scores.new.df$Variable == 'YEARDOI.')] <- 2
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.ais.scores.new.df$Variable[(results.sygen.ais.scores.new.df$Variable == 'intercept.')] <- "Intercept"
 results.sygen.ais.scores.new.df$Variable[(results.sygen.ais.scores.new.df$Variable == 'YEARDOI.')] <- "YEARDOI"
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.ais.scores.new.df$model_temp[(results.sygen.ais.scores.new.df$Plegia == "para" & results.sygen.ais.scores.new.df$AIS == "AIS A")] <- 'Paraplegia:AIS A'
 results.sygen.ais.scores.new.df$model_temp[(results.sygen.ais.scores.new.df$Plegia == "para" & results.sygen.ais.scores.new.df$AIS == "AIS B")] <- 'Paraplegia:AIS B'
 results.sygen.ais.scores.new.df$model_temp[(results.sygen.ais.scores.new.df$Plegia == "para" & results.sygen.ais.scores.new.df$AIS == "AIS C" )] <- 'Paraplegia:AIS C'
@@ -220,18 +219,18 @@ results.sygen.ais.scores.new.df$model_temp[(results.sygen.ais.scores.new.df$Pleg
 
 
 
-#Add adjusted p-value column
+# Add adjusted p-value column
 results.sygen.ais.scores.new.df$Adjusted.pval<- as.numeric(results.sygen.ais.scores.new.df$`p-value`)*8
 
-#Rename column
+# Rename column
 names(results.sygen.ais.scores.new.df)[names(results.sygen.ais.scores.new.df) == 'Adjusted.pval'] <- 'Adjusted p-value'
 
-#Make t-value, p-value, and Adjusted p-value numeric
+# Make t-value, p-value, and Adjusted p-value numeric
 results.sygen.ais.scores.new.df$`t-value`<-as.numeric(results.sygen.ais.scores.new.df$`t-value`)
 results.sygen.ais.scores.new.df$`p-value`<-as.numeric(results.sygen.ais.scores.new.df$`p-value`)
 results.sygen.ais.scores.new.df$`Adjusted p-value`<-as.numeric(results.sygen.ais.scores.new.df$`Adjusted p-value`)
 
-#Function to round to 3 digits
+# Function to round to 3 digits
 round_df <- function(x, digits) {
   # round all numeric variables
   # x: data frame 
@@ -243,11 +242,10 @@ round_df <- function(x, digits) {
 
 results.sygen.ais.scores.new.df.2 <- round_df(results.sygen.ais.scores.new.df, 3)
 
-
-#Sort data
+# Sort data
 results.sygen.ais.scores.new.df.3digits <- arrange(results.sygen.ais.scores.new.df.2,model_temp,order)
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.ais.scores.new.df.3digits$Model[(results.sygen.ais.scores.new.df.3digits$Plegia == "tetra" & results.sygen.ais.scores.new.df.3digits$AIS == "AIS A" & results.sygen.ais.scores.new.df.3digits$order==1)] <- 'Tetraplegia: AIS A'
 results.sygen.ais.scores.new.df.3digits$Model[(results.sygen.ais.scores.new.df.3digits$Plegia == "tetra" & results.sygen.ais.scores.new.df.3digits$AIS == "AIS B"& results.sygen.ais.scores.new.df.3digits$order==1)] <- 'Tetraplegia: AIS B'
 results.sygen.ais.scores.new.df.3digits$Model[(results.sygen.ais.scores.new.df.3digits$Plegia == "tetra" & results.sygen.ais.scores.new.df.3digits$AIS == "AIS C" & results.sygen.ais.scores.new.df.3digits$order==1)] <- 'Tetraplegia: AIS C'
@@ -258,23 +256,26 @@ results.sygen.ais.scores.new.df.3digits$Model[(results.sygen.ais.scores.new.df.3
 results.sygen.ais.scores.new.df.3digits$Model[(results.sygen.ais.scores.new.df.3digits$Plegia == "para" & results.sygen.ais.scores.new.df.3digits$AIS == "AIS C" & results.sygen.ais.scores.new.df.3digits$order==1)] <- 'Paraplegia: AIS C'
 results.sygen.ais.scores.new.df.3digits$Model[(results.sygen.ais.scores.new.df.3digits$Plegia == "para" & results.sygen.ais.scores.new.df.3digits$AIS == "AIS D" & results.sygen.ais.scores.new.df.3digits$order==1)] <- 'Paraplegia: AIS D'
 
-# #Replace NA with empty cell
+# Replace NA with empty cell
 results.sygen.ais.scores.new.df.3digits[is.na(results.sygen.ais.scores.new.df.3digits)] <- ""
 results.sygen.ais.scores.new.df.3digits[results.sygen.ais.scores.new.df.3digits == "<NA>"] <- ""
 
-#Write csv file with only selected columns
+# Write csv file with only selected columns
 write.csv(results.sygen.ais.scores.new.df.3digits[,c(11,3:7,10)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables/ais_scores_distribution_sygen.csv", row.names = F)
 
 
 #### -------------------------------------------------------------------------- Visualize Results ------------------------------------------------------------------------------------------------####
 
-#----Plot the population pyramide 'Baseline Injury Severity' - OVERALL----
-#Caculate the percentage of each AIS grade per year
-sygen.ais.proportions.visualize = sygen.included.cohort %>%
-  count(YEARDOI,AIS,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+#---------- Plot the population pyramide 'Baseline Injury Severity' - OVERALL --------#
 
-#Plot
+# Caculate the percentage of each AIS grade per year
+sygen.ais.proportions.visualize = sygen.included.cohort %>%
+  dplyr::count(YEARDOI,AIS,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>% 
+  as.data.frame()
+
+# Create plot
 sygen.ais.plot <-ggplot(data = sygen.ais.proportions.visualize, aes(x = YEARDOI, y = frequency, fill = AIS)) +
   geom_bar(data = sygen.ais.proportions.visualize %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -295,10 +296,9 @@ sygen.ais.plot <-ggplot(data = sygen.ais.proportions.visualize, aes(x = YEARDOI,
         axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
         axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
   )
-
 sygen.ais.plot
 
-
+# Save plot
 ggsave(
   "ais.distribitution_overall.pdf",
   plot = sygen.ais.plot,
@@ -314,15 +314,16 @@ ggsave(
 dev.off()
 
 
+#---------- Plot the population pyramide 'Baseline Injury Severity' - Tetraplegic --------#
 
-#----Plot the population pyramide 'Baseline Injury Severity' - Tetraplegic----
-
-#Caculate the percentage of each AIS grade per year
+# Caculate the percentage of each AIS grade per year
 sygen.ais.proportions.tetra = subset(sygen.included.cohort, Plegia=="tetra") %>%
-  count(YEARDOI,AIS,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,AIS,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>%
+  as.data.frame()
 
-
+# Create plot
 sygen.ais.plot.tetra <-ggplot(data = sygen.ais.proportions.tetra, aes(x = YEARDOI, y = frequency, fill = AIS)) +
   geom_bar(data = sygen.ais.proportions.tetra %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -343,10 +344,9 @@ sygen.ais.plot.tetra <-ggplot(data = sygen.ais.proportions.tetra, aes(x = YEARDO
         axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
         axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
   )
-
 sygen.ais.plot.tetra
 
-
+# Save plot
 ggsave(
   "ais.distribitution_tetra.pdf",
   plot = sygen.ais.plot.tetra,
@@ -362,14 +362,16 @@ ggsave(
 dev.off()
 
 
-#----Plot the population pyramide 'Baseline Injury Severity' - Paraplegic----
+#---------- Plot the population pyramide 'Baseline Injury Severity' - Paraplegic --------#
 
-#Caculate the percentage of each AIS grade per year
+# Caculate the percentage of each AIS grade per year
 sygen.ais.proportions.para = subset(sygen.included.cohort, Plegia=="para") %>%
-  count(YEARDOI,AIS,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,AIS,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>%
+  as.data.frame()
 
-
+# Create plot
 sygen.ais.plot.para <-ggplot(data = sygen.ais.proportions.para, aes(x = YEARDOI, y = frequency, fill = AIS)) +
   geom_bar(data = sygen.ais.proportions.para %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -390,10 +392,9 @@ sygen.ais.plot.para <-ggplot(data = sygen.ais.proportions.para, aes(x = YEARDOI,
         axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
         axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
   )
-
 sygen.ais.plot.para
 
-
+# Save plot
 ggsave(
   "ais.distribitution_para.pdf",
   plot = sygen.ais.plot.para,
@@ -409,19 +410,20 @@ ggsave(
 dev.off()
 
 
+#---------- Plot the population pyramide 'Baseline Injury Level' - OVERALL --------#
 
-#----Plot the population pyramide 'Baseline Injury Level' - OVERALL----
-
+# Caculate the percentage of each baseline injury grade per year
 sygen.nli.proportions = sygen.included.cohort %>%
-  count(YEARDOI,NLI,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100) %>%
+  as.data.frame()
 
-#Model
+# Model
 sygen.nli.proportions.lm <-lm(frequency~YEARDOI, data=sygen.nli.proportions)
 summary(sygen.nli.proportions.lm)
 
-
-#Plot
+# Create plot
 sygen.nli.plot <- ggplot(data = sygen.nli.proportions, aes(x = YEARDOI, y = frequency, fill = NLI)) +
   geom_bar(data = sygen.nli.proportions %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -460,13 +462,16 @@ dev.off()
 
 
 
-#----Plot the population pyramide 'Baseline Injury Level' - AIS A----
+#---------- Plot the population pyramide 'Baseline Injury Level' - AIS A --------#
 
+# Count number of subject per year per plegia per sex
 sygen.nli.proportions.ais_a = subset(sygen.included.cohort, AIS=="AIS A") %>%
-  count(YEARDOI,NLI,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100) %>%
+  as.data.frame()
 
-
+# Create plot
 sygen.nli.ais.a <- ggplot(data = sygen.nli.proportions.ais_a, aes(x = YEARDOI, y = frequency, fill = NLI)) +
   geom_bar(data = sygen.nli.proportions.ais_a %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -489,6 +494,7 @@ sygen.nli.ais.a <- ggplot(data = sygen.nli.proportions.ais_a, aes(x = YEARDOI, y
   )
 sygen.nli.ais.a
 
+# Save plot
 ggsave(
   "nli.distribitution.ais_a.pdf",
   plot = sygen.nli.ais.a,
@@ -504,15 +510,16 @@ ggsave(
 dev.off()
 
 
+#---------- Plot the population pyramide 'Baseline Injury Level' - AIS B --------#
 
-#----Plot the population pyramide 'Baseline Injury Level' - AIS B----
-
-
+# Caculate the percentage of each baseline injury grade per year
 sygen.nli.proportions.ais_b = subset(sygen.included.cohort, AIS=="AIS B") %>%
-  count(YEARDOI,NLI,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>%
+  as.data.frame()
 
-
+# Create plot 
 sygen.nli.ais.b <- ggplot(data = sygen.nli.proportions.ais_b, aes(x = YEARDOI, y = frequency, fill = NLI)) +
   geom_bar(data = sygen.nli.proportions.ais_b %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -535,6 +542,7 @@ sygen.nli.ais.b <- ggplot(data = sygen.nli.proportions.ais_b, aes(x = YEARDOI, y
   )
 sygen.nli.ais.b
 
+# Save plot
 ggsave(
   "nli.distribitution.ais_b.pdf",
   plot = sygen.nli.ais.b,
@@ -549,14 +557,16 @@ ggsave(
 
 dev.off()
 
-#----Plot the population pyramide 'Baseline Injury Level' - AIS C----
+#---------- Plot the population pyramide 'Baseline Injury Level' - AIS C --------#
 
-
+# Caculate the percentage of each baseline injury grade per year
 sygen.nli.proportions.ais_c = subset(sygen.included.cohort, AIS=="AIS C") %>%
-  count(YEARDOI,NLI,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>%
+  as.data.frame()
 
-
+# Create plot
 sygen.nli.ais.c <- ggplot(data = sygen.nli.proportions.ais_c, aes(x = YEARDOI, y = frequency, fill = NLI)) +
   geom_bar(data = sygen.nli.proportions.ais_c %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -579,6 +589,7 @@ sygen.nli.ais.c <- ggplot(data = sygen.nli.proportions.ais_c, aes(x = YEARDOI, y
   )
 sygen.nli.ais.c
 
+# Save plot
 ggsave(
   "nli.distribitution.ais_c.pdf",
   plot = sygen.nli.ais.c,
@@ -594,13 +605,16 @@ ggsave(
 dev.off()
 
 
-#----Plot the population pyramide 'Baseline Injury Level' - AIS D----
+#---------- Plot the population pyramide 'Baseline Injury Level' - AIS D --------#
 
+# Caculate the percentage of each baseline injury grade per year
 sygen.nli.proportions.ais_d = subset(sygen.included.cohort, AIS=="AIS D") %>%
-  count(YEARDOI,NLI,Sex) %>%
-  group_by(YEARDOI,Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)%>%
+  as.data.frame()
 
-
+# Create plot
 sygen.nli.ais.d <- ggplot(data = sygen.nli.proportions.ais_d, aes(x = YEARDOI, y = frequency, fill = NLI)) +
   geom_bar(data = sygen.nli.proportions.ais_d %>% filter(Sex == "Female") %>% arrange(rev(YEARDOI)),
            stat = "identity")+
@@ -623,6 +637,7 @@ sygen.nli.ais.d <- ggplot(data = sygen.nli.proportions.ais_d, aes(x = YEARDOI, y
   )
 sygen.nli.ais.d
 
+# Save plot
 ggsave(
   "nli.distribitution.ais_d.pdf",
   plot = sygen.nli.ais.d,

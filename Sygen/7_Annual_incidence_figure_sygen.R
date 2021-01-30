@@ -17,34 +17,32 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-## Clear working space
-
-rm(list=ls())
-
-## set working directory for Mac
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
-
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
+##
 library(easyGgplot2)
 library(ggthemes)
 library(dplyr)
-
-## ----------------------------
-## Install packages needed:  (uncomment as required)
-
-#if(!require(easyGgplot2)){install.packages("easyGgplot2")}
-#if(!require(ggthemes)){install.packages("ggthemes")}
-#if(!require(dplyr)){install.packages("dplyr")}
-
-#### ---------------------------
-#Set output directorypaths
+##
+## ---------------------------
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+## ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
+##
+## ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
-
-
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 #load original dataset
@@ -57,15 +55,12 @@ sygen.included.cohort.all.times<- subset(sygen, (!is.na(Age)) & (Sex=="Female" |
 
 sygen_incidence <- distinct(subset(sygen.included.cohort.all.times, Time==0 | Time==1), ID, .keep_all = TRUE)
 
-
-
-
-#Calculate the annual incidence
+# Calculate the annual incidence
 value.sygen <-as.data.frame(sygen_incidence%>%
                         count(YEARDOI))
 
 
-#Plot the annual incidence
+# Plot the annual incidence
 annual.incidence.sygen <- ggplot2.barplot(data=value.sygen, xName="YEARDOI", yName='n',
                                           width=0.9, color="black")+
   geom_text(aes(label=n), vjust=-0.12, color="black", size=3)+
@@ -83,7 +78,7 @@ annual.incidence.sygen <- ggplot2.barplot(data=value.sygen, xName="YEARDOI", yNa
   )
 annual.incidence.sygen
 
-#Save Plot
+# Save Plot
 ggsave(
   "annual.incidence.sygen.pdf",
   plot = annual.incidence.sygen,
@@ -97,8 +92,6 @@ ggsave(
 )
 
 dev.off()
-
-
 
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####

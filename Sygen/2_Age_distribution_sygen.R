@@ -17,14 +17,10 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## set working directory for Mac and PC
-
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
-
 ## ---------------------------
+## 
 ## load up the packages we will need:  (uncomment as required)
+## 
 library(lme4)
 library(sjPlot) #To creats tables
 library(jtools)#To creats tables
@@ -39,49 +35,57 @@ library(Hmisc)
 library(scales)  #To recale the data
 library(splitstackshape) #To format the model output to a table
 library(lmerTest) #To run the mixed effect models
-
+## 
 ## ----------------------------
+## 
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(lme4)){install.packages("lme4")}
-#if(!require(sjPlot)){install.packages("sjPlot")}
-#if(!require(jtools)){install.packages("jtools")}
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(ggridges)){install.packages("ggridges")}
-#if(!require(ggpubr)){install.packages("ggpubr")}
-#if(!require(plyr)){install.packages("plyr")}
-#if(!require(dplyr)){install.packages("dplyr")}
+## 
+# if(!require(lme4)){install.packages("lme4")}
+# if(!require(sjPlot)){install.packages("sjPlot")}
+# if(!require(jtools)){install.packages("jtools")}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggridges)){install.packages("ggridges")}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(plyr)){install.packages("plyr")}
+# if(!require(dplyr)){install.packages("dplyr")}
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
+##
 #### ---------------------------
-#Clear working space
-
-rm(list = ls())
-
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
-
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-
-#load original dataset
+# Load original dataset
 sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 sygen.included.cohort.all.times<- subset(sygen, (!is.na(Age)) & (Sex=="Female" | Sex=="Male") & ###Age at DOI and Sex
                                  (NLI == 'cervical' | NLI == 'thoracic')&   ## Neurological level
                                  (AIS=="AIS A"| AIS=="AIS B"| AIS=="AIS C"| AIS=="AIS D")) #AIS Grades
 
 sygen.included.cohort <- distinct(subset(sygen.included.cohort.all.times, Time==0 | Time==1), ID, .keep_all = TRUE)
 
-#### ---------------------------Rescale Data
+# Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -97,20 +101,19 @@ sygen.included.cohort <-rescale.many(sygen.included.cohort, c(9))
 
 #### ---------------------------Age distribution over time: Data analysis ---------------------------
 
-#------Calculate the change in age distribution over time - OVERALL
+#---------- Calculate the change in age distribution over time - OVERALL --------#
 age_model.overall.sygen <-lm(Age~YEARDOI.rescaled*Sex, data=sygen.included.cohort)
 summary(age_model.overall.sygen)
 
-
-#------Calculate the change in age distribution over time - OVERALL FEMALE
+#---------- Calculate the change in age distribution over time - OVERALL FEMALE --------#
 age_model.overall.female.sygen <-lm(Age~YEARDOI.rescaled, data=subset(sygen.included.cohort, Sex=='Female'))
 summary(age_model.overall.female.sygen)
 
-#------Calculate the change in age distribution over time - OVERALL MALE
+#---------- Calculate the change in age distribution over time - OVERALL MALE --------#
 age_model.overall.male.sygen <-lm(Age~YEARDOI.rescaled, data=subset(sygen.included.cohort, Sex=='Male'))
 summary(age_model.overall.male.sygen)
 
-#----Create a table with summary statistics
+#---------- Create a table with summary statistics --------#
 tab_model(
   age_model.overall.sygen, age_model.overall.female.sygen, age_model.overall.male.sygen,
   pred.labels = c("Intercept", "Year of injury"),
@@ -121,14 +124,13 @@ tab_model(
   digits.p = 3
 )
 
-
-#------Calculate the change sex distribution over time for subgroups ----
+#---------- Calculate the change sex distribution over time for subgroups --------#
 ais.score.sygen<- unique(sygen.included.cohort$AIS)
 rescaled.nli.sygen <- unique(sygen.included.cohort$Plegia)
 rescaled.sex.sygen <- unique(sygen.included.cohort$Sex)
 
 
-#----- create data frame to store results
+#---------- create data frame to store results --------#
 results.sygen.age <- data.frame()
   for (j in rescaled.nli.sygen){
     for (i in ais.score.sygen){
@@ -137,7 +139,7 @@ results.sygen.age <- data.frame()
       mixed.lmer <- lm(Age ~ YEARDOI.rescaled, data = df1, na.action = na.omit)
       print(summary(mixed.lmer))
       
-      # ## capture summary stats
+      # Capture summary stats
       intercept.estimate <- coef(summary(mixed.lmer))[1]
       YEARDOI.estimate <- coef(summary(mixed.lmer))[2]
       intercept.std <- coef(summary(mixed.lmer))[3]
@@ -163,7 +165,7 @@ results.sygen.age <- data.frame()
     }
   }
 
-#------Create Table to export
+#------Create Table to export --------#
 
 results.sygen.age.new <-merged.stack(results.sygen.age,                ## Add the id if it doesn't exist
                                      var.stubs = c("estimate", "std", "tval", "pval"),   ## Specify the stubs
@@ -172,22 +174,22 @@ results.sygen.age.new <-merged.stack(results.sygen.age,                ## Add th
 
 results.sygen.age.new.df <- as.data.frame(results.sygen.age.new)
 
-#Rename variables
+# Rename variables
 names(results.sygen.age.new.df)[names(results.sygen.age.new.df) == '.time_1'] <- 'Variable'
 names(results.sygen.age.new.df)[names(results.sygen.age.new.df) == 'estimate'] <- 'Estimate'
 names(results.sygen.age.new.df)[names(results.sygen.age.new.df) == 'std'] <- 'Standard Error'
 names(results.sygen.age.new.df)[names(results.sygen.age.new.df) == 'tval'] <- 't-value'
 names(results.sygen.age.new.df)[names(results.sygen.age.new.df) == 'pval'] <- 'p-value'
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.age.new.df$order[(results.sygen.age.new.df$Variable == 'intercept.')] <- 1
 results.sygen.age.new.df$order[(results.sygen.age.new.df$Variable == 'YEARDOI.')] <- 2
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.age.new.df$Variable[(results.sygen.age.new.df$Variable == 'intercept.')] <- "Intercept"
 results.sygen.age.new.df$Variable[(results.sygen.age.new.df$Variable == 'YEARDOI.')] <- "YEARDOI"
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.age.new.df$model_temp[(results.sygen.age.new.df$plegia == "para" & results.sygen.age.new.df$AIS == "AIS A")] <- 'Paraplegia:AIS A'
 results.sygen.age.new.df$model_temp[(results.sygen.age.new.df$plegia == "para" & results.sygen.age.new.df$AIS == "AIS B")] <- 'Paraplegia:AIS B'
 results.sygen.age.new.df$model_temp[(results.sygen.age.new.df$plegia == "para" & results.sygen.age.new.df$AIS == "AIS C" )] <- 'Paraplegia:AIS C'
@@ -198,19 +200,18 @@ results.sygen.age.new.df$model_temp[(results.sygen.age.new.df$plegia == "tetra" 
 results.sygen.age.new.df$model_temp[(results.sygen.age.new.df$plegia == "tetra" & results.sygen.age.new.df$AIS == "AIS C" )] <- 'Tetraplegia:AIS C'
 results.sygen.age.new.df$model_temp[(results.sygen.age.new.df$plegia == "tetra" & results.sygen.age.new.df$AIS == "AIS D" )] <- 'Tetraplegia:AIS D'
 
-
-#Add adjusted p-value column
+# Add adjusted p-value column
 results.sygen.age.new.df$Adjusted.pval<- as.numeric(results.sygen.age.new.df$`p-value`)*8
 
-#Rename column
+# Rename column
 names(results.sygen.age.new.df)[names(results.sygen.age.new.df) == 'Adjusted.pval'] <- 'Adjusted p-value'
 
-#Make t-value, p-value, and Adjusted p-value numeric
+# Make t-value, p-value, and Adjusted p-value numeric
 results.sygen.age.new.df$`t-value`<-as.numeric(results.sygen.age.new.df$`t-value`)
 results.sygen.age.new.df$`p-value`<-as.numeric(results.sygen.age.new.df$`p-value`)
 results.sygen.age.new.df$`Adjusted p-value`<-as.numeric(results.sygen.age.new.df$`Adjusted p-value`)
 
-#Function to round to 3 digits
+# Function to round to 3 digits
 round_df <- function(x, digits) {
   # round all numeric variables
   # x: data frame 
@@ -222,11 +223,10 @@ round_df <- function(x, digits) {
 
 results.sygen.age.new.df.2 <- round_df(results.sygen.age.new.df, 3)
 
-
-#Sort data
+# Sort data
 results.sygen.age.new.df.3digits <- arrange(results.sygen.age.new.df.2,model_temp,order)
 
-#Create a new variable based on condition
+# Create a new variable based on condition
 results.sygen.age.new.df.3digits$Model[(results.sygen.age.new.df.3digits$plegia == "tetra" & results.sygen.age.new.df.3digits$AIS == "AIS A" & results.sygen.age.new.df.3digits$order==1)] <- 'Tetraplegia: AIS A'
 results.sygen.age.new.df.3digits$Model[(results.sygen.age.new.df.3digits$plegia == "tetra" & results.sygen.age.new.df.3digits$AIS == "AIS B"& results.sygen.age.new.df.3digits$order==1)] <- 'Tetraplegia: AIS B'
 results.sygen.age.new.df.3digits$Model[(results.sygen.age.new.df.3digits$plegia == "tetra" & results.sygen.age.new.df.3digits$AIS == "AIS C" & results.sygen.age.new.df.3digits$order==1)] <- 'Tetraplegia: AIS C'
@@ -241,21 +241,21 @@ results.sygen.age.new.df.3digits$Model[(results.sygen.age.new.df.3digits$plegia 
 results.sygen.age.new.df.3digits[is.na(results.sygen.age.new.df.3digits)] <- ""
 results.sygen.age.new.df.3digits[results.sygen.age.new.df.3digits == "<NA>"] <- ""
 
-#Write csv file with only selected columns
+# Write csv file with only selected columns
 write.csv(results.sygen.age.new.df.3digits[,c(11,3:7,10)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables/Age_distribution_sygen.csv", row.names = F)
 
 
-#### ---------------------------Age distribution over time: Data analysis ---------------------------
+#---------- Age distribution over time: Data analysis --------#
 
-#---Visualization: Change in age distribution between 1992-1997 years - OVERALL-----
+#---------- Visualization: Change in age distribution between 1992-1997 years - OVERALL --------#
 
-#Set theme
+# Set theme
 theme_set(theme_ridges())
 
+# Change labels
 levels(sygen.included.cohort$Sex) <- c("Female", "Male")
 
-
-#Create plot
+# Create plot
 age_overall.sygen <- ggplot(
   sygen.included.cohort, 
   aes(y = as.factor(YEARDOI) , x = Age)
@@ -286,9 +286,9 @@ age_overall.sygen <- ggplot(
         legend.text  = element_text(size = 10),
         legend.title = element_text(size = 10),
         legend.text.align = 0)
-
 age_overall.sygen
 
+# Save plot
 ggsave(
   "age_overall.sygen.pdf",
   plot = age_overall.sygen,
@@ -303,18 +303,18 @@ ggsave(
 
 dev.off()
 
-#---Visualization: Change in age distribution between 1992-1997 years - PARAPLEGIA-----
+#---------- Visualization: Change in age distribution between 1992-1997 years - PARAPLEGIA --------#
 
-#Set theme
-
+# Set theme
 theme_set(theme_ridges())
 
+# Change labels
 levels(sygen.included.cohort$Sex) <- c("Female", "Male")
 
+# Subset data
 sygen.included.cohort.para <-subset(sygen.included.cohort, Plegia =='para')
 
-
-#Create plot
+# Create plot
 age_para.sygen <- ggplot(
   sygen.included.cohort.para, 
   aes(y = as.factor(YEARDOI) , x = Age)
@@ -345,9 +345,9 @@ age_para.sygen <- ggplot(
         legend.text  = element_text(size = 10),
         legend.title = element_text(size = 10),
         legend.text.align = 0)
-
 age_para.sygen
 
+# Save plot
 ggsave(
   "age_para.sygen.pdf",
   plot = age_para.sygen,
@@ -362,14 +362,15 @@ ggsave(
 
 dev.off()
 
-#---Visualization: Change in age distribution between 1992-1997 years - TETRAPLEGIA-----
+#---------- Visualization: Change in age distribution between 1992-1997 years - TETRAPLEGIA --------#
 
+# Change labels
 levels(sygen.included.cohort$Sex) <- c("Female", "Male")
 
+# Subset data
 sygen.included.cohort.tetra <-subset(sygen.included.cohort, Plegia =='tetra')
 
-
-#Create plot
+# Create plot
 age_tetra.sygen <- ggplot(
   sygen.included.cohort.tetra, 
   aes(y = as.factor(YEARDOI) , x = Age)
@@ -400,9 +401,9 @@ age_tetra.sygen <- ggplot(
         legend.text  = element_text(size = 10),
         legend.title = element_text(size = 10),
         legend.text.align = 0)
-
 age_tetra.sygen
 
+# Save plot
 ggsave(
   "age_tetra.sygen.pdf",
   plot = age_tetra.sygen,
@@ -417,7 +418,7 @@ ggsave(
 
 dev.off()
 
-
+#### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
 
 

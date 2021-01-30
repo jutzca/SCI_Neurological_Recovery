@@ -17,14 +17,10 @@
 ##
 ## Notes: Code for the publication XXX
 ##   
-#### ---------------------------
-
-## set working directory for Mac and PC
-
-setwd("/Users/jutzca/Documents/GitHub/SCI_Neurological_Recovery/Sygen") 
-
 ## ---------------------------
+##
 ## load up the packages we will need:  (uncomment as required)
+##
 library(lme4)
 library(sjPlot) #To creats tables
 library(jtools)#To creats tables
@@ -45,46 +41,60 @@ library(gridExtra)
 library(grid)
 library(forcats)
 library(viridis)
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(lme4)){install.packages("lme4")}
-#if(!require(sjPlot)){install.packages("sjPlot")}
-#if(!require(jtools)){install.packages("jtools")}
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(ggridges)){install.packages("ggridges")}
-#if(!require(ggpubr)){install.packages("ggpubr")}
-#if(!require(plyr)){install.packages("plyr")}
-#if(!require(dplyr)){install.packages("dplyr")}
+##
+# if(!require(lme4)){install.packages("lme4")}
+# if(!require(sjPlot)){install.packages("sjPlot")}
+# if(!require(jtools)){install.packages("jtools")}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggridges)){install.packages("ggridges")}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(plyr)){install.packages("plyr")}
+# if(!require(dplyr)){install.packages("dplyr")}
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
-
+##
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
+##
+#### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-
-#load original dataset
+# Load original dataset
 sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 sygen.included.cohort.all.times<- subset(sygen, (!is.na(Age)) & (Sex=="Female" | Sex=="Male") & ###Age at DOI and Sex
                                            (NLI == 'cervical' | NLI == 'thoracic')&   ## Neurological level
                                            (AIS=="AIS A"| AIS=="AIS B"| AIS=="AIS C"| AIS=="AIS D")) #AIS Grades
 
 sygen.included.cohort.all.times.2 <- subset(sygen.included.cohort.all.times, (Plegia=='para' | Plegia=="tetra"))
 
-#------LEMS Sygen ----
+#---------- LEMS Sygen --------#
 sygen.included.cohort.all.times.2$LEMS <- as.numeric(sygen.included.cohort.all.times.2$LEMS)
 
-#Create data frame with mean and sd for lems
+# Create data frame with mean and sd for lems
 new.data.lems.sygen =sygen.included.cohort.all.times.2 %>%
   group_by(AIS, Time, Plegia) %>%
   dplyr::summarize( 
@@ -92,18 +102,18 @@ new.data.lems.sygen =sygen.included.cohort.all.times.2 %>%
     mean_LEMS = mean(LEMS, na.rm=TRUE),
     sd_LEMS = sd(LEMS, na.rm=TRUE))
 
-#Write data file
+# Write data file
 write.csv(new.data.lems.sygen, '/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables/lems.sygen.csv')
 
-#To reverse the order of levels of AIS
+# To reverse the order of levels of AIS
 new.data.lems.sygen$AIS <- factor(new.data.lems.sygen$AIS, levels=rev(levels(new.data.lems.sygen$AIS)))
 levels(new.data.lems.sygen$Plegia)<-c("Paraplegia\n", 'Tetraplegia\n') 
 
-#Round values to 1 digits
+# Round values to 1 digits
 new.data.lems.sygen$mean_LEMS <- round(new.data.lems.sygen$mean_LEMS,1 )
 new.data.lems.sygen$mean_LEMS <- round(new.data.lems.sygen$mean_LEMS, 1)
 
-#------Plot the data
+# Create plot
 lems.sygen.plot <- ggplot(new.data.lems.sygen,aes(x = as.factor(Time),y = AIS,fill = mean_LEMS)) + 
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 50))+
   facet_grid(.~new.data.lems.sygen$Plegia)+theme_economist()+
@@ -118,6 +128,7 @@ lems.sygen.plot <- ggplot(new.data.lems.sygen,aes(x = as.factor(Time),y = AIS,fi
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 lems.sygen.plot 
 
+# Save plot
 ggsave(
   "lems.sygen.plot.pdf",
   plot = lems.sygen.plot,
@@ -132,8 +143,9 @@ ggsave(
 
 dev.off()
 
-###Create longitudinal lems trajectory figure
+#---------- Create longitudinal lems trajectory figure --------#
 
+# Create plot
 lems.trajectory.sygen.plot <- ggplot() +
   stat_summary(aes(x = as.numeric(Time),y = as.numeric(LEMS), group=AIS), data=sygen.included.cohort.all.times.2, fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
@@ -144,7 +156,7 @@ lems.trajectory.sygen.plot <- ggplot() +
         axis.text.x = element_text(face='bold'))
 lems.trajectory.sygen.plot
 
-
+# Save plot
 ggsave(
   "lems.trajectory.sygen.plot.pdf",
   plot = lems.trajectory.sygen.plot,
@@ -160,12 +172,10 @@ ggsave(
 dev.off()
 
 
-
-
-#------UEMS Sygen ----
+#---------- UEMS Sygen --------#
 sygen.included.cohort.all.times.2$UEMS <- as.numeric(sygen.included.cohort.all.times.2$UEMS)
 
-#Create data frame with mean and sd for UEMS
+# Create data frame with mean and sd for UEMS
 new.data.uems.sygen =sygen.included.cohort.all.times.2 %>%
   group_by(AIS, Time, Plegia) %>%
   dplyr::summarize( 
@@ -173,18 +183,18 @@ new.data.uems.sygen =sygen.included.cohort.all.times.2 %>%
     mean_uems = mean(UEMS, na.rm=TRUE),
     sd_uems = sd(UEMS, na.rm=TRUE))
 
-#Write data file
+# Write data file
 write.csv(new.data.uems.sygen, '/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables/uems.sygen.csv')
 
-#To reverse the order of levels of AIS
+# To reverse the order of levels of AIS
 new.data.uems.sygen$AIS <- factor(new.data.uems.sygen$AIS, levels=rev(levels(new.data.uems.sygen$AIS)))
 levels(new.data.uems.sygen$Plegia)<-c("Paraplegia\n", 'Tetraplegia\n') 
 
-#Round values to 1 digits
+# Round values to 1 digits
 new.data.uems.sygen$mean_uems <- round(new.data.uems.sygen$mean_uems,1 )
 new.data.uems.sygen$mean_uems <- round(new.data.uems.sygen$mean_uems, 1)
 
-#------Plot the data
+# Create plot
 uems.sygen.plot <- ggplot(new.data.uems.sygen,aes(x = as.factor(Time),y = AIS,fill = mean_uems)) + 
   geom_tile()+scale_fill_viridis(option = "inferno",  direction = -1, limits = c(-8, 50))+
   facet_grid(.~new.data.uems.sygen$Plegia)+theme_economist()+
@@ -199,6 +209,7 @@ uems.sygen.plot <- ggplot(new.data.uems.sygen,aes(x = as.factor(Time),y = AIS,fi
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 uems.sygen.plot 
 
+# Save plot
 ggsave(
   "uems.sygen.plot.pdf",
   plot = uems.sygen.plot,
@@ -214,8 +225,7 @@ ggsave(
 dev.off()
 
 
-
-###Create longitudinal uems trajectory figure
+#---------- Create longitudinal uems trajectory figure --------#
 
 uems.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(UEMS), group=AIS)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
@@ -227,7 +237,7 @@ uems.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = a
         axis.text.x = element_text(face='bold'))
 uems.trajectory.sygen.plot
 
-
+# Save plot
 ggsave(
   "uems.trajectory.sygen.plot.pdf",
   plot = uems.trajectory.sygen.plot,
@@ -243,10 +253,10 @@ ggsave(
 dev.off()
 
 
-#------TSS Sygen ----
+#---------- TSS Sygen --------#
 sygen.included.cohort.all.times.2$tss <- as.numeric(sygen.included.cohort.all.times.2$TSS)
 
-#Create data frame with mean and sd for tss
+# Create data frame with mean and sd for tss
 new.data.tss.sygen =sygen.included.cohort.all.times.2 %>%
   group_by(AIS, Time, Plegia) %>%
   dplyr::summarize( 
@@ -254,18 +264,18 @@ new.data.tss.sygen =sygen.included.cohort.all.times.2 %>%
     mean_tss = mean(TSS, na.rm=TRUE),
     sd_tss = sd(TSS, na.rm=TRUE))
 
-#Write data file
+# Write data file
 write.csv(new.data.tss.sygen, '/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables/tss.sygen.csv')
 
-#To reverse the order of levels of AIS
+# To reverse the order of levels of AIS
 new.data.tss.sygen$AIS <- factor(new.data.tss.sygen$AIS, levels=rev(levels(new.data.tss.sygen$AIS)))
 levels(new.data.tss.sygen$Plegia)<-c("Paraplegia\n", 'Tetraplegia\n') 
 
-#Round values to 1 digits
+# Round values to 1 digits
 new.data.tss.sygen$mean_tss <- round(new.data.tss.sygen$mean_tss,1 )
 new.data.tss.sygen$mean_tss <- round(new.data.tss.sygen$mean_tss, 1)
 
-#------Plot the data
+# Create plot
 tss.sygen.plot <- ggplot(new.data.tss.sygen,aes(x = as.factor(Time),y = AIS,fill = mean_tss)) + 
   geom_tile()+scale_fill_viridis(option = "viridis",  direction = -1, limits = c(0, 180))+
   facet_grid(.~new.data.tss.sygen$Plegia)+theme_economist()+
@@ -280,6 +290,7 @@ tss.sygen.plot <- ggplot(new.data.tss.sygen,aes(x = as.factor(Time),y = AIS,fill
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 tss.sygen.plot 
 
+# Save plot
 ggsave(
   "tss.sygen.plot.pdf",
   plot = tss.sygen.plot,
@@ -296,8 +307,9 @@ dev.off()
 
 
 
-###Create longitudinal tss trajectory figure
+#---------- Create longitudinal tss trajectory figure --------#
 
+# Create plot
 tss.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TSS), group=AIS)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
@@ -308,7 +320,7 @@ tss.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as
         axis.text.x = element_text(face='bold'))
 tss.trajectory.sygen.plot
 
-
+# Save plot
 ggsave(
   "tss.trajectory.sygen.plot.pdf",
   plot = tss.trajectory.sygen.plot,
@@ -323,9 +335,9 @@ ggsave(
 
 dev.off()
 
-#------TMS Sygen ----
-###Create longitudinal TMS trajectory figure
+#---------- TMS Sygen --------#
 
+# Create plot
 tms.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TMS), group=AIS)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
@@ -336,7 +348,7 @@ tms.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as
         axis.text.x = element_text(face='bold'))
 tms.trajectory.sygen.plot
 
-
+# Save plot
 ggsave(
   "tms.trajectory.sygen.plot.pdf",
   plot = tms.trajectory.sygen.plot,
@@ -351,9 +363,9 @@ ggsave(
 
 dev.off()
 
+#---------- Pinprick Sygen --------#
 
-
-#------Pinprick Sygen ----
+# Create plot
 pp.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TPP), group=AIS)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
@@ -365,7 +377,7 @@ pp.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.
         axis.text.x = element_text(face='bold'))
 pp.trajectory.sygen.plot
 
-
+#Save plot
 ggsave(
   "pp.trajectory.sygen.plot.pdf",
   plot = pp.trajectory.sygen.plot,
@@ -381,7 +393,9 @@ ggsave(
 dev.off()
 
 
-#------Light Touch Sygen ----
+#---------- Light Touch Sygen --------#
+
+# Create plot
 lt.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.numeric(Time),y = as.numeric(TLT), group=AIS)) +
   stat_summary(fun.data = "mean_cl_boot", geom="smooth", se = TRUE, color="red", size=0.5)+
   facet_grid(sygen.included.cohort.all.times.2$Plegia~sygen.included.cohort.all.times.2$AIS)+
@@ -393,7 +407,7 @@ lt.trajectory.sygen.plot <- ggplot(sygen.included.cohort.all.times.2,aes(x = as.
         axis.text.x = element_text(face='bold'))
 lt.trajectory.sygen.plot
 
-
+# Save plot
 ggsave(
   "lt.trajectory.sygen.plot.pdf",
   plot = lt.trajectory.sygen.plot,
@@ -408,15 +422,4 @@ ggsave(
 
 dev.off()
 
-
-
-
-
-
-
-
-
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
-
-
-

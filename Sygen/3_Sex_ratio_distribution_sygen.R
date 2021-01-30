@@ -43,45 +43,56 @@ library(data.table)
 library(magrittr)
 library(gridExtra)
 library(grid)
-
+##
 ## ----------------------------
+##
 ## Install packages needed:  (uncomment as required)
-
-#if(!require(lme4)){install.packages("lme4")}
-#if(!require(sjPlot)){install.packages("sjPlot")}
-#if(!require(jtools)){install.packages("jtools")}
-#if(!require(ggplot2)){install.packages("ggplot2")}
-#if(!require(ggridges)){install.packages("ggridges")}
-#if(!require(ggpubr)){install.packages("ggpubr")}
-#if(!require(plyr)){install.packages("plyr")}
-#if(!require(dplyr)){install.packages("dplyr")}
+##
+# if(!require(lme4)){install.packages("lme4")}
+# if(!require(sjPlot)){install.packages("sjPlot")}
+# if(!require(jtools)){install.packages("jtools")}
+# if(!require(ggplot2)){install.packages("ggplot2")}
+# if(!require(ggridges)){install.packages("ggridges")}
+# if(!require(ggpubr)){install.packages("ggpubr")}
+# if(!require(plyr)){install.packages("plyr")}
+# if(!require(dplyr)){install.packages("dplyr")}
 # if(!require(tidyr)){install.packages("tidyr")}
 # if(!require(ggthemes)){install.packages("ggthemes")}
 # if(!require(Hmisc)){install.packages("Hmisc")}
 # if(!require(scales)){install.packages("scales")}
 # if(!require(splitstackshape)){install.packages("splitstackshape")}
 # if(!require(lmerTest)){install.packages("lmerTest")}
-
-
 #### ---------------------------
-#Set output directorypaths
+##
+## R Studio Clean-Up:
+cat("\014") # clear console
+rm(list=ls()) # clear workspace
+gc() # garbage collector
+##
+#### ---------------------------
+##
+## Set working directory 
+setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen") 
+##
+#### ---------------------------
+##
+## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Tables'
-
-
+##
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
-#load original dataset
+# Load original dataset
 sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
-#Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
+# Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 sygen.included.cohort.all.times<- subset(sygen, (!is.na(Age)) & (Sex=="Female" | Sex=="Male") & ###Age at DOI and Sex
                                            (NLI == 'cervical' | NLI == 'thoracic')&   ## Neurological level
                                            (AIS=="AIS A"| AIS=="AIS B"| AIS=="AIS C"| AIS=="AIS D")) #AIS Grades
 
 sygen.included.cohort <- distinct(subset(sygen.included.cohort.all.times, Time==0 | Time==1), ID, .keep_all = TRUE)
 
-#### ---------------------------Rescale Data
+# Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -94,18 +105,18 @@ rescale.many <- function(dat, column.nos) {
 
 sygen.included.cohort <-rescale.many(sygen.included.cohort, c(9)) 
 
-#### --------------------------- Count percentage of female and male subjects by Year of Injury - OVERAL ---------------------------####
+#---------- Count percentage of female and male subjects by Year of Injury - OVERAL --------#
 
 sex_ratios.overall.sygen = sygen.included.cohort %>%
-  count(Sex, YEARDOI.rescaled) %>%
-  group_by(YEARDOI.rescaled)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI.rescaled) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
-#Reshape data from long to wide in order to calculate ratios
+# Reshape data from long to wide in order to calculate ratios
 sex_ratios.overall.sygen <- dcast(sex_ratios.overall.sygen, YEARDOI.rescaled ~ Sex, value.var="n")
 sex_ratios.overall.sygen
 
-#Calculate ratios
+# Calculate ratios
 sex_ratios.overall.sygen$Ratios <-
   case_when(
     is.na(sex_ratios.overall.sygen$Male) & is.na(sex_ratios.overall.sygen$Female) ~ 1,
@@ -114,21 +125,21 @@ sex_ratios.overall.sygen$Ratios <-
     TRUE ~ sex_ratios.overall.sygen$Male / sex_ratios.overall.sygen$Female
   )
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.overall.sygen.lm <- lm(Ratios~YEARDOI.rescaled, data=sex_ratios.overall.sygen)
 summary(sex_ratios.overall.sygen.lm)
 
-#### --------------------------- Count percentage of female and male subjects by Year of Injury - Per AIS Grades ---------------------------####
+#---------- Count percentage of female and male subjects by Year of Injury - Per AIS Grades --------#
 sex_ratios.ais.sygen = sygen.included.cohort %>%
-  count(Sex, YEARDOI.rescaled, AIS) %>%
-  group_by(YEARDOI.rescaled)%>%
-  mutate(frequency = (n / sum(n))*100)
+ dplyr::count(Sex, YEARDOI.rescaled, AIS) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
-#Reshape data from long to wide in order to calculate ratios
+# Reshape data from long to wide in order to calculate ratios
 sex_ratios.ais.sygen <- dcast(sex_ratios.ais.sygen, YEARDOI.rescaled ~ Sex+AIS, value.var="n")
 sex_ratios.ais.sygen
 
-#Calculate ratios
+# Calculate ratios
 sex_ratios.ais.sygen$Ratios_A <-
   case_when(
     is.na(sex_ratios.ais.sygen$`Male_AIS A`) & is.na(sex_ratios.ais.sygen$`Female_AIS A`) ~ 1,
@@ -162,35 +173,35 @@ sex_ratios.ais.sygen$Ratios_D <-
     TRUE ~ sex_ratios.ais.sygen$`Male_AIS D`/ sex_ratios.ais.sygen$`Female_AIS D`
   )
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.sygen.ais.a.lm <- lm(Ratios_A~YEARDOI.rescaled, data=sex_ratios.ais.sygen)
 summary(sex_ratios.sygen.ais.a.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.sygen.ais.b.lm <- lm(Ratios_B~YEARDOI.rescaled, data=sex_ratios.ais.sygen)
 summary(sex_ratios.sygen.ais.b.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.sygen.ais.c.lm <- lm(Ratios_C~YEARDOI.rescaled, data=sex_ratios.ais.sygen)
 summary(sex_ratios.sygen.ais.c.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.sygen.d.lm <- lm(Ratios_D~YEARDOI.rescaled, data=sex_ratios.ais.sygen)
 summary(sex_ratios.sygen.d.lm)
 
 
-#### --------------------------- Count percentage of female and male subjects by Year of Injury - PLEGIA ---------------------------####
+#---------- Count percentage of female and male subjects by Year of Injury - PLEGIA --------#
 
 sex_ratios.plegia.sygen = sygen.included.cohort %>%
-  count(Sex, YEARDOI.rescaled, Plegia) %>%
-  group_by(YEARDOI.rescaled)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(Sex, YEARDOI.rescaled, Plegia) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
-#Reshape data from long to wide in order to calculate ratios
+# Reshape data from long to wide in order to calculate ratios
 sex_ratios.plegia.sygen <- dcast(sex_ratios.plegia.sygen, YEARDOI.rescaled ~ Sex+Plegia, value.var="n")
 sex_ratios.plegia.sygen
 
-#Calculate ratios
+# Calculate ratios
 sex_ratios.plegia.sygen$Ratios_para <-
   case_when(
     is.na(sex_ratios.plegia.sygen$Male_para) & is.na(sex_ratios.plegia.sygen$Female_para) ~ 1,
@@ -207,27 +218,27 @@ sex_ratios.plegia.sygen$Ratios_tetra <-
     TRUE ~ sex_ratios.plegia.sygen$Male_tetra/ sex_ratios.plegia.sygen$Female_tetra
   )
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.sygen.tetra.lm <- lm(Ratios_tetra~YEARDOI.rescaled, data=sex_ratios.plegia.sygen)
 summary(sex_ratios.sygen.tetra.lm)
 
-#Run LM to investigate if there was a change in sex ratio between 2001 and 2019
+# Run LM to investigate if there was a change in sex ratio between 2001 and 2019
 sex_ratios.sygen.para.lm <- lm(Ratios_para~YEARDOI.rescaled, data=sex_ratios.plegia.sygen)
 summary(sex_ratios.sygen.para.lm)
 
 
-
-
-
-
 #### --------------------------- Visualize Results ---------------------------####
-#------Calculate the number of patients per year by sex - Overall----
+
+#---------- Calculate the number of patients per year by sex - Overall --------#
+
 sygen.sex.long <- sygen.included.cohort %>%
-  count(Sex, YEARDOI) %>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by sex - OVERALL ----
-##Plot data for the male patients
+  dplyr::count(Sex, YEARDOI) %>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
+
+#---------- Plot population pyramide for year and color by sex - OVERALL --------#
+
+# Plot data for the male patients
 gg.male.sygen <- ggplot(data = subset(sygen.sex.long,Sex=='Male'), 
                         mapping = aes(
                           x = as.factor(YEARDOI), 
@@ -260,7 +271,7 @@ gg.male.sygen <- ggplot(data = subset(sygen.sex.long,Sex=='Male'),
   coord_flip()    
 gg.male.sygen
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.sygen <-  ggplot(data = subset(sygen.sex.long,Sex=='Female'), 
                            mapping = aes(
                              x = as.factor(YEARDOI), 
@@ -293,14 +304,14 @@ gg.female.sygen <-  ggplot(data = subset(sygen.sex.long,Sex=='Female'),
   coord_flip()
 gg.female.sygen
 
-## Plutting the graphs together together
+# Putting the graphs together
 sex.overall.sygen <- grid.arrange(gg.female.sygen,
                                   gg.male.sygen,
                                   widths=c(0.4,0.4),
                                   ncol=2,  top = textGrob("Overall",gp=gpar(fontsize=12,font=2))
 )
 
-
+# Save plot
 ggsave(
   "sex.overall.sygen.pdf",
   plot = sex.overall.sygen,
@@ -315,14 +326,16 @@ ggsave(
 
 dev.off()
 
-#------Calculate the number of patients per year by sex - PARAPLEGIA----
-sygen.included.cohort.para <- subset(sygen.included.cohort, Plegia=='para') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+#---------- Calculate the number of patients per year by sex - PARAPLEGIA --------#
 
-#------Plot population pyramide for year and color by sex- PARAPLEGIA ----
-##Plot data for the male patients
+sygen.included.cohort.para <- subset(sygen.included.cohort, Plegia=='para') %>%
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
+
+#---------- Plot population pyramide for year and color by sex- PARAPLEGIA --------#
+
+# Plot data for the male patients
 gg.male.para.sygen <- ggplot(data = subset(sygen.included.cohort.para,Sex=='Male'), 
                              mapping = aes(
                                x = as.factor(YEARDOI), 
@@ -355,7 +368,7 @@ gg.male.para.sygen <- ggplot(data = subset(sygen.included.cohort.para,Sex=='Male
   coord_flip()    
 gg.male.para.sygen
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.para.sygen <-  ggplot(data = subset(sygen.included.cohort.para,Sex=='Female'), 
                                 mapping = aes(
                                   x = as.factor(YEARDOI), 
@@ -386,17 +399,16 @@ gg.female.para.sygen <-  ggplot(data = subset(sygen.included.cohort.para,Sex=='F
         legend.text.align = 0)+ 
   ggtitle("Female") + 
   coord_flip()
-
 gg.female.para.sygen
 
-## Plutting the graphs together together
+# Putting the graphs together
 sex.paraplegia.sygen <- grid.arrange(gg.female.para.sygen,
                                      gg.male.para.sygen,
                                      widths=c(0.4,0.4),
                                      ncol=2,  top = textGrob("Paraplegia",gp=gpar(fontsize=12,font=2))
 )
 
-
+# Save plot
 ggsave(
   "sex.paraplegia.sygen.pdf",
   plot = sex.paraplegia.sygen,
@@ -411,13 +423,16 @@ ggsave(
 
 dev.off()
 
-#------Calculate the number of patients per year by sex - TETRAPLEGIA----
+#---------- Calculate the number of patients per year by sex - TETRAPLEGIA --------#
+
 sygen.included.cohort.tetra <- subset(sygen.included.cohort, Plegia=='tetra') %>%
-  count(Sex, YEARDOI)%>%
-  group_by(YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
-#------Plot population pyramide for year and color by Sex - TETRAPLEGIA ----
-##Plot data for the male patients
+  dplyr::count(Sex, YEARDOI)%>%
+  dplyr::group_by(YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
+
+#---------- Plot population pyramide for year and color by Sex - TETRAPLEGIA ----
+
+# Plot data for the male patients
 gg.male.tetra.sygen <- ggplot(data = subset(sygen.included.cohort.tetra,Sex=='Male'), 
                               mapping = aes(
                                 x = as.factor(YEARDOI), 
@@ -448,10 +463,9 @@ gg.male.tetra.sygen <- ggplot(data = subset(sygen.included.cohort.tetra,Sex=='Ma
         legend.text.align = 0)+ 
   ggtitle("Male") + 
   coord_flip()   
-
 gg.male.tetra.sygen
 
-##Plot data for the female patients
+# Plot data for the female patients
 gg.female.tetra.sygen <-  ggplot(data = subset(sygen.included.cohort.tetra,Sex=='Female'), 
                                  mapping = aes(
                                    x = as.factor(YEARDOI), 
@@ -484,13 +498,14 @@ gg.female.tetra.sygen <-  ggplot(data = subset(sygen.included.cohort.tetra,Sex==
   coord_flip()
 gg.female.tetra.sygen
 
-## Plutting the graphs together together
+# Putting the graphs together
 sex.tetrapelgia.sygen <- grid.arrange(gg.female.tetra.sygen,
                                       gg.male.tetra.sygen,
                                       widths=c(0.4,0.4),
                                       ncol=2,  top = textGrob("Tetraplegia",gp=gpar(fontsize=12,font=2))
 )
 
+# Save plot
 ggsave(
   "sex.tetrapelgia.sygen.pdf",
   plot = sex.tetrapelgia.sygen,
@@ -505,11 +520,4 @@ ggsave(
 
 dev.off()
 
-
-
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
-
-
-
-
-
