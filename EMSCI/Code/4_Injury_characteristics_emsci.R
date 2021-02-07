@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Script name: injury_characteristics_emsci
+## Script name: 4_baseline_injury_characteristics_emsci
 ##
 ## Purpose of script: To determine if and to what extent the injury characteristics of SCI patients changed between 2001 and 2019.
 ##
@@ -295,19 +295,19 @@ write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzele
 
 # Caculate the percentage of each AIS grade per year
 emsci.ais.proportions = emsci.trauma.sex.va.a1 %>%
-  count(YEARDOI,AIS,Sex) %>%
-  group_by(YEARDOI, Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(X2_year_bins,AIS,Sex) %>%
+  dplyr::group_by(X2_year_bins, Sex)%>% mutate(frequency = (n / sum(n))*100)
 
 #---------- Plot the population pyramide 'Baseline Injury Severity' - OVERALL --------#
-emsci.ais.plot <-ggplot(data = emsci.ais.proportions, aes(x = YEARDOI, y = frequency, fill = AIS)) +
-  geom_bar(data = emsci.ais.proportions %>% filter(Sex == "f") %>% arrange(rev(YEARDOI)),
+emsci.ais.plot <-ggplot(data = emsci.ais.proportions, aes(x = X2_year_bins, y = frequency, fill = AIS)) +
+  geom_bar(data = emsci.ais.proportions %>% filter(Sex == "f") %>% arrange(rev(X2_year_bins)),
            stat = "identity")+
-  geom_bar(data = emsci.ais.proportions %>% filter(Sex == "m") %>% arrange(rev(YEARDOI)),
+  geom_bar(data = emsci.ais.proportions %>% filter(Sex == "m") %>% arrange(rev(X2_year_bins)),
            stat = "identity",
            mapping = aes(y = -frequency)) +
   coord_flip() +
-  scale_y_continuous(labels = abs, limits = c(-101, 101), breaks = seq(-100, 100, 10), expand = c(0,0)) +
-  scale_x_continuous(labels = abs, limits = c(2000, 2020), breaks = seq(2001, 2019, 1), expand = c(0,0))+ 
+  scale_y_continuous(labels = abs, limits = c(-101, 101), breaks = seq(-100, 100, 20), expand = c(0,0)) +
+  #scale_x_continuous(labels = abs, limits = c(2000, 2020), breaks = seq(2001, 2019, 1), expand = c(0,0))+ 
   geom_hline(yintercept = 0) +
   theme_economist(horizontal = FALSE) +
   scale_fill_economist() +
@@ -433,8 +433,8 @@ dev.off()
 #---------- Plot the population pyramide 'Baseline Injury Level' - OVERALL --------#
 
 emsci.nli.proportions = emsci.trauma.sex.va.a1 %>%
-  count(YEARDOI,NLI_level,Sex) %>%
-  group_by(YEARDOI,Sex)%>%
+  dplyr::count(X2_year_bins,NLI_level,Sex) %>%
+  dplyr::group_by(X2_year_bins,Sex)%>%
  mutate(frequency = (n / sum(n))*100)
 
 #Reorder levels

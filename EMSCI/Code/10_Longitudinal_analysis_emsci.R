@@ -76,7 +76,7 @@ emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' |
 emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 
 # Merge
-emsci.trauma.sex.baseline.ais <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
+emsci.trauma.sex.baseline.ais <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,244)])
 
 #Convert certain columns to numeric
 emsci.trauma.sex.baseline.ais[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)] <- sapply(emsci.trauma.sex.baseline.ais[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)], as.numeric)
