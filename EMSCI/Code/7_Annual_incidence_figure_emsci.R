@@ -45,7 +45,7 @@ setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI")
 ##
 #### ---------------------------
 ##
-## Set output directorypaths
+## Set output directory paths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
 outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 ##
@@ -58,6 +58,11 @@ emsci_incidence <- subset(emsci, ExamStage=='acute I' &  AgeAtDOI >= 0 & (!(is.n
 # Calculate the annual incidence
 value <-as.data.frame(emsci_incidence%>%
                         dplyr::count(YEARDOI))
+
+# Calculate number of centers per country
+emsci_number.of.centers.per.country <-emsci_incidence%>%
+  dplyr::count(Center,Country)%>%
+  dplyr::arrange(Country)
 
 # Plot the annual incidence
 annual.incidence.emsci <- ggplot2.barplot(data=value, xName="YEARDOI", yName='n',

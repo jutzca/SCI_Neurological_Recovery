@@ -38,6 +38,7 @@ library(data.table)
 library(magrittr)
 library(gridExtra)
 library(grid)
+library(table1)
 ##
 ## ----------------------------
 ## Install packages needed:  (uncomment as required)
@@ -109,9 +110,9 @@ emsci.trauma.sex.va.a1 <-rescale.many(emsci.trauma.sex.va.a1, c(8))
 
 #---------- Count percentage of female and male subjects by Year of Injury - OVERALL --------#
 emsci.ais.proportions.overall = emsci.trauma.sex.va.a1 %>%
-  count(YEARDOI.rescaled,AIS,Sex) %>%
-  group_by(YEARDOI.rescaled)%>% 
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI.rescaled,AIS,Sex) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 
 emsci.ais.proportions.overall.df <- as.data.frame(emsci.ais.proportions.overall)
@@ -142,9 +143,9 @@ summary(emsci.ais.proportions.overall.ais.d.lm)
 
 #---------- Count percentage of female and male subjects by Year of Injury - SUBGROUPS stratified by Sex and Plegia --------#
 emsci.ais.proportions.overall.df = emsci.trauma.sex.va.a1 %>%
-  count(YEARDOI.rescaled,AIS,Sex,plegia) %>%
-  group_by(YEARDOI.rescaled)%>% 
-  mutate(frequency = (n / sum(n))*100)%>% 
+  dplyr::count(YEARDOI.rescaled,AIS,Sex,plegia) %>%
+  dplyr::group_by(YEARDOI.rescaled)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)%>% 
   as.data.frame()
 
 #---------- Calculate the change sex distribution over time for subgroups --------#
@@ -288,7 +289,7 @@ results.emsci.ais.scores.new.df.3digits[is.na(results.emsci.ais.scores.new.df.3d
 results.emsci.ais.scores.new.df.3digits[results.emsci.ais.scores.new.df.3digits == "<NA>"] <- ""
 
 # Write csv file with only selected columns
-write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/ais_scores_distribution_emsci.csv", row.names = F)
+write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/ais_scores_distribution_emsci.csv", row.names = F)
 
 
 #### -------------------------------------------------------------------------- Visualization ------------------------------------------------------------------------------------------------####
@@ -296,7 +297,8 @@ write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzele
 # Caculate the percentage of each AIS grade per year
 emsci.ais.proportions = emsci.trauma.sex.va.a1 %>%
   dplyr::count(X2_year_bins,AIS,Sex) %>%
-  dplyr::group_by(X2_year_bins, Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::group_by(X2_year_bins, Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 #---------- Plot the population pyramide 'Baseline Injury Severity' - OVERALL --------#
 emsci.ais.plot <-ggplot(data = emsci.ais.proportions, aes(x = X2_year_bins, y = frequency, fill = AIS)) +
@@ -341,8 +343,9 @@ dev.off()
 
 #Caculate the percentage of each AIS grade per year
 emsci.ais.proportions.tetra = subset(emsci.trauma.sex.va.a1, plegia == 'tetra')%>%
-  count(YEARDOI,AIS,Sex) %>%
-  group_by(YEARDOI, Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,AIS,Sex) %>%
+  dplyr::group_by(YEARDOI, Sex)%>% 
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 
 emsci.ais.plot.tetra <-ggplot(data = emsci.ais.proportions.tetra, aes(x = YEARDOI, y = frequency, fill = AIS)) +
@@ -388,8 +391,9 @@ dev.off()
 
 #Caculate the percentage of each AIS grade per year
 emsci.ais.proportions.tetra = subset(emsci.trauma.sex.va.a1, plegia == 'para')%>%
-  count(YEARDOI,AIS,Sex) %>%
-  group_by(YEARDOI, Sex)%>% mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,AIS,Sex) %>%
+  dplyr::group_by(YEARDOI, Sex)%>%  
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 emsci.ais.plot.para <-ggplot(data = emsci.ais.proportions.tetra, aes(x = YEARDOI, y = frequency, fill = AIS)) +
   geom_bar(data = emsci.ais.proportions.tetra %>% filter(Sex == "f") %>% arrange(rev(YEARDOI)),
@@ -433,9 +437,9 @@ dev.off()
 #---------- Plot the population pyramide 'Baseline Injury Level' - OVERALL --------#
 
 emsci.nli.proportions = emsci.trauma.sex.va.a1 %>%
-  dplyr::count(X2_year_bins,NLI_level,Sex) %>%
-  dplyr::group_by(X2_year_bins,Sex)%>%
- mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI_level,Sex) %>%
+  dplyr::group_by(YEARDOI,Sex)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 #Reorder levels
 emsci.nli.proportions$NLI_level <- factor(emsci.nli.proportions$NLI_level, levels = c("cervical", "thoracic", "lumbar"))
@@ -481,9 +485,9 @@ dev.off()
 #---------- Plot the population pyramide 'Baseline Injury Level' - AIS A --------#
 
 emsci.nli.proportions = subset(emsci.trauma.sex.va.a1, AIS=='A') %>%
-  count(YEARDOI,NLI_level,Sex,AIS) %>%
-  group_by(YEARDOI,Sex)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI_level,Sex,AIS) %>%
+  dplyr::group_by(YEARDOI,Sex)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 # Reorder levels
 emsci.nli.proportions$NLI_level <- factor(emsci.nli.proportions$NLI_level, levels = c("cervical", "thoracic", "lumbar"))
@@ -529,9 +533,9 @@ dev.off()
 #---------- Plot the population pyramide 'Baseline Injury Level' - AIS B --------#
 
 emsci.nli.proportions = subset(emsci.trauma.sex.va.a1, AIS=='B') %>%
-  count(YEARDOI,NLI_level,Sex,AIS) %>%
-  group_by(YEARDOI,Sex)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI_level,Sex,AIS) %>%
+  dplyr::group_by(YEARDOI,Sex)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 #Reorder levels
 emsci.nli.proportions$NLI_level <- factor(emsci.nli.proportions$NLI_level, levels = c("cervical", "thoracic", "lumbar"))
@@ -577,9 +581,9 @@ dev.off()
 #---------- Plot the population pyramide 'Baseline Injury Level' - AIS C --------#
 
 emsci.nli.proportions = subset(emsci.trauma.sex.va.a1, AIS=='C') %>%
-  count(YEARDOI,NLI_level,Sex,AIS) %>%
-  group_by(YEARDOI,Sex)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI_level,Sex,AIS) %>%
+  dplyr::group_by(YEARDOI,Sex)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 # Reorder levels
 emsci.nli.proportions$NLI_level <- factor(emsci.nli.proportions$NLI_level, levels = c("cervical", "thoracic", "lumbar"))
@@ -626,9 +630,9 @@ dev.off()
 #----Plot the population pyramide 'Baseline Injury Level' - AIS D --------#
 
 emsci.nli.proportions = subset(emsci.trauma.sex.va.a1, AIS=='D') %>%
-  count(YEARDOI,NLI_level,Sex,AIS) %>%
-  group_by(YEARDOI,Sex)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(YEARDOI,NLI_level,Sex,AIS) %>%
+  dplyr::group_by(YEARDOI,Sex)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 # Reorder levels
 emsci.nli.proportions$NLI_level <- factor(emsci.nli.proportions$NLI_level, levels = c("cervical", "thoracic", "lumbar"))
@@ -684,9 +688,9 @@ table(emsci.ais$agegr)
 
 # Calculate ratios of AIS grades per age group per year for female subjects
 ais_ratios.by.agegroup.female = subset(emsci.ais, Sex=='f') %>%
-  count(AIS, YEARDOI, agegr) %>%
-  group_by(agegr, YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(AIS, YEARDOI, agegr) %>%
+  dplyr::group_by(agegr, YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 # Fit regression model with the proportion of AIS grade as the response, and time as the predictor
 ais_ratios.by.agegroup.female.lm<-ais_ratios.by.agegroup.female %>%
@@ -721,9 +725,9 @@ estimate.plot.female<- ggplot(ais_ratios.by.agegroup.female.lm, aes(y = estimate
 
 # Calculate ratios of AIS grades per age group per year for male subjects
 ais_ratios.by.agegroup.male= subset(emsci.ais, Sex=='m') %>%
-  count(AIS, YEARDOI, agegr) %>%
-  group_by(agegr, YEARDOI)%>%
-  mutate(frequency = (n / sum(n))*100)
+  dplyr::count(AIS, YEARDOI, agegr) %>%
+  dplyr::group_by(agegr, YEARDOI)%>%
+  dplyr::mutate(frequency = (n / sum(n))*100)
 
 # Fit regression model with the proportion of AIS grade as the response, and time as the predictor
 ais_ratios.by.agegroup.male.lm<-ais_ratios.by.agegroup.male %>%
@@ -760,6 +764,47 @@ grid.arrange(estimate.plot.female,
              estimate.plot.male,
              widths=c(0.4,0.4),
              ncol=2)
+
+
+#---------- Histograms of baseline injury characteristics over 20 years --------#
+
+label(emsci.trauma.sex.va.a1$AIS) <- c("AIS-A", "AIS-B", "AIS-C", "AIS-D")
+
+
+histogram.baseline.tms <-emsci.trauma.sex.va.a1%>% 
+  dplyr::filter(plegia == "tetra") %>% 
+  dplyr::select(AIS, X5_year_bins, TMS, Sex, AgeAtDOI)%>%
+  dplyr::group_by(AIS, X5_year_bins) %>%
+  #dplyr::mutate(percent = LEMS/sum(LEMS))%>%
+  as.data.frame()%>%
+  ggplot(aes(TMS)) +
+  geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count") +facet_grid(X5_year_bins~AIS)+
+  scale_fill_viridis_d(option="plasma") + theme_bw()+
+  theme(legend.position = 'none')+
+  xlab("TMS at baseline") +
+  ylab("Proportions")+
+  ggtitle("Paraplegic Spinal Cord Injury")
+histogram.baseline.tms
+
+# Save plot
+ggsave(
+  "histogram.baseline.tms.para.pdf",
+  plot = histogram.baseline.tms,
+  device = 'pdf',
+  path = outdir_figures,
+  scale = 1,
+  width = 6,
+  height = 5,
+  units = "in",
+  dpi = 300
+)
+
+dev.off()
+
+
+
+  
+
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
 
 

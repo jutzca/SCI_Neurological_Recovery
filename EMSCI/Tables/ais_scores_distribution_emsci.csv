@@ -1,33 +1,33 @@
 "Model","Variable","Estimate","Standard Error","t-value","p-value","Adjusted p-value"
-"Female: Paraplegia: AIS A","Intercept",4.363,0.583,7.491,0,0
-"","YEARDOI",0.52,0.969,0.537,0.599,9.579
-"Female: Paraplegia: AIS B","Intercept",2.006,0.578,3.467,0.003,0.051
-"","YEARDOI",-0.519,0.962,-0.539,0.597,9.554
-"Female: Paraplegia: AIS C","Intercept",3.426,0.65,5.269,0,0.001
-"","YEARDOI",-2.006,1.091,-1.84,0.084,1.351
-"Female: Paraplegia: AIS D","Intercept",2.221,0.768,2.892,0.011,0.17
-"","YEARDOI",1.149,1.277,0.9,0.381,6.103
-"Female: Tetraplegia: AIS A","Intercept",4.728,0.718,6.589,0,0
-"","YEARDOI",-2.623,1.16,-2.261,0.039,0.625
-"Female: Tetraplegia: AIS B","Intercept",1.895,0.286,6.635,0,0
-"","YEARDOI",-0.9,0.473,-1.904,0.076,1.221
-"Female: Tetraplegia: AIS C","Intercept",4.157,0.591,7.031,0,0
-"","YEARDOI",-2.05,1.01,-2.029,0.058,0.935
-"Female: Tetraplegia: AIS D","Intercept",5.356,1.195,4.484,0,0.005
-"","YEARDOI",-0.839,2.041,-0.411,0.686,10.977
-"Male: Paraplegia: AIS A","Intercept",20.708,1.969,10.515,0,0
-"","YEARDOI",-4.043,3.365,-1.202,0.246,3.935
-"Male: Paraplegia: AIS B","Intercept",4.855,0.824,5.889,0,0
-"","YEARDOI",-0.838,1.371,-0.611,0.55,8.792
-"Male: Paraplegia: AIS C","Intercept",5.39,0.832,6.481,0,0
-"","YEARDOI",-0.328,1.383,-0.237,0.816,13.052
-"Male: Paraplegia: AIS D","Intercept",6.04,0.85,7.109,0,0
-"","YEARDOI",1.786,1.452,1.23,0.235,3.766
-"Male: Tetraplegia: AIS A","Intercept",13.686,1.28,10.69,0,0
-"","YEARDOI",-1.661,2.187,-0.759,0.458,7.331
-"Male: Tetraplegia: AIS B","Intercept",4.68,0.627,7.463,0,0
-"","YEARDOI",-0.143,1.043,-0.137,0.892,14.279
-"Male: Tetraplegia: AIS C","Intercept",10.275,1.612,6.376,0,0
-"","YEARDOI",-1.891,2.753,-0.687,0.501,8.022
-"Male: Tetraplegia: AIS D","Intercept",13.229,1.444,9.163,0,0
-"","YEARDOI",4.446,2.467,1.802,0.089,1.428
+"Female: Paraplegia: AIS A","Intercept",4.408,0.591,7.463,0,0
+"","YEARDOI",0.481,0.982,0.489,0.631,10.099
+"Female: Paraplegia: AIS B","Intercept",2.109,0.571,3.694,0.002,0.035
+"","YEARDOI",-0.598,0.934,-0.64,0.532,8.508
+"Female: Paraplegia: AIS C","Intercept",3.572,0.617,5.789,0,0
+"","YEARDOI",-2.127,1.035,-2.056,0.057,0.904
+"Female: Paraplegia: AIS D","Intercept",2.101,0.735,2.859,0.011,0.182
+"","YEARDOI",1.252,1.222,1.025,0.321,5.132
+"Female: Tetraplegia: AIS A","Intercept",4.786,0.713,6.708,0,0
+"","YEARDOI",-2.687,1.153,-2.33,0.034,0.547
+"Female: Tetraplegia: AIS B","Intercept",1.94,0.284,6.836,0,0
+"","YEARDOI",-0.939,0.47,-1.999,0.064,1.026
+"Female: Tetraplegia: AIS C","Intercept",4.256,0.6,7.09,0,0
+"","YEARDOI",-2.134,1.026,-2.08,0.053,0.847
+"Female: Tetraplegia: AIS D","Intercept",5.184,1.21,4.284,0.001,0.008
+"","YEARDOI",-0.694,2.067,-0.335,0.741,11.862
+"Male: Paraplegia: AIS A","Intercept",20.38,1.906,10.691,0,0
+"","YEARDOI",-3.731,3.257,-1.146,0.268,4.285
+"Male: Paraplegia: AIS B","Intercept",4.903,0.817,5.998,0,0
+"","YEARDOI",-0.894,1.359,-0.658,0.52,8.322
+"Male: Paraplegia: AIS C","Intercept",5.481,0.876,6.26,0,0
+"","YEARDOI",-0.415,1.456,-0.285,0.779,12.469
+"Male: Paraplegia: AIS D","Intercept",5.886,0.923,6.38,0,0
+"","YEARDOI",1.882,1.576,1.194,0.249,3.984
+"Male: Tetraplegia: AIS A","Intercept",13.973,1.319,10.597,0,0
+"","YEARDOI",-1.923,2.253,-0.853,0.405,6.484
+"Male: Tetraplegia: AIS B","Intercept",4.834,0.641,7.54,0,0
+"","YEARDOI",-0.327,1.066,-0.307,0.763,12.204
+"Male: Tetraplegia: AIS C","Intercept",10.22,1.629,6.274,0,0
+"","YEARDOI",-1.807,2.783,-0.649,0.525,8.397
+"Male: Tetraplegia: AIS D","Intercept",13.243,1.414,9.366,0,0
+"","YEARDOI",4.46,2.416,1.846,0.082,1.318
