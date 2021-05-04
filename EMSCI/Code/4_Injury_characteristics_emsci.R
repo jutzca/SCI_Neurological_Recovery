@@ -162,6 +162,7 @@ for (h in rescaled.sex) {
       df1 = subset(emsci.ais.proportions.overall.df, (AIS == i & plegia== j & Sex == h))
       mixed.lmer <- lm(frequency~YEARDOI.rescaled, data = df1, na.action = na.omit)
       print(summary(mixed.lmer))
+      n=nobs(mixed.lmer)
       
       # Capture summary stats
       intercept.estimate <- coef(summary(mixed.lmer))[1]
@@ -183,8 +184,12 @@ for (h in rescaled.sex) {
                        YEARDOI.pval =cfit[8],
                        stringsAsFactors = F)
       
+      
+      
+      df2<- cbind(df, n)
+      
       # Bind rows of temporary data frame to the results data frame
-      results.emsci.ais.scores <- rbind(results.emsci.ais.scores, df)
+      results.emsci.ais.scores <- rbind(results.emsci.ais.scores, df2)
       
     }
   }
@@ -289,7 +294,7 @@ results.emsci.ais.scores.new.df.3digits[is.na(results.emsci.ais.scores.new.df.3d
 results.emsci.ais.scores.new.df.3digits[results.emsci.ais.scores.new.df.3digits == "<NA>"] <- ""
 
 # Write csv file with only selected columns
-write.csv(results.emsci.ais.scores.new.df.3digits[,c(12,4:8,11)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/ais_scores_distribution_emsci.csv", row.names = F)
+write.csv(results.emsci.ais.scores.new.df.3digits[,c(13,4:9,12)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/ais_scores_distribution_emsci.csv", row.names = F)
 
 
 #### -------------------------------------------------------------------------- Visualization ------------------------------------------------------------------------------------------------####

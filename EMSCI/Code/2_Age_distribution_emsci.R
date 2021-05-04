@@ -125,14 +125,17 @@ write.csv(age.year,"/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiologi
 #---------- Calculate the change in age distribution over time - OVERALL --------#
 age_model.overall <-lm(AgeAtDOI~YEARDOI.rescaled, data=emsci.trauma.sex.va.a1)
 summary(age_model.overall)
+nobs(age_model.overall)
 
 #---------- Calculate the change in age distribution over time - OVERALL FEMALE --------#
 age_model.overall.female <-lm(AgeAtDOI~YEARDOI.rescaled, data=subset(emsci.trauma.sex.va.a1, Sex=='f'))
 summary(age_model.overall.female)
+nobs(age_model.overall.female)
 
 #---------- Calculate the change in age distribution over time - OVERALL MALE --------#
 age_model.overall.male <-lm(AgeAtDOI~YEARDOI.rescaled, data=subset(emsci.trauma.sex.va.a1, Sex=='m'))
-summary(age_model.overall.female)
+summary(age_model.overall.male)
+nobs(age_model.overall.male)
 
 # Create table with model summary
 tab_model(
@@ -160,6 +163,8 @@ for (h in rescaled.sex) {
       mixed.lmer <- lm(AgeAtDOI ~ YEARDOI.rescaled, data = df1, na.action = na.omit)
       print(summary(mixed.lmer))
       
+      n <- nobs(mixed.lmer)
+      
       # Capture summary stats
       intercept.estimate <- coef(summary(mixed.lmer))[1]
       YEARDOI.estimate <- coef(summary(mixed.lmer))[2]
@@ -180,8 +185,10 @@ for (h in rescaled.sex) {
                        YEARDOI.pval =cfit[8],
                        stringsAsFactors = F)
       
+      df2<- cbind(df, n)
+      
       # Bind rows of temporary data frame to the results data frame
-      results.emsci.age <- rbind(results.emsci.age, df)
+      results.emsci.age <- rbind(results.emsci.age, df2)
       
     }
   }
@@ -286,8 +293,8 @@ results.emsci.age.new.df.3digits[is.na(results.emsci.age.new.df.3digits)] <- ""
 results.emsci.age.new.df.3digits[results.emsci.age.new.df.3digits == "<NA>"] <- ""
 
 # Write csv file with only selected columns
-write.csv(results.emsci.age.new.df.3digits[,c(12,4:8,11)],"/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/Age_distribution_emsci.csv", row.names = F)
-
+write.csv(results.emsci.age.new.df.3digits[,c(13,4:9,12)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/Age_distribution_emsci.csv", row.names = F)
+names(results.emsci.age.new.df.3digits)
 
 #---------- Visualization: Change in age distribution over 20 years - OVERALL --------#
 # Set theme
