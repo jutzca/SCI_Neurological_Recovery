@@ -66,7 +66,7 @@ emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' |
 emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 
 # Merge
-emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,244)])
+emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,245)])
 
 # Change levels of AIS grade and plegia
 levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
@@ -103,6 +103,19 @@ ggsave(
 )
 
 dev.off()
+
+
+
+df1=subset(emsci.trauma.sex.ais.baseline, plegia=='tetra')
+
+library(ggplot2)
+ggplot(data=df1, aes(x=TMS))+
+  geom_histogram() + theme_bw() + facet_grid(df1$ExamStage_weeks~df1$baseline.ais)
+
+
+
+
+
 
 
 #---------- Total Sensory Score --------#

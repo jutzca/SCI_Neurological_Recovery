@@ -26,6 +26,7 @@ library(scales)
 library(lmerTest)
 library(dplyr)
 library(splitstackshape)
+library(LMERConvenienceFunctions)
 ##
 ## ----------------------------
 ##
@@ -106,12 +107,43 @@ for (h in rescaled.sex) {
   for (j in rescaled.nli){
     for (i in ais.score){
       print(paste("MODEL",h,j, i,  sep = " "))
-      df1 = subset(emsci.rescaled, (baseline.ais == i & plegia == j & Sex == h))
+      df1 = subset(emsci.rescaled, (ais.score == i & plegia == j & Sex == h))
     
       if (nrow(df1) == 0) next
-      mixed.lmer <- lmer(df1$X10m~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1, control=lmerControl(check.nlev.gtr.1="ignore"))
+      mixed.lmer <- lme4::lmer(df1$TMS~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), 
+                               data = df1, 
+                               control=lmerControl(check.nlev.gtr.1="ignore"),
+                                                   na.action = na.exclude)
       print(summary(mixed.lmer))
+      tab_model(mixed.lmer)
      
+      #mcp.fnc(mixed.lmer)
+      
+      res1 <- resid(mixed.lmer, type = "pearson") # Extract standardized residuals
+      df3<-df1[which(abs(res1) > 2.5),] # Get the rows which absolute residuals > 2.5
+      unique(df3$Patientennummer)
+      
+      
+      # df4<-romr.fnc(mixed.lmer, df1, trim = 2.5)
+      # 
+      # df5<-anti_join(df1, df3, by="Patientennummer")
+      # 
+      
+      mixed.lmer.updated <- lme4::lmer(df3$TMS~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), 
+                               data = df3, 
+                               control=lmerControl(check.nlev.gtr.1="ignore"),
+                               na.action = na.exclude)
+      print(summary(mixed.lmer.updated))
+      tab_model(mixed.lmer.updated)
+      
+     plot1 <-ggplot(data = df5, aes(x = ExamStage_weeks, y = as.numeric(as.character(TMS)), group = Patientennummer))+geom_line()+
+       ggtitle(as.character(paste(i,j,h)))
+      print(plot1)
+      
+      
+      
+      
+      
       # 
       # df2 <-subset(emsci.rescaled, baseline.ais=="D" & plegia =="para")
       # 
