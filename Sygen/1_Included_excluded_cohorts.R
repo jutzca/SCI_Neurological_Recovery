@@ -127,7 +127,7 @@ units(sygen.included.cohort$yeardoi) <- "years"
 # Print table
 table1::table1(~ sex+age+ais1+splvl1 | yeardoi, data = sygen.included.cohort)
 
-#------Data analysis and creation of table: Excluded cohort------
+#---------- Data analysis and creation of table: Excluded cohort --------#
 # Summary Table: Excluded cohort
 # Extract excluded cohort
 sygen.missing<-anti_join(sygen,sygen.included.cohort, by ="ptid")
@@ -139,11 +139,11 @@ levels(sygen.missing.unique$sex) <- c("Female", "Male")
 levels(sygen.missing.unique$ais1) <- c("A", "B", "C", "D")
 levels(sygen.missing.unique$splvl1) <- c("Cervical", "Thoracic")
 
-#R elable variables
+# R elable variables
 label(sygen.missing.unique$sex) <- "Sex"
 label(sygen.missing.unique$age) <- "Age"
 
-# label(emsci.trauma.sex.va.a1$NLI_level)<- "Neurological level of injury"
+# Label(emsci.trauma.sex.va.a1$NLI_level)<- "Neurological level of injury"
 label(sygen.missing.unique$yeardoi) <- "Year of injury"
 label(sygen.missing.unique$ais1) <- "AIS"
 label(sygen.missing.unique$splvl1) <- "Neurological level of injury"
@@ -155,22 +155,22 @@ units(sygen.missing.unique$yeardoi) <- "years"
 # Print table
 table1::table1(~ sex+age+ais1+splvl1, data = sygen.missing.unique)
 
-#------Comparison between included and exlcuded Sygen cohorts------
+#---------- Comparison between included and exlcuded Sygen cohorts --------#
 
-#sex
+# Sex
 prop.test(x=c(11,83), n=c(143, 560),
           conf.level=0.95)
 
 
-#age
+# Age
 sygen.missing.unique$status <- 'excluded cohort'
 sygen.included.cohort$status <- 'included cohort'
 merged_data.sygen<-rbind(sygen.missing.unique,sygen.included.cohort)
 
-#Welch Two Sample t-test
+# Welch Two Sample t-test
 t.test(age ~ status, data = merged_data.sygen)
 
-#Here's a quick visualization of the difference:
+# Plot the results
 ggplot(merged_data.sygen, aes(x=age, fill = status)) + 
   geom_histogram(alpha = .5, bins = 20, position = "identity") + 
   theme_classic()

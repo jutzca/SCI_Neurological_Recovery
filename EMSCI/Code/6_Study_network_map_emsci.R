@@ -39,19 +39,19 @@ theme_set(
 # if(!require(maps)){install.packages("maps")}
 # if(!require(viridis)){install.packages("viridis")}
 ##
-#### ---------------------------
+## ---------------------------
 ##
 ## R Studio Clean-Up:
 cat("\014") # clear console
 rm(list=ls()) # clear workspace
 gc() # garbage collector
 ##
-#### ---------------------------
+## ---------------------------
 ##
 ## Set working directory 
 setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 ##
-#### ---------------------------
+## ---------------------------
 ##
 ## Set output directorypaths
 outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
