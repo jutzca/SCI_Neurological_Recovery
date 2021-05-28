@@ -15,7 +15,7 @@
 ##
 ## Data source: European Multi-center Study about Spinal Cord Injury
 ##
-## Notes: Code for the publication XXX
+## Notes: Code for the publication XXXß
 ##
 ## ---------------------------
 ##
@@ -66,7 +66,7 @@ emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' |
 emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 
 # Merge
-emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
+emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,245)])
 
 # Change levels of AIS grade and plegia
 levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B ", "AIS-C", "AIS-D", " ", "")
@@ -79,12 +79,12 @@ longitudinal.trajectory.tms <-ggplot() +
   stat_summary(data=emsci.trauma.sex.ais.baseline,aes(x=ExamStage_weeks, y=as.numeric(as.character(TMS)), color=X5_year_bins, fill=X5_year_bins), fun.data = "mean_cl_boot", geom="smooth", se = TRUE,  size=0.5, linetype=1, alpha=0.2) +
   facet_grid(emsci.trauma.sex.ais.baseline$plegia~emsci.trauma.sex.ais.baseline$baseline.ais, scales = 'free')+scale_fill_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+scale_color_manual(values = c('#218317',"#457fe1", "#b30099", "#ffba00" ))+
   theme_bw()+ ylab('Total Motor Score')+xlab("Time since injury [weeks]")+
-  #scale_x_continuous( limits = c(0, 50), breaks = seq(0, 50, 10), expand = c(0,0), labels=abbrev_x, position = "top" )+
+  scale_y_continuous( limits = c(0, 100), breaks = seq(0, 100, 25), expand = c(0,0))+
   theme(panel.spacing = unit(1, "lines"), axis.ticks.x = element_blank(),
         axis.text = element_text(face='plain', size=10, family='Times', color = 'black'),
         axis.title = element_text(face='bold', size=12, family='Times', color = 'black'), 
         strip.text = element_text(face='bold', size=10, family='Times', color = 'black'),
-        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#EFF2F4', color="#EFF2F4"),
+        plot.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), panel.background = element_rect(fill='#FFFFFF', color="#FFFFFF"),
         panel.grid.minor=element_line(color = "#E2E2E2"), panel.grid.major=element_line(color = "#E2E2E2"),
         legend.background = element_rect(fill='#EFF2F4', color="#EFF2F4"), legend.title = element_blank(), legend.position = 'bottom')
 longitudinal.trajectory.tms
@@ -103,6 +103,19 @@ ggsave(
 )
 
 dev.off()
+
+
+
+df1=subset(emsci.trauma.sex.ais.baseline, plegia=='tetra')
+
+library(ggplot2)
+ggplot(data=df1, aes(x=TMS))+
+  geom_histogram() + theme_bw() + facet_grid(df1$ExamStage_weeks~df1$baseline.ais)
+
+
+
+
+
 
 
 #---------- Total Sensory Score --------#
@@ -195,7 +208,7 @@ ggsave(
   path = outdir_figures,
   scale = 1,
   width = 7,
-  height = 2.7,
+  height = 4,
   units = "in",
   dpi = 300
 )

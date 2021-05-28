@@ -24,6 +24,7 @@
 library(ggplot2)
 library(grid)
 library(ggthemes)
+library(table1)
 ##   
 ## ----------------------------
 ##   
@@ -64,10 +65,10 @@ emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' |
 emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 
 # Merge
-emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
+emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,245)])
 
 # Change names of levels of AIS grade and plegia
-levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B", "AIS-C", "AIS-D", " ", "")
+label(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B", "AIS-C", "AIS-D", " ", "")
 levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia ")
 
 # Create age groups
@@ -79,10 +80,10 @@ labs
 emsci.trauma.sex.ais.baseline$AgeGroup <- cut(emsci.trauma.sex.ais.baseline$AgeAtDOI, breaks = c(seq(0, 89, by = 30), Inf), labels = labs, right = FALSE)
 
 # Create subset according to AIS grades
-emsci.trauma.sex.ais.baseline.ais.a= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-A') )
-emsci.trauma.sex.ais.baseline.ais.b= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-B') )
-emsci.trauma.sex.ais.baseline.ais.c= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-C') )
-emsci.trauma.sex.ais.baseline.ais.d= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='AIS-D') )
+emsci.trauma.sex.ais.baseline.ais.a= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='A') )
+emsci.trauma.sex.ais.baseline.ais.b= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='B') )
+emsci.trauma.sex.ais.baseline.ais.c= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='C') )
+emsci.trauma.sex.ais.baseline.ais.d= subset(emsci.trauma.sex.ais.baseline, (baseline.ais=='D') )
 
 #---------- Total Motor Score - AIS-A Patients --------#
 

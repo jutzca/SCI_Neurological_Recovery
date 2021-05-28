@@ -1,6 +1,6 @@
 ## ---------------------------
 ##
-## Script name: Longitudinal_analysis_sygen
+## Script name: Longitudinal_analysis_emsci
 ##
 ## Purpose of script: To determine if the neurological and functional recovery changed over the course of the EMSCI study.
 ##
@@ -26,6 +26,7 @@ library(scales)
 library(lmerTest)
 library(dplyr)
 library(splitstackshape)
+library(LMERConvenienceFunctions)
 ##
 ## ----------------------------
 ##
@@ -76,10 +77,10 @@ emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' |
 emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
 
 # Merge
-emsci.trauma.sex.baseline.ais <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,243)])
+emsci.trauma.sex.baseline.ais <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,245)])
 
 #Convert certain columns to numeric
-emsci.trauma.sex.baseline.ais[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)] <- sapply(emsci.trauma.sex.baseline.ais[,c(5,6,8,11,23,26,29,32,35,186, 188,190, 192)], as.numeric)
+emsci.trauma.sex.baseline.ais[,c(5,6,8,11,24,25,30,31,36,187, 189,191, 193)] <- sapply(emsci.trauma.sex.baseline.ais[,c(5,6,8,11,24,25,30,31,36,187, 189,191, 193)], as.numeric)
 
 #---------- Rescale Data
 rescale.many <- function(dat, column.nos) { 
@@ -92,7 +93,7 @@ rescale.many <- function(dat, column.nos) {
   dat 
 } 
 
-emsci.rescaled <-rescale.many(emsci.trauma.sex.baseline.ais, c(5,6,8,11)) 
+emsci.rescaled <-rescale.many(emsci.trauma.sex.baseline.ais, c(6,8,11)) 
 
 # Prepare selection variables
 ais.score<-unique(emsci.rescaled$baseline.ais)
@@ -106,20 +107,59 @@ for (h in rescaled.sex) {
   for (j in rescaled.nli){
     for (i in ais.score){
       print(paste("MODEL",h,j, i,  sep = " "))
-      df1 = subset(emsci.rescaled, (baseline.ais == i & plegia == j & Sex == h))
-      #if (nrow(df1) == 0) next
-      #mixed.lmer <- nlme(LEMS~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), data = df1)
-      #print(summary(mixed.lmer))
+      df1 = subset(emsci.rescaled, (ais.score == i & plegia == j & Sex == h))
+    
+      if (nrow(df1) == 0) next
+      mixed.lmer <- lme4::lmer(df1$TMS~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), 
+                               data = df1, 
+                               control=lmerControl(check.nlev.gtr.1="ignore"),
+                                                   na.action = na.exclude)
+      print(summary(mixed.lmer))
+      tab_model(mixed.lmer)
+     
+      #mcp.fnc(mixed.lmer)
       
-      mixed.lmer <- nlme::nlme(LEMS ~ SSasympOff(ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled, Asym, R0, lrc),
-                 data = df1,
-                 fixed = Asym + R0 + lrc ~ 1,
-                 random = Asym ~ 1,
-                 na.action=na.exclude, 
-                 na.fail(emsci.rescaled),
-                 naPattern = ~ !is.na(LEMS),
-                 method="ML",verbose=TRUE)
+      res1 <- resid(mixed.lmer, type = "pearson") # Extract standardized residuals
+      df3<-df1[which(abs(res1) > 2.5),] # Get the rows which absolute residuals > 2.5
+      unique(df3$Patientennummer)
       
+      
+      # df4<-romr.fnc(mixed.lmer, df1, trim = 2.5)
+      # 
+      # df5<-anti_join(df1, df3, by="Patientennummer")
+      # 
+      
+      mixed.lmer.updated <- lme4::lmer(df3$TMS~ ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled + (1|Patientennummer), 
+                               data = df3, 
+                               control=lmerControl(check.nlev.gtr.1="ignore"),
+                               na.action = na.exclude)
+      print(summary(mixed.lmer.updated))
+      tab_model(mixed.lmer.updated)
+      
+     plot1 <-ggplot(data = df5, aes(x = ExamStage_weeks, y = as.numeric(as.character(TMS)), group = Patientennummer))+geom_line()+
+       ggtitle(as.character(paste(i,j,h)))
+      print(plot1)
+      
+      
+      
+      
+      
+      # 
+      # df2 <-subset(emsci.rescaled, baseline.ais=="D" & plegia =="para")
+      # 
+      
+      
+      # mixed.lmer <- nlme::nlme(LEMS ~ SSasympOff(ExamStage_weeks.rescaled*YEARDOI.rescaled+AgeAtDOI.rescaled, Asym, R0, lrc),
+      #            data = df1,
+      #            fixed = Asym + R0 + lrc ~ 1,
+      #            random = Asym ~ 1,
+      #            na.action=na.exclude, 
+      #            na.fail(emsci.rescaled),
+      #            naPattern = ~ !is.na(LEMS),
+      #            method="ML",verbose=TRUE)
+      
+      
+      n <- sapply(ranef(mixed.lmer),nrow)
       
       # Capture summary stats
       intercept.estimate <- coef(summary(mixed.lmer))[1]
@@ -173,12 +213,14 @@ for (h in rescaled.sex) {
                        yeardoi.pval =cfit[23],
                        age.pval =cfit[24],
                        time.yeardoi.pval =cfit[25],
-                              stringsAsFactors = F)
+                       stringsAsFactors = F)
   
-      # Bind rows of temporary data frame to the results data frame
-      results <- rbind(results, df)
+      df2<- cbind(df, n)
       
-    }
+      # Bind rows of temporary data frame to the results data frame
+      results <- rbind(results, df2)
+      #results<- cbind(results, n)
+          }
   }
 }
 
@@ -286,7 +328,40 @@ new_data_4[is.na(new_data_4)] <- ""
 new_data_4[new_data_4 == "<NA>"] <- ""
 
 # Write csv file with only selected columns
-write.csv(new_data_4[,c(13,4:9,12)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/emsci.longitudinal.results_10m.csv", row.names = F)
+write.csv(new_data_4[,c(14,4:10,13)],"/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables/emsci.mixed.models.results_X10m.csv", row.names = F)
+
+
+
+
+
+
+#---------- Revised analysis: Days post injury
+
+
+
+
+# Load data
+emsci.revised<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
+
+
+histogram.test <-emsci.revised%>% 
+  # dplyr::filter(ExamStage == 2) %>% 
+  # dplyr::select(AIS, X5_year_bins, TMS, Sex, AgeAtDOI)%>%
+  # dplyr::group_by(AIS, X5_year_bins) %>%
+  # #dplyr::mutate(percent = LEMS/sum(LEMS))%>%
+  # as.data.frame()%>%
+  ggplot(aes(as.numeric(Days_since_Injury))) +
+  geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat="count")+
+  scale_fill_viridis_d(option="plasma") + theme_bw()+
+  theme(legend.position = 'none')+
+  xlab("Days post injury") +
+  ylab("Proportions")+
+  ggtitle("Paraplegic Spinal Cord Injury")
+histogram.test
+
+
+boxplot(as.numeric(emsci.revised$Days_since_Injury), emsci.revised$Exam)
 
 #### -------------------------------------------------------------------------- CODE END ------------------------------------------------------------------------------------------------####
+
 

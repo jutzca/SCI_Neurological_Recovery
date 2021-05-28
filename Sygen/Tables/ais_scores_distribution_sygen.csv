@@ -1,17 +1,17 @@
-Model,Variable,Estimate,Standard Error,t-value,p-value,Adjusted p-value
-Paraplegia: AIS A,Intercept,19.152,2.825,6.778,0.002,0.020
-,YEARDOI,-2.034,4.666,-0.436,0.685,5.483
-Paraplegia: AIS B,Intercept,1.188,0.886,1.341,0.312,2.495
-,YEARDOI,0.642,1.738,0.369,0.747,5.978
-Paraplegia: AIS C,Intercept,0.914,0.482,1.894,0.154,1.236
-,YEARDOI,2.281,0.984,2.318,0.103,0.827
-Paraplegia: AIS D,Intercept,0.609,0.138,4.400,0.142,1.138
-,YEARDOI,0.246,0.320,0.767,0.583,4.667
-Tetraplegia: AIS A,Intercept,38.739,8.262,4.689,0.009,0.075
-,YEARDOI,21.700,13.644,1.590,0.187,1.496
-Tetraplegia: AIS B,Intercept,7.881,1.953,4.035,0.027,0.219
-,YEARDOI,5.141,3.987,1.289,0.288,2.301
-Tetraplegia: AIS C,Intercept,22.439,2.994,7.496,0.002,0.014
-,YEARDOI,-9.371,4.944,-1.895,0.131,1.047
-Tetraplegia: AIS D,Intercept,5.821,1.873,3.108,0.053,0.424
-,YEARDOI,-4.346,3.823,-1.137,0.338,2.706
+"Model","Variable","Estimate","Standard Error","t-value","p-value","Adjusted p-value"
+"Paraplegia: AIS A","Intercept",19.152,2.825,6.778,0.002,0.02
+"","YEARDOI",-2.034,4.666,-0.436,0.685,5.483
+"Paraplegia: AIS B","Intercept",1.188,0.886,1.341,0.312,2.495
+"","YEARDOI",0.642,1.738,0.369,0.747,5.978
+"Paraplegia: AIS C","Intercept",0.914,0.482,1.894,0.154,1.236
+"","YEARDOI",2.281,0.984,2.318,0.103,0.827
+"Paraplegia: AIS D","Intercept",0.609,0.138,4.4,0.142,1.138
+"","YEARDOI",0.246,0.32,0.767,0.583,4.667
+"Tetraplegia: AIS A","Intercept",38.739,8.262,4.689,0.009,0.075
+"","YEARDOI",21.7,13.644,1.59,0.187,1.496
+"Tetraplegia: AIS B","Intercept",7.881,1.953,4.035,0.027,0.219
+"","YEARDOI",5.141,3.987,1.289,0.288,2.301
+"Tetraplegia: AIS C","Intercept",22.439,2.994,7.496,0.002,0.014
+"","YEARDOI",-9.371,4.944,-1.895,0.131,1.047
+"Tetraplegia: AIS D","Intercept",5.821,1.873,3.108,0.053,0.424
+"","YEARDOI",-4.346,3.823,-1.137,0.338,2.706

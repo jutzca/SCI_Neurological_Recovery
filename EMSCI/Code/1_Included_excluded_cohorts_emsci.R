@@ -144,9 +144,14 @@ table1::table1(~ Country | X5_year_bins, data = emsci.trauma.sex.va.a1)
 
 ###Calculate Number of patients enrolled per year
 nr.of.patients.enrolled.per.year = emsci.trauma.sex.va.a1%>%
-  count(YEARDOI) %>%
-  group_by(YEARDOI)
+  dplyr::count(YEARDOI) %>%
+  dplyr::group_by(YEARDOI)
 nr.of.patients.enrolled.per.year
+
+# Calculate average recruitment per year 
+ave.recruitment <-mean(nr.of.patients.enrolled.per.year$n)
+sd.recruitment <-sd(nr.of.patients.enrolled.per.year$n)
+
 
 sort(nr.of.patients.enrolled.per.year$n)
 

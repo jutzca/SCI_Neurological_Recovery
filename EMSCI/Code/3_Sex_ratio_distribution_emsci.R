@@ -228,15 +228,15 @@ summary(sex_ratios.emsci.tetra.lm)
 
 #---------- Calculate the number of patients per year by sex - Overall --------#
 emsci.sex.long <- emsci.trauma.sex.va.a1 %>%
-  dplyr::count(Sex, YEARDOI)%>%
-  dplyr::group_by(YEARDOI)%>%
+  dplyr::count(Sex, X2_year_bins)%>%
+  dplyr::group_by(X2_year_bins)%>%
   dplyr::mutate(frequency = (n / sum(n))*100)
 
 #---------- Plot population pyramide for year and color by sex - OVERALL --------#
 # Plot data for the male patients
 gg.male <- ggplot(data = subset(emsci.sex.long,Sex=='m'), 
                   mapping = aes(
-                    x = as.factor(YEARDOI), 
+                    x = as.factor(X2_year_bins), 
                     y = frequency, 
                     fill = Sex,
                     label=paste(round(frequency, 0), "% (", 'n = ', n, ')', sep="")
@@ -268,7 +268,7 @@ gg.male <- ggplot(data = subset(emsci.sex.long,Sex=='m'),
 # Plot data for the female patients
 gg.female <-  ggplot(data = subset(emsci.sex.long,Sex=='f'), 
                      mapping = aes(
-                       x = as.factor(YEARDOI), 
+                       x = as.factor(X2_year_bins), 
                        y = frequency, 
                        fill = Sex,
                        label=paste(round(frequency, 0), "% (", 'n = ', n, ')', sep="")
