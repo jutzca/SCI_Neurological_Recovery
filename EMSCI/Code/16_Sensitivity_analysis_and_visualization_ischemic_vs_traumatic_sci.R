@@ -24,6 +24,10 @@
 library(ggplot2)
 library(grid)
 library(ggthemes)
+library(table1)
+library(dplyr)
+library(lme4)
+library(scales)
 ##   
 ## ----------------------------
 ##   
@@ -41,11 +45,11 @@ gc() # garbage collector
 ##   
 #### ---------------------------
 ## set working directory
-setwd("/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
+setwd("/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI") 
 ##   
 # Set output directorypaths
-outdir_figures='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
-outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
+outdir_figures='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Figures'
+outdir_tables='/Users/jutzelec/Documents/Github/SCI_Neurological_Recovery/EMSCI/Tables'
 ##   
 ##   
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
@@ -58,7 +62,7 @@ emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') &
                              (Cause=="ischemic" | Cause=="traumatic" | Cause=="haemorragic" |Cause=="disc herniation") & 
                              (NLI_level == 'cervical' | NLI_level == 'thoracic'| NLI_level == 'lumbar') & (YEARDOI >= 2000) & (AIS=="A"| AIS=="B"| AIS=="C"| AIS=="D"))
 
-emsci.trauma.sex.va.a1<-distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute') , Patientennummer, .keep_all = TRUE)
+emsci.trauma.sex.va.a1<-dplyr::distinct(subset(emsci.trauma.sex, ExamStage=='acute I' | ExamStage=='very acute') , Patientennummer, .keep_all = TRUE)
 
 # Create new variable: Baseline AIS grade
 emsci.trauma.sex.va.a1$baseline.ais <-emsci.trauma.sex.va.a1$AIS
@@ -71,6 +75,7 @@ emsci.trauma.sex.ais.baseline <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,
 # Change levels of AIS grade and plegia
 levels(emsci.trauma.sex.ais.baseline$baseline.ais) <- c("AIS-A", "AIS-B", "AIS-C", "AIS-D", " ", "")
 levels(emsci.trauma.sex.ais.baseline$plegia) <- c("Paraplegia", "Tetraplegia")
+
 
 #---------- 1. VISUALIZATION --------
 
@@ -175,6 +180,13 @@ dev.off()
 #---------- 2. ANALYSIS --------
 
 
+# Merge
+emsci.trauma.sex.baseline.ais <-merge(emsci.trauma.sex, emsci.trauma.sex.va.a1[,c(2,245)])
+
+#Convert certain columns to numeric
+emsci.trauma.sex.baseline.ais[,c(5,6,8,11,24,25,30,31,36,187, 189,191, 193)] <- sapply(emsci.trauma.sex.baseline.ais[,c(5,6,8,11,24,25,30,31,36,187, 189,191, 193)], as.numeric)
+
+#---------- Rescale Data
 rescale.many <- function(dat, column.nos) { 
   nms <- names(dat) 
   for(col in column.nos) { 
@@ -185,24 +197,25 @@ rescale.many <- function(dat, column.nos) {
   dat 
 } 
 
-emsci.rescaled <-rescale.many(emsci.trauma.sex.ais.baseline, c(6,8,11)) 
+emsci.rescaled <-rescale.many(emsci.trauma.sex.baseline.ais, c(6,8,11)) 
+
 
 #---------- Total Motor Score --------
 
 # Paraplegic patients
-mixed.lmer.ischemic.ais.a.para <- lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-A" & plegia =='Paraplegia')))
+mixed.lmer.ischemic.ais.a.para <- lme4::lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-A" & plegia =='Paraplegia')))
 print(summary(mixed.lmer.ischemic.ais.a.para))
 tab_model(mixed.lmer.ischemic.ais.a.para, show.se = TRUE, show.ci = NULL, digits = 3)
 
-mixed.lmer.ischemic.ais.b.para <- lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-B" & plegia =='Paraplegia')))
+mixed.lmer.ischemic.ais.b.para <- lme4::lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-B" & plegia =='Paraplegia')))
 print(summary(mixed.lmer.ischemic.ais.b.para))
 tab_model(mixed.lmer.ischemic.ais.b.para, show.se = TRUE, show.ci = NULL, digits = 3)
 
-mixed.lmer.ischemic.ais.c.para <- lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-C" & plegia =='Paraplegia')))
+mixed.lmer.ischemic.ais.c.para <- lme4::lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-C" & plegia =='Paraplegia')))
 print(summary(mixed.lmer.ischemic.ais.c.para))
 tab_model(mixed.lmer.ischemic.ais.c.para, show.se = TRUE, show.ci = NULL, digits = 3)
 
-mixed.lmer.ischemic.ais.d.para <- lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-D" & plegia =='Paraplegia')))
+mixed.lmer.ischemic.ais.d.para <- lme4::lmer(TMS~ ExamStage_weeks.rescaled+baseline.tms+Cause_new+ (1|Patientennummer), data = subset(emsci.rescaled, (baseline.ais=="AIS-D" & plegia =='Paraplegia')))
 print(summary(mixed.lmer.ischemic.ais.d.para))
 tab_model(mixed.lmer.ischemic.ais.d.para, show.se = TRUE, show.ci = NULL, digits = 3)
 
