@@ -15,7 +15,7 @@
 ## Contact
 Questions or comments related to the manuscript:
 * [Lucie Bourguignon](mailto:lucie.Bourguignon@hest.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
-* [Dr. Catherine Jutzeler](mailto:catherine.jutzeler@hest.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
+* [Prof. Dr. Catherine Jutzeler](mailto:catherine.jutzeler@hest.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
 * [Prof. Armin Curt](mailto:armin.curt@balgrist.ch?subject=[GitHub]%20Source%20Han%20Sans)
 
 This repository is maintained by:
