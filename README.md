@@ -1,4 +1,4 @@
-# Benchmarking the spontaneous functional and neurological recovery following spinal cord injury: A European Population-Based Surveillance Study from 2001 to 2019
+# International surveillance study in acute spinal cord injury confirms viability of multinational clinical trials
 
 **Authors:** Lucie Bourguignon, Bobo Tong, Fred Geisler, Martin Schubert, Frank Röhrich, Marion Saur, Norbert Weidner, Ruediger Rupp, Yorck-Bernhard B. Kalke, Rainer Abel, Doris Maier, Lukas Grassner, Harvinder S. Chhabra, Thomas Liebscher, Jacquelyn J. Cragg, [EMSCI study group](https://www.emsci.org/index.php/members), John Kramer, Armin Curt, Catherine R. Jutzeler
 
@@ -14,8 +14,8 @@
 
 ## Contact
 Questions or comments related to the manuscript:
-* [Lucie Bourguignon](mailto:lucie.Bourguignon@bsse.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
-* [Dr. Catherine Jutzeler](mailto:catherine.jutzeler@bsse.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
+* [Lucie Bourguignon](mailto:lucie.Bourguignon@hest.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
+* [Dr. Catherine Jutzeler](mailto:catherine.jutzeler@hest.ethz.ch?subject=[GitHub]%20Source%20Han%20Sans)
 * [Prof. Armin Curt](mailto:armin.curt@balgrist.ch?subject=[GitHub]%20Source%20Han%20Sans)
 
 This repository is maintained by:
