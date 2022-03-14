@@ -96,7 +96,7 @@ outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Ta
 #-------------------------Data wrangling------------------------------------------------------------------------------------------------------
 
 #load original dataset
-emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
+emsci<- read.csv("/Volumes/jutzelec/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
 
 #Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
@@ -135,8 +135,21 @@ label(emsci.trauma.sex.va.a1$AIS) <- "AIS Score"
 units(emsci.trauma.sex.va.a1$AgeAtDOI) <- "years"
 units(emsci.trauma.sex.va.a1$YEARDOI) <- "years"
 
-#Print table
-table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level, data = emsci.trauma.sex.va.a1)
+#Print table by sex and overall
+table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level|Sex, data = emsci.trauma.sex.va.a1)
+
+#Print table by age groups
+# Create age groups
+labs <- c(paste(seq(0, 89, by = 30), seq(0 + 30 - 1, 90 - 1, by = 30),
+                sep = "-"))
+labs
+
+# Add new varianle AgeGroup to the main dataframe
+emsci.trauma.sex.va.a1$AgeGroup <- cut(emsci.trauma.sex.va.a1$AgeAtDOI, breaks = c(seq(0, 89, by = 30), Inf), labels = labs, right = FALSE)
+
+#Print table by sex and overall
+table1::table1(~ Sex+AgeAtDOI+Cause+AIS+NLI_level|AgeGroup, data = emsci.trauma.sex.va.a1)
+
 
 #------Data analysis, creation of table, and figure: Patients enrolled in EMSCI per year and country------
 #Create Supplemantray Table 1: Number of patients enrolled per country (5 year bins)

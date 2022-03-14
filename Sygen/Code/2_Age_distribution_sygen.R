@@ -76,7 +76,7 @@ outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/Sygen/Ta
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 # Load original dataset
-sygen<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
+sygen<- read.csv("/Volumes/jutzelec/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/df_sygen_formatted.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
 # Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar; as well as AIS score A, B, C, or D
 sygen.included.cohort.all.times<- subset(sygen, (!is.na(Age)) & (Sex=="Female" | Sex=="Male") & ###Age at DOI and Sex

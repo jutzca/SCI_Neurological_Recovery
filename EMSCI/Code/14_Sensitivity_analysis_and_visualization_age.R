@@ -52,7 +52,7 @@ outdir_tables='/Users/jutzca/Documents/Github/SCI_Neurological_Recovery/EMSCI/Ta
 #### -------------------------------------------------------------------------- CODE START ------------------------------------------------------------------------------------------------####
 
 # Load original dataset
-emsci<- read.csv("/Volumes/jutzelec$/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
+emsci<- read.csv("/Volumes/jutzelec/8_Projects/1_Ongoing/9_EMSCI_epidemiological_shift/2_Data/emsci_data_2020.csv", sep = ',', header = T,  na.strings=c("","NA"))
 
 # Only include subject with information on sex, valid age at injury, traumatic or ischemic cause of injury, and level of injury either cervical, thoracic, or lumbar
 emsci.trauma.sex <- subset(emsci, (AgeAtDOI > 8) & (Sex=='f' | Sex=='m') & 
